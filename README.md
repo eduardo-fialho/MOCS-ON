@@ -69,7 +69,7 @@ Descrição do projeto.
 | Id     | Nome       | Descrição   |
 |:-------|:-----------|:------------|
 | RN001  | Login via email   | O login do usuário é feito com seu email cadastrado.   |
-| RN002  | Um comitê por delegado   |Um delegado só pode estar inscrito em um único comitê por edição do MOCS.|
+| RN002  | Um comitê por delegado   |Um delegado só pode estar inscrito em um único comitê por edição do-   MOCS.|
 | RN003  | Aprovação da imprensa    | Toda publicação da Imprensa deve ser aprovada por um Diretor da Imprensa ou superior.  |
 | RN004  | Sem acúmulo de função   | Membros do Secretariado não podem ser Delegados   |
 | RN005  | Documentos oficiais   | Apenas documentos postados ou aprovados por diretores ou superiores são considerados oficiais.   |
@@ -90,21 +90,21 @@ Descrição do projeto.
 ## Casos de Uso:
 | Id     | Caso de Uso                           | Requisitos Associados  | Regras de Negócio Associadas |
 |:-------|:--------------------------------------|:-----------------------|:----------------------------|
-| CSU01  | Login na plataforma                   | REQ001, REQ002          | RN001, RN013                |
-| CSU02  | Recuperar senha                       | REQ002                  | RN013                       |
-| CSU03  | Editar perfil de usuário              | REQ004, REQ021          | RN010, RN018                |
-| CSU04  | Emitir certificado                    | REQ033                  | RN015                       |
-| CSU05  | Criar usuários; cadastrar e editar dados pessoais e histórico | REQ003, REQ007 | RN004                       |
-| CSU06  | Acessar histórico do usuário          | REQ005, REQ008          | RN018                       |
-| CSU07  | Submeter documentos no comitê         | REQ011, REQ026, REQ019  | RN009, RN016                |
-| CSU08  | Submeter um post no comitê ou geral   | REQ017, REQ018          | RN003, RN008, RN005         |
-| CSU09  | Avaliar documento submetido           | REQ018                  | RN005                       |
-| CSU10  | Preencher e salvar a lista de presença| REQ026                  | RN015                       |
-| CSU11  | Criar comitê; cadastrar e editar página inicial, documentos e posts | REQ009, REQ010 | RN011                       |
-| CSU12  | Visualizar mural geral                | REQ015                  |                             |
-| CSU13  | Submeter e aprovar documentos e posts no mural | REQ017, REQ018 | RN003, RN008, RN005         |
-| CSU14  | Reagir a documentos                   | REQ019                  |                             |
-| CSU15  | Postar “Spotteds” e “Pérolas”         | REQ020                  | RN005                       |
-| CSU16  | Gerenciar controle de prazos          | REQ034                  |                             |
-| CSU17  | Registrar recursos e materiais        | REQ022, REQ023, REQ024, REQ025 | RN012   |
-| CSU18  | Responsividade e acesso mobile        | REQ030                  |                             |
+| CSU01  | Login na plataforma                   | REQ001         | RN001           |
+| CSU02  | Criar e Editar diferentes tipos de Usuário                      | REQ004                   | -                      |
+| CSU03  | Criar e Editar comitê              | -         | -              |
+| CSU04  | Utilizar a Ouvidoria                   | -                 | -                      |
+| CSU05  | Receber e avaliar documento submetido | - | -                     |
+| CSU06  | Submeter documentos no comitê          | REQ003         | -                |
+| CSU07  | Submeter um post no comitê        | REQ003  | -               |
+| CSU08  | Interagir com um post  | REQ003        | -         |
+| CSU09  | Preencher e salvar a lista de presença da sessão          |-| - |
+| CSU10  | Consulta informal| -                  | -                     |
+| CSU11  | Spotteds e Pérolas |REQ003 | -                |
+| CSU12  | Submeter e Aprovar um post da Imprensa               | REQ003                 |-                        |
+| CSU13  | Enviar avisos | REQ003 | -         |
+| CSU14  | Recuperação de Senha                 | REQ002                  |  -                           |
+| CSU15  | Agenda do Comitê        | -                | -|
+| CSU16  | Agenda do Dia          | -                 |-                             |
+| CSU17  | Criar e Editar Delegações        | REQ004  | -   |
+| CSU18  | Guia de Estudos       | -                |-                             |
