@@ -92,12 +92,12 @@ Descrição do projeto.
 |:-------|:--------------------------------------|:-----------------------|:----------------------------|
 | CSU01  | Login na plataforma                   | REQ001         | RN001           |
 | CSU02  | Criar e Editar diferentes tipos de Usuário                      | REQ004                   | -                      |
-| CSU03  | Criar e Editar comitê              | -         | -              |
-| CSU04  | Utilizar a Ouvidoria                   | -                 | -                      |
-| CSU05  | Receber e avaliar documento submetido | - | -                     |
-| CSU06  | Submeter documentos no comitê          | REQ003         | -                |
-| CSU07  | Submeter um post no comitê        | REQ003  | -               |
-| CSU08  | Interagir com um post  | REQ003        | -         |
+| CSU03  | Criar e Editar comitê              | REQ003, REQ009, REQ017       | RN011              |
+| CSU04  | Utilizar a Ouvidoria                   | REQ032                | RN009                      |
+| CSU05  | Receber e avaliar documento submetido |REQ010, REQ011, REQ018, REQ019, REQ031 | RN005, RN016                     |
+| CSU06  | Submeter documentos no comitê       | REQ003,   REQ029         |     RN009,  RN016               |
+| CSU07  | Submeter um post no comitê        | REQ003, REQ017  | RN008, RN017               |
+| CSU08  | Interagir com um post  | REQ003        | REQ017         |RN008, RN017
 | CSU09  | Preencher e salvar a lista de presença da sessão          |-| - |
 | CSU10  | Consulta informal| -                  | -                     |
 | CSU11  | Spotteds e Pérolas |REQ003 | -                |
