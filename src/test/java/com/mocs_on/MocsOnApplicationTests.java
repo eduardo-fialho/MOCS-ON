@@ -9,5 +9,4 @@ class MocsOnApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }
