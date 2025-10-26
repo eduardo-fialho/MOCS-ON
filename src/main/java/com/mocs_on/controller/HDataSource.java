@@ -1,7 +1,8 @@
-package;
-//inserir package
+package com.mocs_on.controller;
+
 import java.sql.*;
 
+/*
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import com.zaxxer.hikari.*;
@@ -24,7 +25,7 @@ public class HDataSource {
     
     private String jdbcDriver = "com.mysql.cj.jdbc.Driver";
   
-    private HDataSource() {
+    public HDataSource() {
     }
 
     @PostConstruct
@@ -102,4 +103,4 @@ public class HDataSource {
             conn = null;
         }
     }	    
-}
+} */
