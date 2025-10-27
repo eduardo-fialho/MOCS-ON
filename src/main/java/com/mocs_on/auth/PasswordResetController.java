@@ -16,6 +16,11 @@ public class PasswordResetController {
         this.service = service;
     }
 
+    @GetMapping("/forgot-password")
+    public String showForgotForm() {
+        return "forgot_password_form"; // view com formulário de e-mail
+    }
+
     @PostMapping(path = "/forgot-password", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public String forgotPassword(@RequestParam("email") String email,
                                  HttpServletRequest req,
@@ -62,4 +67,3 @@ public class PasswordResetController {
         return "reset_password_success";
     }
 }
-
