@@ -7,7 +7,7 @@ public class Diretor extends Usuario{
         super();
     }
     
-    Diretor(Integer id, String nome, String email){
-        super(id, nome, email);
+    Diretor(Integer id, String nome, String email, String senha){
+        super(id, nome, email, senha);
     }
 }
