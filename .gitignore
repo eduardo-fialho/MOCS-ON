@@ -33,7 +33,7 @@ build/
 .vscode/
 
 # Projeto: ignores adicionais
-smtp_config.json
-web/smtp_config.json
+
+
 *.log
 *.tmp
