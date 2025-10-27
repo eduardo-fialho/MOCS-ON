@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mesa Diretora</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .bg-mocs-blue {
+            background-color: #205395;
+        }
+
+        .text-mocs-blue {
+            color: #205395;
+        }
+
+        .bg-mocs-orange {
+            background-color: #FF8C00;
+        }
+
+        .text-mocs-orange {
+            color: #FF8C00;
+        }
+
+        .border-mocs-blue {
+            border-color: #205395;
+        }
+
+        .border-mocs-orange {
+            border-color: #FF8C00;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+
+    <div class="flex flex-col min-h-screen">
+        <!-- Cabeçalho Principal -->
+        <header class="bg-white shadow-md z-10 sticky top-0">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                     <a href="dashboard.html"><img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON" class="h-8"></a>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <span class="font-semibold text-gray-700 hidden sm:block">CSNU - Crise do Congo</span>
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center space-x-2">
+                            <img src="https://placehold.co/40x40/FF8C00/ffffff?text=M" alt="Avatar da Mesa" class="h-9 w-9 rounded-full border-2 border-mocs-orange">
+                        </button>
+                        <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20" style="display: none;">
+                            <a href="login.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Conteúdo Principal -->
+        <main class="flex-grow container mx-auto p-4 md:p-6">
+
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-800">Painel de Acompanhamento</h1>
+                <p class="text-gray-500">Conselho de Segurança das Nações Unidas: Crise do Congo</p>
+            </div>
+
+            <!-- Estatísticas Rápidas -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                <div class="bg-white p-5 rounded-xl shadow-md flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-500">Tempo de Sessão</p>
+                        <p class="text-3xl font-bold text-mocs-blue">01:45:23</p>
+                    </div>
+                    <i class="fas fa-clock text-4xl text-mocs-blue opacity-20"></i>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-md flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-500">Documentos Pendentes</p>
+                        <p class="text-3xl font-bold text-mocs-orange">4</p>
+                    </div>
+                    <i class="fas fa-file-signature text-4xl text-mocs-orange opacity-20"></i>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-md flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-500">Status do Comitê</p>
+                        <p class="text-2xl font-bold text-green-600">Sessão Ativa</p>
+                    </div>
+                    <i class="fas fa-gavel text-4xl text-green-600 opacity-20"></i>
+                </div>
+            </div>
+
+            <!-- Agenda e Documentos -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Agenda / Fluxo do Debate -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-xl font-bold text-mocs-blue mb-4">Agenda da Sessão</h2>
+                    <ul class="space-y-4">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 text-xl mr-4"></i>
+                            <div>
+                                <p class="font-semibold text-gray-800">Abertura da Sessão e Chamada</p>
+                                <p class="text-sm text-gray-500">Concluído às 09:05</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-spinner fa-spin text-mocs-blue text-xl mr-4"></i>
+                            <div>
+                                <p class="font-semibold text-gray-800">Debate Geral</p>
+                                <p class="text-sm text-gray-500">Em andamento...</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="far fa-circle text-gray-400 text-xl mr-4"></i>
+                            <div>
+                                <p class="font-semibold text-gray-500">Abertura para envio de Documentos</p>
+                                <p class="text-sm text-gray-400">Aguardando</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="far fa-circle text-gray-400 text-xl mr-4"></i>
+                            <div>
+                                <p class="font-semibold text-gray-500">Votação das Propostas</p>
+                                <p class="text-sm text-gray-400">Aguardando</p>
+                            </div>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="far fa-circle text-gray-400 text-xl mr-4"></i>
+                            <div>
+                                <p class="font-semibold text-gray-500">Encerramento da Sessão</p>
+                                <p class="text-sm text-gray-400">Aguardando</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Documentos para Apreciação -->
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h2 class="text-xl font-bold text-mocs-blue mb-4">Últimos Documentos Enviados</h2>
+                    <div class="space-y-3">
+                        <!-- Documento Item -->
+                        <div class="border-t p-3 flex justify-between items-center">
+                            <div>
+                                <p class="font-semibold">Proposta de Resolução 1.1</p>
+                                <p class="text-sm text-gray-500">Enviado por: Brasil, África do Sul</p>
+                            </div>
+                            <div class="text-right">
+                                <span
+                                    class="text-xs font-semibold bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">Pendente</span>
+                                <a href="#" class="text-sm text-mocs-blue hover:underline ml-2">Analisar</a>
+                            </div>
+                        </div>
+                        <!-- Documento Item -->
+                        <div class="border-t p-3 flex justify-between items-center">
+                            <div>
+                                <p class="font-semibold">Documento de Trabalho</p>
+                                <p class="text-sm text-gray-500">Enviado por: China</p>
+                            </div>
+                            <div class="text-right">
+                                <span
+                                    class="text-xs font-semibold bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full">Pendente</span>
+                                <a href="#" class="text-sm text-mocs-blue hover:underline ml-2">Analisar</a>
+                            </div>
+                        </div>
+                        <!-- Documento Item -->
+                        <div class="border-t p-3 flex justify-between items-center">
+                            <div>
+                                <p class="font-semibold">Moção de Procedimento</p>
+                                <p class="text-sm text-gray-500">Enviado por: Estados Unidos</p>
+                            </div>
+                            <div class="text-right">
+                                <span
+                                    class="text-xs font-semibold bg-green-100 text-green-700 px-3 py-1 rounded-full">Aprovado</span>
+                                <a href="#" class="text-sm text-gray-500 hover:underline ml-2">Ver</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+</body>
+</html>
