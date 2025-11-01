@@ -22,7 +22,7 @@ public class EmailService {
 
     public void send(String to, String subject, String body) {
         if (mailSender == null) {
-            log.info("RESET_LINK mail fallback -> to: {} | subject: {} | body: {}", to, subject, body);
+            log.info("RESET_LINK mail fallback -> to: {} | subject: {} | body=omitted", to, subject);
             return;
         }
 
@@ -38,7 +38,7 @@ public class EmailService {
             mailSender.send(message);
         } catch (MailException ex) {
             log.warn("Falha ao enviar e-mail. Caindo para o fallback. erro={}", ex.getMessage());
-            log.info("RESET_LINK mail fallback -> to: {} | subject: {} | body: {}", to, subject, body);
+            log.info("RESET_LINK mail fallback -> to: {} | subject: {} | body=omitted", to, subject);
         }
     }
 }

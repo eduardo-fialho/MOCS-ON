@@ -21,7 +21,9 @@ public class PasswordResetController {
 
     @GetMapping("/forgot-password")
     public String showForgotForm(Model model) {
-        model.addAttribute("email", "");
+        if (!model.containsAttribute("email")) {
+            model.addAttribute("email", "");
+        }
         return "forgot_password_form";
     }
 
@@ -30,7 +32,7 @@ public class PasswordResetController {
                                HttpServletRequest request,
                                Model model) {
         service.requestReset(email, request.getRemoteAddr(), request.getHeader("User-Agent"));
-        model.addAttribute("message", "Se o e-mail estiver cadastrado, enviamos instruções para redefinição.");
+        model.addAttribute("message", "Se o e-mail estiver cadastrado, enviamos instrucoes para redefinicao.");
         return "forgot_password_result";
     }
 
@@ -53,16 +55,21 @@ public class PasswordResetController {
         }
 
         if (!password.equals(confirm)) {
-            model.addAttribute("error", "As senhas não coincidem.");
+            model.addAttribute("error", "As senhas nao coincidem.");
             model.addAttribute("token", token);
             return "reset_password_form";
         }
 
-        boolean ok = service.resetPassword(token, password);
-        if (!ok) {
-            return "reset_password_invalid";
+        PasswordResetService.ResetPasswordStatus status = service.resetPassword(token, password);
+        switch (status) {
+            case SUCCESS:
+                return "reset_password_success";
+            case SAME_PASSWORD:
+                model.addAttribute("error", "Escreva uma senha diferente da anterior.");
+                model.addAttribute("token", token);
+                return "reset_password_form";
+            default:
+                return "reset_password_invalid";
         }
-
-        return "reset_password_success";
     }
 }

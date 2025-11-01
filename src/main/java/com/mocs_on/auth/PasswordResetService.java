@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -11,7 +12,7 @@ import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Locale;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,16 +20,8 @@ public class PasswordResetService {
 
     private final JdbcTemplate jdbcTemplate;
     private final EmailService emailService;
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
-    @Value("${app.users.table:usuarios}")
-    private String usersTable;
-
-    @Value("${app.users.email-column:email}")
-    private String usersEmailColumn;
-
-    @Value("${app.users.password-column:senha}")
-    private String usersPasswordColumn;
+    private final UserAccountService userAccountService;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Value("${app.reset.expiration-minutes:60}")
     private long expirationMinutes;
@@ -36,34 +29,48 @@ public class PasswordResetService {
     @Value("${app.base-url:http://localhost:8082}")
     private String appBaseUrl;
 
-    public PasswordResetService(JdbcTemplate jdbcTemplate, EmailService emailService) {
+    public PasswordResetService(JdbcTemplate jdbcTemplate,
+                                EmailService emailService,
+                                UserAccountService userAccountService,
+                                BCryptPasswordEncoder passwordEncoder) {
         this.jdbcTemplate = jdbcTemplate;
         this.emailService = emailService;
+        this.userAccountService = userAccountService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public void requestReset(String emailRaw, String ip, String userAgent) {
-        String email = normalizeEmail(emailRaw);
+        String email = userAccountService.normalizeEmail(emailRaw);
+        if (!userAccountService.isValidEmail(email)) {
+            return;
+        }
+        if (!userAccountService.userExists(email)) {
+            return;
+        }
+
         String token = generateToken();
         String tokenHash = sha256Hex(token);
-        Instant expires = Instant.now().plus(Duration.ofMinutes(expirationMinutes));
+
+        Instant now = Instant.now();
+        Instant expires = now.plus(Duration.ofMinutes(expirationMinutes));
 
         jdbcTemplate.update(
                 "INSERT INTO password_reset_tokens (email, token_hash, expires_at, created_at, ip, user_agent) VALUES (?,?,?,?,?,?)",
                 email,
                 tokenHash,
                 Timestamp.from(expires),
-                new Timestamp(System.currentTimeMillis()),
+                Timestamp.from(now),
                 ip,
                 userAgent
         );
 
-        String link = appBaseUrl.replaceAll("/$", "") + "/auth/reset-password?token=" + token;
-        String subject = "MOCS ON - Vamos redefinir sua senha";
+        String link = sanitizeBaseUrl(appBaseUrl) + "/auth/reset-password?token=" + token;
+        String subject = "MOCS ON - redefinicao de senha";
         String body = String.format(
-                "Ola!%n%nRecebemos o seu pedido para redefinir a senha do portal MOCS ON.%n%n" +
-                        "Para continuar, clique no link abaixo (valido por %d minutos):%n%s%n%n" +
-                        "Se nao foi voce, basta ignorar esta mensagem.%n%n" +
-                        "Conte com a gente — estamos fazendo de tudo para tornar a sua experiencia com o MOCS a melhor possivel.%n",
+                "Ola,%n%nRecebemos um pedido para redefinir a senha do portal MOCS ON.%n%n" +
+                        "Use o link abaixo (valido por %d minutos):%n%s%n%n" +
+                        "Se voce nao solicitou, ignore este e-mail.%n%n" +
+                        "Equipe MOCS ON%n",
                 expirationMinutes,
                 link
         );
@@ -71,60 +78,74 @@ public class PasswordResetService {
         emailService.send(email, subject, body);
     }
 
-    public boolean resetPassword(String tokenRaw, String newPassword) {
+    @Transactional
+    public ResetPasswordStatus resetPassword(String tokenRaw, String newPassword) {
         String token = tokenRaw == null ? "" : tokenRaw.trim();
+        if (token.isEmpty()) {
+            return ResetPasswordStatus.INVALID_TOKEN;
+        }
+
         String tokenHash = sha256Hex(token);
 
-        Optional<TokenRow> rowOpt = jdbcTemplate.query(
+        List<TokenRow> rows = jdbcTemplate.query(
                 "SELECT id, email, expires_at, used_at FROM password_reset_tokens WHERE token_hash = ?",
-                rs -> {
-                    if (rs.next()) {
-                        TokenRow row = new TokenRow();
-                        row.id = rs.getLong("id");
-                        row.email = rs.getString("email");
-                        row.expiresAt = rs.getTimestamp("expires_at");
-                        row.usedAt = rs.getTimestamp("used_at");
-                        return Optional.of(row);
-                    }
-                    return Optional.empty();
+                (rs, rowNum) -> {
+                    TokenRow row = new TokenRow();
+                    row.id = rs.getLong("id");
+                    row.email = rs.getString("email");
+                    row.expiresAt = rs.getTimestamp("expires_at");
+                    row.usedAt = rs.getTimestamp("used_at");
+                    return row;
                 },
                 tokenHash
         );
 
+        Optional<TokenRow> rowOpt = rows.stream().findFirst();
         if (rowOpt.isEmpty()) {
-            return false;
+            return ResetPasswordStatus.INVALID_TOKEN;
         }
 
         TokenRow row = rowOpt.get();
         if (row.usedAt != null) {
-            return false;
+            return ResetPasswordStatus.TOKEN_ALREADY_USED;
         }
         if (row.expiresAt != null && row.expiresAt.toInstant().isBefore(Instant.now())) {
-            return false;
+            return ResetPasswordStatus.TOKEN_EXPIRED;
         }
 
-        String email = normalizeEmail(row.email);
-        String hash = encoder.encode(newPassword);
+        String email = userAccountService.normalizeEmail(row.email);
+        if (!userAccountService.isValidEmail(email)) {
+            return ResetPasswordStatus.INVALID_EMAIL;
+        }
 
-        int updated = jdbcTemplate.update(
-                String.format("UPDATE `%s` SET `%s` = ? WHERE LOWER(`%s`) = LOWER(?)",
-                        usersTable,
-                        usersPasswordColumn,
-                        usersEmailColumn),
-                hash,
-                email
-        );
+        Optional<String> currentHashOpt = userAccountService.findPasswordHashByEmail(email);
+        if (currentHashOpt.isEmpty()) {
+            return ResetPasswordStatus.INVALID_EMAIL;
+        }
 
+        if (passwordEncoder.matches(newPassword, currentHashOpt.get())) {
+            return ResetPasswordStatus.SAME_PASSWORD;
+        }
+
+        String hash = passwordEncoder.encode(newPassword);
+        int updated = userAccountService.updatePassword(email, hash);
         if (updated == 0) {
-            return false;
+            return ResetPasswordStatus.UPDATE_FAILED;
         }
 
-        jdbcTemplate.update("UPDATE password_reset_tokens SET used_at = NOW() WHERE id = ?", row.id);
-        return true;
+        jdbcTemplate.update(
+                "UPDATE password_reset_tokens SET used_at = ? WHERE id = ?",
+                Timestamp.from(Instant.now()),
+                row.id
+        );
+        return ResetPasswordStatus.SUCCESS;
     }
 
-    private static String normalizeEmail(String email) {
-        return email == null ? null : email.trim().toLowerCase(Locale.ROOT);
+    private static String sanitizeBaseUrl(String baseUrl) {
+        if (baseUrl == null || baseUrl.isBlank()) {
+            return "";
+        }
+        return baseUrl.replaceAll("/$", "");
     }
 
     private static String generateToken() {
@@ -156,5 +177,15 @@ public class PasswordResetService {
         String email;
         Timestamp expiresAt;
         Timestamp usedAt;
+    }
+
+    public enum ResetPasswordStatus {
+        SUCCESS,
+        INVALID_TOKEN,
+        TOKEN_ALREADY_USED,
+        TOKEN_EXPIRED,
+        INVALID_EMAIL,
+        SAME_PASSWORD,
+        UPDATE_FAILED
     }
 }
