@@ -1,4 +1,4 @@
-﻿package com.mocs_on.auth;
+package com.mocs_on.auth;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

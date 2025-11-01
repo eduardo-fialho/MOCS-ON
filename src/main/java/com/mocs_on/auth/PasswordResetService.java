@@ -1,4 +1,4 @@
-﻿package com.mocs_on.auth;
+package com.mocs_on.auth;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,13 +21,13 @@ public class PasswordResetService {
     private final EmailService emailService;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    @Value("${app.users.table:users}")
+    @Value("${app.users.table:usuarios}")
     private String usersTable;
 
     @Value("${app.users.email-column:email}")
     private String usersEmailColumn;
 
-    @Value("${app.users.password-column:password_hash}")
+    @Value("${app.users.password-column:senha}")
     private String usersPasswordColumn;
 
     @Value("${app.reset.expiration-minutes:60}")
