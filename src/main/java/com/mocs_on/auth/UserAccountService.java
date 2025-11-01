@@ -26,6 +26,12 @@ public class UserAccountService {
     @Value("${app.users.password-column:senha}")
     private String usersPasswordColumn;
 
+    @Value("${app.users.name-column:nome}")
+    private String usersNameColumn;
+
+    @Value("${app.users.type-column:tipo}")
+    private String usersTypeColumn;
+
     public UserAccountService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -83,5 +89,47 @@ public class UserAccountService {
                 usersEmailColumn
         );
         return jdbcTemplate.update(sql, passwordHash, normalized);
+    }
+
+    public int createUser(String name, String email, String passwordHash, String type) {
+        String normalized = normalizeEmail(email);
+        if (!isValidEmail(normalized)) {
+            throw new IllegalArgumentException("Invalid email");
+        }
+
+        String safeName = name == null ? "" : name.trim();
+        boolean hasTypeColumn = usersTypeColumn != null && !usersTypeColumn.isBlank();
+        boolean hasNameColumn = usersNameColumn != null && !usersNameColumn.isBlank();
+
+        if (hasNameColumn && hasTypeColumn) {
+            String sql = String.format(
+                    "INSERT INTO `%s` (`%s`, `%s`, `%s`, `%s`) VALUES (?, ?, ?, ?)",
+                    usersTable,
+                    usersNameColumn,
+                    usersEmailColumn,
+                    usersPasswordColumn,
+                    usersTypeColumn
+            );
+            return jdbcTemplate.update(sql, safeName, normalized, passwordHash, type);
+        }
+
+        if (hasNameColumn) {
+            String sql = String.format(
+                    "INSERT INTO `%s` (`%s`, `%s`, `%s`) VALUES (?, ?, ?)",
+                    usersTable,
+                    usersNameColumn,
+                    usersEmailColumn,
+                    usersPasswordColumn
+            );
+            return jdbcTemplate.update(sql, safeName, normalized, passwordHash);
+        }
+
+        String sql = String.format(
+                "INSERT INTO `%s` (`%s`, `%s`) VALUES (?, ?)",
+                usersTable,
+                usersEmailColumn,
+                usersPasswordColumn
+        );
+        return jdbcTemplate.update(sql, normalized, passwordHash);
     }
 }

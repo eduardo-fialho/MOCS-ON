@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -43,7 +43,7 @@
 <body class="bg-gray-100">
 
     <div class="flex flex-col min-h-screen">
-        <!-- Cabeçalho Principal -->
+        <!-- CabeÃ§alho Principal -->
         <header class="bg-white shadow-md z-10 sticky top-0">
             <div class="container mx-auto px-4 py-3 flex justify-between items-center">
                 <div class="flex items-center space-x-4">
@@ -53,19 +53,19 @@
                     <span class="font-semibold text-gray-700 hidden sm:block">CSNU</span>
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" class="flex items-center space-x-2">
-                            <img src="https://placehold.co/40x40/cccccc/ffffff?text=U" alt="Avatar do Usuário" class="h-9 w-9 rounded-full border-2 border-mocs-blue">
+                            <img src="https://placehold.co/40x40/cccccc/ffffff?text=U" alt="Avatar do UsuÃ¡rio" class="h-9 w-9 rounded-full border-2 border-mocs-blue">
                             <span class="hidden md:block font-semibold text-gray-700">Delegado do Brasil</span>
                             <i class="fas fa-chevron-down text-xs text-gray-500"></i>
                         </button>
                         <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20" style="display: none;">
-                            <a href="login.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
+                            <a href="/auth/logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
                         </div>
                     </div>
                 </div>
             </div>
         </header>
 
-        <!-- Conteúdo Principal -->
+        <!-- ConteÃºdo Principal -->
         <main class="flex-grow container mx-auto p-4 md:p-6">
             
             <!-- Grid do Dashboard -->
@@ -74,13 +74,13 @@
                 <!-- Coluna Principal (Mural) -->
                 <div class="lg:col-span-2 flex flex-col gap-6">
                     <div class="bg-white p-6 rounded-xl shadow-lg">
-                        <h2 class="text-2xl font-bold text-mocs-blue mb-4">Mural do Comitê - CSNU</h2>
+                        <h2 class="text-2xl font-bold text-mocs-blue mb-4">Mural do ComitÃª - CSNU</h2>
                         
-                        <!-- Formulário de Postagem -->
+                        <!-- FormulÃ¡rio de Postagem -->
                         <div class="mb-6">
-                            <textarea class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue" rows="3" placeholder="Escreva um post no mural, envie um spotted anônimo..."></textarea>
+                            <textarea class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue" rows="3" placeholder="Escreva um post no mural, envie um spotted anÃ´nimo..."></textarea>
                             <div class="flex justify-end items-center mt-2">
-                                <label class="text-sm text-gray-600 mr-4"><input type="checkbox" class="mr-2 rounded">Postar como anônimo (Spotted)</label>
+                                <label class="text-sm text-gray-600 mr-4"><input type="checkbox" class="mr-2 rounded">Postar como anÃ´nimo (Spotted)</label>
                                 <button class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">Postar</button>
                             </div>
                         </div>
@@ -93,24 +93,24 @@
                                     <div class="bg-mocs-orange text-white h-10 w-10 rounded-full flex-shrink-0 flex items-center justify-center"><i class="fas fa-newspaper"></i></div>
                                     <div>
                                         <p class="font-bold text-gray-800">Jornal da Imprensa</p>
-                                        <p class="font-semibold text-gray-800 text-lg">"Crise se intensifica: delegações buscam consenso no CSNU"</p>
-                                        <p class="text-sm text-gray-600">Enquanto as negociações avançam, fontes indicam que um bloco de países está perto de apresentar a primeira proposta de resolução...</p>
-                                        <p class="text-xs text-gray-500 mt-1">15 minutos atrás</p>
-                                        <!-- Reações -->
+                                        <p class="font-semibold text-gray-800 text-lg">"Crise se intensifica: delegaÃ§Ãµes buscam consenso no CSNU"</p>
+                                        <p class="text-sm text-gray-600">Enquanto as negociaÃ§Ãµes avanÃ§am, fontes indicam que um bloco de paÃ­ses estÃ¡ perto de apresentar a primeira proposta de resoluÃ§Ã£o...</p>
+                                        <p class="text-xs text-gray-500 mt-1">15 minutos atrÃ¡s</p>
+                                        <!-- ReaÃ§Ãµes -->
                                         <div x-data="{ open: false }" class="mt-3 relative">
                                             <div class="flex items-center space-x-2 text-sm text-gray-500">
-                                                <span class="bg-gray-100 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-200">😮 3</span>
+                                                <span class="bg-gray-100 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-200">ðŸ˜® 3</span>
                                                 <button @click="open = !open" class="text-gray-400 hover:text-mocs-blue p-1 rounded-full hover:bg-gray-100">
                                                     <i class="far fa-smile"></i>
                                                 </button>
                                             </div>
                                             <div x-show="open" @click.away="open = false" class="absolute bottom-8 left-0 bg-white border rounded-lg shadow-lg p-2 flex space-x-2 z-10" style="display: none;">
-                                                <button class="text-2xl hover:scale-125 transition-transform">👍</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">❤️</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">😂</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">😮</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">😢</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">😠</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ‘</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">â¤ï¸</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ˜‚</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ˜®</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ˜¢</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ˜ </button>
                                             </div>
                                         </div>
                                     </div>
@@ -123,23 +123,23 @@
                                     <div class="bg-pink-500 text-white h-10 w-10 rounded-full flex-shrink-0 flex items-center justify-center"><i class="fas fa-heart"></i></div>
                                     <div>
                                         <p class="font-bold text-gray-800">Spotted</p>
-                                        <p class="text-gray-700 italic">"Admirado com a oratória do delegado da França. Discurso impecável!"</p>
-                                        <p class="text-xs text-gray-500 mt-1">30 minutos atrás</p>
-                                         <!-- Reações -->
+                                        <p class="text-gray-700 italic">"Admirado com a oratÃ³ria do delegado da FranÃ§a. Discurso impecÃ¡vel!"</p>
+                                        <p class="text-xs text-gray-500 mt-1">30 minutos atrÃ¡s</p>
+                                         <!-- ReaÃ§Ãµes -->
                                         <div x-data="{ open: false }" class="mt-3 relative">
                                             <div class="flex items-center space-x-2 text-sm text-gray-500">
-                                                <span class="bg-gray-100 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-200">❤️ 8</span>
+                                                <span class="bg-gray-100 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-200">â¤ï¸ 8</span>
                                                 <button @click="open = !open" class="text-gray-400 hover:text-mocs-blue p-1 rounded-full hover:bg-gray-100">
                                                     <i class="far fa-smile"></i>
                                                 </button>
                                             </div>
                                             <div x-show="open" @click.away="open = false" class="absolute bottom-8 left-0 bg-white border rounded-lg shadow-lg p-2 flex space-x-2 z-10" style="display: none;">
-                                                <button class="text-2xl hover:scale-125 transition-transform">👍</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">❤️</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">😂</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">😮</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">😢</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">😠</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ‘</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">â¤ï¸</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ˜‚</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ˜®</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ˜¢</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ˜ </button>
                                             </div>
                                         </div>
                                     </div>
@@ -152,24 +152,24 @@
                                     <div class="bg-green-500 text-white h-10 w-10 rounded-full flex-shrink-0 flex items-center justify-center"><i class="fas fa-check-circle"></i></div>
                                     <div>
                                         <p class="font-bold text-gray-800">Documento Aprovado</p>
-                                        <p class="text-gray-700">A <span class="font-semibold">Proposta de Resolução 1.1</span>, submetida por Brasil e África do Sul, foi aprovada pela mesa.</p>
+                                        <p class="text-gray-700">A <span class="font-semibold">Proposta de ResoluÃ§Ã£o 1.1</span>, submetida por Brasil e Ãfrica do Sul, foi aprovada pela mesa.</p>
                                         <a href="#" class="text-sm text-mocs-blue hover:underline">Clique para visualizar o documento</a>
-                                        <p class="text-xs text-gray-500 mt-1">1 hora atrás</p>
-                                         <!-- Reações -->
+                                        <p class="text-xs text-gray-500 mt-1">1 hora atrÃ¡s</p>
+                                         <!-- ReaÃ§Ãµes -->
                                         <div x-data="{ open: false }" class="mt-3 relative">
                                             <div class="flex items-center space-x-2 text-sm text-gray-500">
-                                                <span class="bg-gray-100 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-200">👍 12</span>
+                                                <span class="bg-gray-100 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-200">ðŸ‘ 12</span>
                                                 <button @click="open = !open" class="text-gray-400 hover:text-mocs-blue p-1 rounded-full hover:bg-gray-100">
                                                     <i class="far fa-smile"></i>
                                                 </button>
                                             </div>
                                             <div x-show="open" @click.away="open = false" class="absolute bottom-8 left-0 bg-white border rounded-lg shadow-lg p-2 flex space-x-2 z-10" style="display: none;">
-                                                <button class="text-2xl hover:scale-125 transition-transform">👍</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">❤️</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">😂</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">😮</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">😢</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">😠</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ‘</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">â¤ï¸</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ˜‚</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ˜®</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ˜¢</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ˜ </button>
                                             </div>
                                         </div>
                                     </div>
@@ -182,9 +182,9 @@
                                     <img src="https://placehold.co/40x40/cccccc/ffffff?text=R" alt="Avatar Delegado" class="h-10 w-10 rounded-full flex-shrink-0">
                                     <div>
                                         <p class="font-bold text-gray-800">Consulta Informal</p>
-                                        <p class="text-gray-700">Quais delegações são favoráveis a proposta 3.4?</p>
-                                        <p class="text-xs text-gray-500 mt-1">2 horas atrás</p>
-                                        <!-- Reações -->
+                                        <p class="text-gray-700">Quais delegaÃ§Ãµes sÃ£o favorÃ¡veis a proposta 3.4?</p>
+                                        <p class="text-xs text-gray-500 mt-1">2 horas atrÃ¡s</p>
+                                        <!-- ReaÃ§Ãµes -->
                                         <div x-data="{ open: false }" class="mt-3 relative">
                                             <div class="flex items-center space-x-2 text-sm text-gray-500">
                                                 <button @click="open = !open" class="text-gray-400 hover:text-mocs-blue p-1 rounded-full hover:bg-gray-100">
@@ -192,12 +192,12 @@
                                                 </button>
                                             </div>
                                             <div x-show="open" @click.away="open = false" class="absolute bottom-8 left-0 bg-white border rounded-lg shadow-lg p-2 flex space-x-2 z-10" style="display: none;">
-                                                <button class="text-2xl hover:scale-125 transition-transform">👍</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">❤️</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">😂</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">😮</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">😢</button>
-                                                <button class="text-2xl hover:scale-125 transition-transform">😠</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ‘</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">â¤ï¸</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ˜‚</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ˜®</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ˜¢</button>
+                                                <button class="text-2xl hover:scale-125 transition-transform">ðŸ˜ </button>
                                             </div>
                                         </div>
                                     </div>
@@ -217,37 +217,37 @@
                                 <i class="fas fa-check-circle text-green-500"></i>
                                 <div>
                                     <p class="font-semibold text-gray-500 line-through">09:00 - 12:00</p>
-                                    <p class="text-sm text-gray-500 line-through">Sessão de Debate 1</p>
+                                    <p class="text-sm text-gray-500 line-through">SessÃ£o de Debate 1</p>
                                 </div>
                             </li>
                             <li class="flex items-center gap-4">
                                 <i class="fas fa-spinner fa-spin text-mocs-orange"></i>
                                 <div>
                                     <p class="font-semibold">14:00 - 17:00</p>
-                                    <p class="text-sm text-gray-600">Sessão de Debate 2</p>
+                                    <p class="text-sm text-gray-600">SessÃ£o de Debate 2</p>
                                 </div>
                             </li>
                             <li class="flex items-center gap-4">
                                 <i class="far fa-circle text-gray-400"></i>
                                 <div>
                                     <p class="font-semibold text-gray-400">17:00 - 17:30</p>
-                                    <p class="text-sm text-gray-400">Encerramento e Votações</p>
+                                    <p class="text-sm text-gray-400">Encerramento e VotaÃ§Ãµes</p>
                                 </div>
                             </li>
                         </ul>
                     </div>
                     
-                    <!-- Card: Anúncios Gerais -->
+                    <!-- Card: AnÃºncios Gerais -->
                     <div class="bg-white p-6 rounded-xl shadow-lg">
-                         <h2 class="text-xl font-bold text-mocs-blue mb-4">Avisos da Organização</h2>
+                         <h2 class="text-xl font-bold text-mocs-blue mb-4">Avisos da OrganizaÃ§Ã£o</h2>
                          <div class="space-y-3">
                              <div class="border-t pt-3">
-                                <p class="font-semibold text-sm text-gray-800">A cerimônia de abertura será transmitida ao vivo.</p>
-                                <p class="text-xs text-gray-500">2 horas atrás</p>
+                                <p class="font-semibold text-sm text-gray-800">A cerimÃ´nia de abertura serÃ¡ transmitida ao vivo.</p>
+                                <p class="text-xs text-gray-500">2 horas atrÃ¡s</p>
                              </div>
                              <div class="border-t pt-3">
-                                <p class="font-semibold text-sm text-gray-800">Lembrete: O prazo para envio dos DPOs é amanhã.</p>
-                                <p class="text-xs text-gray-500">1 dia atrás</p>
+                                <p class="font-semibold text-sm text-gray-800">Lembrete: O prazo para envio dos DPOs Ã© amanhÃ£.</p>
+                                <p class="text-xs text-gray-500">1 dia atrÃ¡s</p>
                              </div>
                          </div>
                     </div>
@@ -257,4 +257,5 @@
     </div>
 </body>
 </html>
+
 

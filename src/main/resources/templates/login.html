@@ -32,6 +32,9 @@
         <div th:if="${error}" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4" th:text="${error}">
             Credenciais invalidas.
         </div>
+        <div th:if="${success}" class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4" th:text="${success}">
+            Conta criada com sucesso! Pode entrar com sua nova senha.
+        </div>
 
         <form th:action="@{/auth/login}" method="post">
             <div class="mb-4 relative">
@@ -64,6 +67,8 @@
                 <a href="/auth/forgot-password" class="hover:text-mocs-blue transition-colors">Esqueceu sua senha?</a>
                 <span class="mx-2 text-gray-300">|</span>
                 <a href="#" class="hover:text-mocs-blue transition-colors">Acessar como Visitante</a>
+                <span class="mx-2 text-gray-300">|</span>
+                <a href="/auth/register" class="hover:text-mocs-blue transition-colors">Criar conta</a>
             </div>
         </form>
     </div>

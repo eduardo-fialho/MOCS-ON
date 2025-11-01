@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar conta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: "Inter", sans-serif; }
+        .bg-mocs-blue { background-color: #205395; }
+        .text-mocs-blue { color: #205395; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<main class="w-full max-w-lg bg-white rounded-2xl shadow-lg p-8">
+    <div class="text-center mb-6">
+        <h1 class="text-2xl font-bold text-mocs-blue">Criar conta no MOCS ON</h1>
+        <p class="text-sm text-gray-600 mt-2">Preencha os dados abaixo para acessar a plataforma.</p>
+    </div>
+
+    <div th:if="${error}" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4" th:text="${error}">
+        Ocorreu um erro ao salvar seus dados.
+    </div>
+
+    <form th:action="@{/auth/register}" th:object="${form}" method="post" class="space-y-4">
+        <div>
+            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nome completo</label>
+            <input type="text" id="name" th:field="*{name}" required
+                   placeholder="Seu nome"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
+        </div>
+
+        <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+            <input type="email" id="email" th:field="*{email}" required
+                   placeholder="seu@email.com"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                <input type="password" id="password" th:field="*{password}" required minlength="8"
+                       placeholder="Mínimo 8 caracteres"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
+            </div>
+            <div>
+                <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirmar senha</label>
+                <input type="password" id="confirmPassword" th:field="*{confirmPassword}" required minlength="8"
+                       placeholder="Repita a senha"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
+            </div>
+        </div>
+
+        <div>
+            <label for="tipo" class="block text-sm font-medium text-gray-700 mb-1">Tipo de usuário</label>
+            <select id="tipo" th:field="*{tipo}"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
+                <option value="">Selecione (padrão: DELEGADO)</option>
+                <option value="DELEGADO">Delegado</option>
+                <option value="DIRETOR">Diretor</option>
+                <option value="SECRETARIADO">Secretariado</option>
+            </select>
+        </div>
+
+        <button type="submit"
+                class="w-full bg-mocs-blue text-white font-semibold py-3 rounded-lg hover:bg-opacity-90 transition-all duration-300">
+            Criar conta
+        </button>
+    </form>
+
+    <div class="text-center text-sm text-gray-600 mt-6">
+        Já possui acesso?
+        <a href="/login" class="text-mocs-blue hover:underline">Entre aqui</a>
+    </div>
+</main>
+</body>
+</html>
