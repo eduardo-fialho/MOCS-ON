@@ -1,5 +1,5 @@
 
-package com.mocs_on.domain;
+package com.mocs_on.model;
 import java.time.LocalDateTime;
 
 public class SpottedPost extends Post{

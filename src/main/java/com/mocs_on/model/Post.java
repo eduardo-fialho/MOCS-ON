@@ -1,5 +1,5 @@
 
-package com.mocs_on.domain;
+package com.mocs_on.model;
 import java.time.LocalDateTime;
 
 public class Post {
@@ -8,7 +8,25 @@ public class Post {
     private String[] linksRelacionados;
     private PostStatus status;
     private LocalDateTime dataPublicacao;
-    
+    private Reacoes qtdReacoes;
+    public static class Reacoes{
+        public Reacoes(int like, int coracao, int riso, int surpresa, int triste, int raiva){
+            this.like=like;
+            this.coracao=coracao;
+            this.riso=riso;
+            this.surpresa=surpresa;
+            this.triste=triste;
+            this.raiva=raiva;
+
+        }
+        int like;
+        int coracao;
+        int riso;
+        int surpresa;
+        int triste;
+        int raiva;
+
+    }
     public enum PostStatus{
         PUBLICO,
         PRIVADO,
@@ -23,18 +41,21 @@ public class Post {
         this.dataPublicacao = LocalDateTime.now();
     }
     
-    public Post(String mensagem, String nome, String[] links, PostStatus status, LocalDateTime data){
+    public Post(String mensagem, String nome, String[] links, PostStatus status, LocalDateTime data, Reacoes qtdReacoes){
         this.mensagem = mensagem;
         this.nomeRemetente = nome;
         this.linksRelacionados = links;
         this.status = status;
         this.dataPublicacao = data;
+        this.qtdReacoes=qtdReacoes;
     }
 
     public String getMensagem() {
         return mensagem;
     }
-
+    public void setQtdReacoes(Reacoes reacoes){
+        this.qtdReacoes=reacoes;
+    }
     public void setMensagem(String mensagem) {
         this.mensagem = mensagem;
     }
