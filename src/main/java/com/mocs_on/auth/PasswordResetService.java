@@ -39,13 +39,13 @@ public class PasswordResetService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void requestReset(String emailRaw, String ip, String userAgent) {
+    public RequestResetResult requestReset(String emailRaw, String ip, String userAgent) {
         String email = userAccountService.normalizeEmail(emailRaw);
         if (!userAccountService.isValidEmail(email)) {
-            return;
+            return RequestResetResult.invalid();
         }
         if (!userAccountService.userExists(email)) {
-            return;
+            return RequestResetResult.invalid();
         }
 
         String token = generateToken();
@@ -75,7 +75,8 @@ public class PasswordResetService {
                 link
         );
 
-        emailService.send(email, subject, body);
+        EmailService.DeliveryStatus status = emailService.send(email, subject, body);
+        return RequestResetResult.of(status == EmailService.DeliveryStatus.SENT, link);
     }
 
     @Transactional
@@ -187,5 +188,15 @@ public class PasswordResetService {
         INVALID_EMAIL,
         SAME_PASSWORD,
         UPDATE_FAILED
+    }
+
+    public record RequestResetResult(boolean delivered, String resetLink) {
+        static RequestResetResult of(boolean delivered, String link) {
+            return new RequestResetResult(delivered, link);
+        }
+
+        static RequestResetResult invalid() {
+            return new RequestResetResult(false, null);
+        }
     }
 }

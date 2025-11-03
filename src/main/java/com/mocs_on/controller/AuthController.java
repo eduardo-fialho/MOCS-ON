@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -18,6 +19,9 @@ import java.util.Optional;
 public class AuthController {
 
     public static final String SESSION_USER_ATTRIBUTE = "AUTH_USER_EMAIL";
+    public static final String SESSION_USER_NAME = "AUTH_USER_NAME";
+    public static final String SESSION_USER_ROLE = "AUTH_USER_ROLE";
+    public static final String SESSION_USER_ID = "AUTH_USER_ID";
 
     private final UserAccountService userAccountService;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -37,17 +41,21 @@ public class AuthController {
             return failLogin(email, redirectAttributes);
         }
 
-        Optional<String> hashOpt = userAccountService.findPasswordHashByEmail(normalizedEmail);
-        if (hashOpt.isEmpty() || !passwordEncoder.matches(password, hashOpt.get())) {
+        Optional<UserAccountService.UserRecord> userOpt = userAccountService.findUserByEmail(normalizedEmail);
+        if (userOpt.isEmpty() || !passwordEncoder.matches(password, userOpt.get().passwordHash())) {
             return failLogin(email, redirectAttributes);
         }
+        UserAccountService.UserRecord user = userOpt.get();
 
         HttpSession session = request.getSession(true);
         session.setAttribute(SESSION_USER_ATTRIBUTE, normalizedEmail);
+        session.setAttribute(SESSION_USER_NAME, user.name());
+        session.setAttribute(SESSION_USER_ROLE, user.type());
+        session.setAttribute(SESSION_USER_ID, user.id());
         return "redirect:/dashboard.html";
     }
 
-    @GetMapping("/logout")
+    @RequestMapping(value = "/logout", method = {RequestMethod.GET, RequestMethod.POST})
     public String logout(HttpSession session) {
         if (session != null) {
             session.invalidate();
