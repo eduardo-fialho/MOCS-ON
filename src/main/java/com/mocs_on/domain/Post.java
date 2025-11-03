@@ -9,7 +9,7 @@ public class Post {
     private PostStatus status;
     private LocalDateTime dataPublicacao;
     
-    enum PostStatus{
+    public enum PostStatus{
         PUBLICO,
         PRIVADO,
         EM_ANALISE,
