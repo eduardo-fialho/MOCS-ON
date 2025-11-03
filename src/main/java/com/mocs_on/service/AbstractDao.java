@@ -1,7 +1,9 @@
-package com.mocs_on.controller;
-import java.sql.*;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component; 
+package com.mocs_on.service;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet; 
+import java.sql.SQLException;
+import java.sql.Statement;
 public class AbstractDao {
 
     public static Connection getConnection() throws SQLException{    
@@ -13,6 +15,7 @@ public class AbstractDao {
         conn.setAutoCommit(false);
         return conn;
     }
+
     protected static void closeResource( Statement statement, ResultSet rs){
         try {
             rs.close();
@@ -25,6 +28,7 @@ public class AbstractDao {
         statement=null;
         }
     } 
+    
     protected static void closeResource(Statement statement){
         try {
             statement.close();
