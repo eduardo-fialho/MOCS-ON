@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class PasswordResetController {
 
     private final PasswordResetService service;
-
     public PasswordResetController(PasswordResetService service) {
         this.service = service;
     }
