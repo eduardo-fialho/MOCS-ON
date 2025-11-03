@@ -1,17 +1,25 @@
 
 package com.mocs_on.domain;
 
+import java.util.List;
+
+import com.mocs_on.security.CargoEnum;
+
 public class Usuario {
-    String nome;
-    String email;
-    Integer id;
-    String senha;
     
-    public Usuario(Integer id, String nome, String email, String senha){
+    private Long id;
+    private String nome;
+    private String email;
+    private String senha;
+    private List<Comite> comites;
+    private CargoEnum tipo;
+    
+    public Usuario(Long id, String nome, String email, String senha, List<Comite> comites){
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
+        this.comites = comites;
     }
     
     public Usuario(){
@@ -19,17 +27,29 @@ public class Usuario {
         this.nome = "";
         this.email = "";
     }
-    
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getNome() {
         return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public Integer getId() {
-        return id;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getSenha() {
@@ -40,15 +60,20 @@ public class Usuario {
         this.senha = senha;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public List<Comite> getComites() {
+        return comites;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public CargoEnum getTipo() {
+        return tipo;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setComites(List<Comite> comites) {
+        this.comites = comites;
     }
+
+    public void setTipo(String tipo) {
+        this.tipo = CargoEnum.valueOf(tipo.toUpperCase());
+    }
+    
 }
