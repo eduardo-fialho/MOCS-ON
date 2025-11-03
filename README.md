@@ -1,5 +1,7 @@
 # MOCS-ON
 
+[FOR DEVELOPERS](https://github.com/eduardo-fialho/MOCS-ON/blob/dev/ForDevelopers.md)
+
 O “MOCS ON” tem como missão proporcionar uma plataforma digital integrada para o gerenciamento do projeto MOCS, Modelo de Comitês Simulados, com o objetivo de promover a participação ativa da comunidade envolvida no projeto, construindo um ambiente online para a exposição, organização e interação entre o secretariado, equipe, professores, participantes e outros interessados.
 Descrição do projeto.
 
