@@ -7,7 +7,7 @@ public class Delegado extends Usuario{
         super();
     }
     
-    Delegado(Integer id, String nome, String email){
-        super(id, nome, email);
+    Delegado(Integer id, String nome, String email, String senha){
+        super(id, nome, email, senha);
     }
 }

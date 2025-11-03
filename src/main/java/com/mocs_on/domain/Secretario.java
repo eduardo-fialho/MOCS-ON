@@ -7,7 +7,7 @@ public class Secretario extends Usuario{
         super();
     }
     
-    Secretario(Integer id, String nome, String email){
-        super(id, nome, email);
+    Secretario(Integer id, String nome, String email, String senha){
+        super(id, nome, email, senha);
     }
 }
