@@ -1,4 +1,4 @@
--- Schema inicial do banco MOCS ON
+-- Tabela principal de usuarios
 CREATE TABLE IF NOT EXISTS `usuarios` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(255) NOT NULL,
@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   KEY `idx_usuarios_tipo` (`tipo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Historico de alteracoes de perfis
 CREATE TABLE IF NOT EXISTS `user_change_logs` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` INT UNSIGNED NOT NULL,
@@ -24,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `user_change_logs` (
   CONSTRAINT `fk_change_user` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Tabela para tokens de redefinicao de senha
 CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `email` VARCHAR(255) NOT NULL,
