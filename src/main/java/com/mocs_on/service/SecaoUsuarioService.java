@@ -18,7 +18,7 @@ import com.mocs_on.security.*;
 @Service
 public class SecaoUsuarioService implements UserDetailsService {
 
-    private final LoginDAO loginDAO; 
+    private final LoginDAO loginDAO;
 
     @Autowired
     public SecaoUsuarioService(LoginDAO loginDAO) {
@@ -27,27 +27,28 @@ public class SecaoUsuarioService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        
-        Usuario usuario = loginDAO.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o email: " + email));
-            
+
+        Usuario usuario = loginDAO.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado com o email: " + email));
+
         CargoEnum cargo;
         try {
             cargo = usuario.getTipo();
         } catch (IllegalArgumentException e) {
-            throw new IllegalStateException("O tipo de cargo do usuário não é válido: " + usuario.getTipo());
+            throw new IllegalStateException("O tipo de cargo do usuario nao e valido: " + usuario.getTipo());
         }
 
         List<GrantedAuthority> authorities = Collections.singletonList(
             new SimpleGrantedAuthority("ROLE_" + cargo.name())
         );
-        
+
         List<Comite> comites = usuario.getComites();
-        
+
         return new SecaoUsuario(
             usuario.getEmail(),
-            usuario.getSenha(), 
+            usuario.getSenha(),
             authorities,
-            true, 
+            true,
             usuario.getNome(),
             cargo,
             comites
