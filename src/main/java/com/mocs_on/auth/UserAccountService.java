@@ -303,6 +303,72 @@ public class UserAccountService {
 
     private record FieldChange(String field, String oldValue, String newValue) {}
 
+    public List<UserChangeLogRecord> findChangeLogsByUserId(long userId) {
+        String sql = String.format(
+                "SELECT id, field, old_value, new_value, changed_by, changed_at FROM `%s` WHERE user_id = ? ORDER BY changed_at DESC",
+                userChangeLogTable
+        );
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new UserChangeLogRecord(
+                rs.getLong("id"),
+                rs.getString("field"),
+                rs.getString("old_value"),
+                rs.getString("new_value"),
+                rs.getString("changed_by"),
+                rs.getTimestamp("changed_at")
+        ), userId);
+    }
+
+    public record UserChangeLogRecord(long id,
+                                      String field,
+                                      String oldValue,
+                                      String newValue,
+                                      String changedBy,
+                                      java.sql.Timestamp changedAt) {
+    }
+
+    public record SecretariadoProfile(String funcao,
+                                      String departamento,
+                                      String matricula,
+                                      String telefone,
+                                      String turnoAtendimento,
+                                      String responsabilidades) {
+    }
+
+    public Optional<SecretariadoProfile> findSecretariadoProfile(long userId) {
+        String sql = "SELECT funcao, departamento, matricula, telefone, turno_atendimento, responsabilidades " +
+                "FROM secretariado_profiles WHERE user_id = ?";
+        List<SecretariadoProfile> rows = jdbcTemplate.query(sql, (rs, rowNum) -> new SecretariadoProfile(
+                rs.getString("funcao"),
+                rs.getString("departamento"),
+                rs.getString("matricula"),
+                rs.getString("telefone"),
+                rs.getString("turno_atendimento"),
+                rs.getString("responsabilidades")
+        ), userId);
+        return rows.stream().findFirst();
+    }
+
+    public void upsertSecretariadoProfile(long userId, SecretariadoProfile profile) {
+        jdbcTemplate.update(
+                "INSERT INTO secretariado_profiles (user_id, funcao, departamento, matricula, telefone, turno_atendimento, responsabilidades, updated_at) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP) " +
+                        "ON DUPLICATE KEY UPDATE funcao = VALUES(funcao), departamento = VALUES(departamento), " +
+                        "matricula = VALUES(matricula), telefone = VALUES(telefone), turno_atendimento = VALUES(turno_atendimento), " +
+                        "responsabilidades = VALUES(responsabilidades), updated_at = CURRENT_TIMESTAMP",
+                userId,
+                profile.funcao(),
+                profile.departamento(),
+                profile.matricula(),
+                profile.telefone(),
+                profile.turnoAtendimento(),
+                profile.responsabilidades()
+        );
+    }
+
+    public void deleteSecretariadoProfile(long userId) {
+        jdbcTemplate.update("DELETE FROM secretariado_profiles WHERE user_id = ?", userId);
+    }
+
     public void ensureCoreTables() {
         String usersSql = "CREATE TABLE IF NOT EXISTS `" + usersTable + "` ("
                 + " `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,"
@@ -347,5 +413,24 @@ public class UserAccountService {
                 + " CONSTRAINT `fk_token_user` FOREIGN KEY (`email`) REFERENCES `" + usersTable + "` (`" + usersEmailColumn + "`) ON DELETE CASCADE"
                 + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
         jdbcTemplate.execute(tokensSql);
+
+        String secretariadoSql = "CREATE TABLE IF NOT EXISTS `secretariado_profiles` ("
+                + " `user_id` INT UNSIGNED NOT NULL,"
+                + " `funcao` VARCHAR(50) NOT NULL,"
+                + " `departamento` VARCHAR(255) NOT NULL,"
+                + " `matricula` VARCHAR(100) NULL,"
+                + " `telefone` VARCHAR(50) NULL,"
+                + " `turno_atendimento` VARCHAR(100) NULL,"
+                + " `responsabilidades` VARCHAR(255) NULL,"
+                + " `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+                + " PRIMARY KEY (`user_id`),"
+                + " CONSTRAINT `fk_secretariado_user` FOREIGN KEY (`user_id`) REFERENCES `" + usersTable + "` (`id`) ON DELETE CASCADE"
+                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+        jdbcTemplate.execute(secretariadoSql);
+
+        jdbcTemplate.execute("ALTER TABLE `secretariado_profiles` "
+                + "ADD COLUMN IF NOT EXISTS `turno_atendimento` VARCHAR(100) NULL");
+        jdbcTemplate.execute("ALTER TABLE `secretariado_profiles` "
+                + "ADD COLUMN IF NOT EXISTS `responsabilidades` VARCHAR(255) NULL");
     }
 }

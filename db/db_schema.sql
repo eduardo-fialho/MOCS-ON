@@ -41,3 +41,17 @@ CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
   KEY `idx_expires_at` (`expires_at`),
   CONSTRAINT `fk_token_user` FOREIGN KEY (`email`) REFERENCES `usuarios` (`email`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Perfil detalhado para membros do secretariado
+CREATE TABLE IF NOT EXISTS `secretariado_profiles` (
+  `user_id` INT UNSIGNED NOT NULL,
+  `funcao` VARCHAR(50) NOT NULL,
+  `departamento` VARCHAR(255) NOT NULL,
+  `matricula` VARCHAR(100) NULL,
+  `telefone` VARCHAR(50) NULL,
+  `turno_atendimento` VARCHAR(100) NULL,
+  `responsabilidades` VARCHAR(255) NULL,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `fk_secretariado_user` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
