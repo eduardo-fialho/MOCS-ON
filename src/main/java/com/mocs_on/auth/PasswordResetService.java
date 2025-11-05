@@ -1,5 +1,7 @@
 package com.mocs_on.auth;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,6 +19,8 @@ import java.util.Optional;
 
 @Service
 public class PasswordResetService {
+
+    private static final Logger log = LoggerFactory.getLogger(PasswordResetService.class);
 
     private final JdbcTemplate jdbcTemplate;
     private final EmailService emailService;
@@ -41,10 +45,19 @@ public class PasswordResetService {
 
     public RequestResetResult requestReset(String emailRaw, String ip, String userAgent) {
         String email = userAccountService.normalizeEmail(emailRaw);
+        log.info("Password reset solicitado para {}", email != null ? email : emailRaw);
         if (!userAccountService.isValidEmail(email)) {
+            log.info("Reset abortado: email inválido {}", emailRaw);
             return RequestResetResult.invalid();
         }
-        if (!userAccountService.userExists(email)) {
+        Optional<UserAccountService.UserRecord> userOpt = userAccountService.findUserByEmail(email);
+        if (userOpt.isEmpty()) {
+            log.info("Reset abortado: usuario não encontrado [{}]. Usuários cadastrados: {}",
+                    email,
+                    userAccountService.findAllUsers()
+                            .stream()
+                            .map(UserAccountService.UserRecord::email)
+                            .toList());
             return RequestResetResult.invalid();
         }
 
@@ -76,6 +89,7 @@ public class PasswordResetService {
         );
 
         EmailService.DeliveryStatus status = emailService.send(email, subject, body);
+        log.info("Email de reset enviado para {}? {}", email, status);
         return RequestResetResult.of(status == EmailService.DeliveryStatus.SENT, link);
     }
 
