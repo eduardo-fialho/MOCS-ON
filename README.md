@@ -108,3 +108,5 @@ DescriÃ§Ã£o do projeto.
 | CSU16  | Agenda do Dia          | -                 |-                             |
 | CSU17  | Criar e Editar DelegaÃ§Ãµes        | REQ004  | -   |
 | CSU18  | Guia de Estudos       | -                |-                             |
+`r`n## Configuração de SMTP`r`n`r`nPara que o sistema envie e-mails (redefinição de senha, boas-vindas etc.) sem depender de variáveis de ambiente, edite o arquivo `config/smtp_config.properties` na raiz do projeto. Preencha nele servidor, porta, remetente e credenciais do provedor SMTP utilizado. Se o arquivo não estiver configurado, o envio cai automaticamente no modo de fallback e registra a mensagem no console.
+`r`n> **SMTP**: arquivo `config/smtp_config.properties` já vem preenchido; basta inserir a app password na linha `password=` antes de iniciar a aplicação.

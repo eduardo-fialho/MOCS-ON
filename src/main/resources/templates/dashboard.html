@@ -53,12 +53,17 @@
                         </button>
                         <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20" style="display: none;">
                             <!-- MUDANÇA: Usando o caminho absoluto (/secretariado.html) para garantir que a rota seja acessada corretamente a partir da raiz da aplicação. -->
+                            <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b">
+                                <i class="fas fa-user mr-2"></i> Meu perfil
+                            </a>
                             <template x-if="isSecretario">
-                                <a href="/secretariado.html" class="block px-4 py-2 text-sm text-mocs-blue font-semibold hover:bg-gray-100 border-b mb-1">
-                                    <i class="fas fa-user-tie mr-2"></i> Área do Secretariado
-                                </a>
+                                <div>
+                                    <a href="/secretariado.html" class="block px-4 py-2 text-sm text-mocs-blue font-semibold hover:bg-gray-100 border-b">
+                                        <i class="fas fa-user-tie mr-2"></i> Área do Secretariado
+                                    </a>
+                                </div>
                             </template>
-                            
+
                             <a href="/auth/logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
                         </div>
                     </div>
