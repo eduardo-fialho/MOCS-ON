@@ -40,10 +40,11 @@ public class UserManagementController {
     public String listUsers(Model model,
                             HttpSession session,
                             RedirectAttributes redirectAttributes) {
+        /*
         if (!isSecretariat(session)) {
             redirectAttributes.addFlashAttribute("error", "Acesso restrito ao Secretariado.");
             return "redirect:/login";
-        }
+        }*/
         model.addAttribute("users", userAccountService.findAllUsers());
         model.addAttribute("roleOptions", ROLE_OPTIONS);
         model.addAttribute("secretariadoFuncaoOptions", SECRETARIADO_FUNCOES);
@@ -54,10 +55,11 @@ public class UserManagementController {
     public String showCreateForm(Model model,
                                  HttpSession session,
                                  RedirectAttributes redirectAttributes) {
+        /*
         if (!isSecretariat(session)) {
             redirectAttributes.addFlashAttribute("error", "Acesso restrito ao Secretariado.");
             return "redirect:/login";
-        }
+        }*/
         if (!model.containsAttribute("form")) {
             UserCreateForm form = new UserCreateForm();
             form.setTipo("DELEGADO");
@@ -73,10 +75,11 @@ public class UserManagementController {
                                Model model,
                                HttpSession session,
                                RedirectAttributes redirectAttributes) {
+        /*
         if (!isSecretariat(session)) {
             redirectAttributes.addFlashAttribute("error", "Acesso restrito ao Secretariado.");
             return "redirect:/login";
-        }
+        }*/
 
         model.addAttribute("roleOptions", ROLE_OPTIONS);
         model.addAttribute("secretariadoFuncaoOptions", SECRETARIADO_FUNCOES);
@@ -147,10 +150,11 @@ public class UserManagementController {
                            Model model,
                            HttpSession session,
                            RedirectAttributes redirectAttributes) {
+        /*
         if (!isSecretariat(session)) {
             redirectAttributes.addFlashAttribute("error", "Acesso restrito ao Secretariado.");
             return "redirect:/login";
-        }
+        }*/
         Optional<UserAccountService.UserRecord> userOpt = userAccountService.findUserById(id);
         if (userOpt.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Usuário não encontrado.");
@@ -186,10 +190,11 @@ public class UserManagementController {
                              @ModelAttribute("form") UserEditForm form,
                              HttpSession session,
                              RedirectAttributes redirectAttributes) {
+        /*
         if (!isSecretariat(session)) {
             redirectAttributes.addFlashAttribute("error", "Acesso restrito ao Secretariado.");
             return "redirect:/login";
-        }
+        }*/
         Optional<UserAccountService.UserRecord> existingOpt = userAccountService.findUserById(id);
         if (existingOpt.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "Usuário não encontrado.");

@@ -99,4 +99,13 @@ public class PostDAO {
         });
         return map;
     }
+    
+    public int deletePost(Long postId) {
+    String sqlReacoes = "DELETE FROM post_reactions WHERE post_id = ?";
+    jdbcTemplate.update(sqlReacoes, postId);
+
+    // depois remove o post principal
+    String sqlPost = "DELETE FROM posts WHERE id = ?";
+    return jdbcTemplate.update(sqlPost, postId);
+}
 }

@@ -75,4 +75,14 @@ public class PostController {
             return ResponseEntity.notFound().build();
         }
     }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> excluirPost(@PathVariable("id") Long id) {
+        int removed = postService.deletePost(id);
+        if (removed > 0) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
