@@ -82,9 +82,7 @@
                 <div class="lg:col-span-2 flex flex-col gap-6">
                     <div class="bg-white p-6 rounded-xl shadow-lg">
                         <h2 class="text-2xl font-bold text-mocs-blue mb-4">Mural do Comitê - CSNU</h2>
-                        
-                        
-=======
+
         <!-- Conteúdo -->
         <main class="flex-grow container mx-auto p-4 md:p-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -94,7 +92,7 @@
                         <h2 class="text-2xl font-bold text-mocs-blue mb-4">Mural do Comitê - CSNU</h2>
 
                         <!-- Formulário de Postagem -->
->>>>>>> eduardo
+
                         <div class="mb-6">
                             <textarea class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue" rows="3" placeholder="Escreva um post no mural, envie um spotted anônimo..."></textarea>
                             <div class="flex justify-end items-center mt-2">
@@ -103,7 +101,6 @@
                             </div>
                         </div>
 
-<<<<<<< HEAD
 <!--                        
                         Feed de Posts
                         <div class="space-y-5">
@@ -112,7 +109,7 @@
                         <!-- Feed -->
                         <div class="space-y-5">
                             <!-- Exemplo de posts -->
->>>>>>> eduardo
+
                             <div class="border-t pt-4">
                                 <div class="flex items-start space-x-4">
                                     <div class="bg-mocs-orange text-white h-10 w-10 rounded-full flex items-center justify-center"><i class="fas fa-newspaper"></i></div>
@@ -121,8 +118,7 @@
                                         <p class="font-semibold text-gray-800 text-lg">Crise se intensifica: delegações buscam consenso no CSNU</p>
                                         <p class="text-sm text-gray-600">Enquanto as negociações avançam, fontes indicam que um bloco de países está perto de apresentar a primeira proposta...</p>
                                         <p class="text-xs text-gray-500 mt-1">15 minutos atrás</p>
-<<<<<<< HEAD
-                                         Reações 
+
                                         <div x-data="{ open: false }" class="mt-3 relative">
                                             <div class="flex items-center space-x-2 text-sm text-gray-500">
                                                 <span class="bg-gray-100 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-200">😮 3</span>
@@ -227,24 +223,22 @@
                                                 <button class="text-2xl hover:scale-125 transition-transform">😠</button>
                                             </div>
                                         </div>
-=======
->>>>>>> eduardo
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-<<<<<<< HEAD
--->
+
+
                 <!-- Coluna Lateral -->
                 <div class="lg:col-span-1 flex flex-col gap-6">
                     <!-- Card: Agenda -->
-=======
+
 
                 <!-- Coluna lateral -->
                 <div class="lg:col-span-1 flex flex-col gap-6" x-data="announcementsData()">
->>>>>>> eduardo
+
                     <div class="bg-white p-6 rounded-xl shadow-lg">
                         <h2 class="text-xl font-bold text-mocs-blue mb-4">Agenda do Dia</h2>
                         <ul class="space-y-3">
@@ -424,6 +418,151 @@
                 }
             };
         }
+    </script>
+    
+    <script>
+        const API_BASE_URL = 'http://localhost:8080';
+        const POST_URL = `${API_BASE_URL}/post`;
+        const postsListElement = document.getElementById('posts-list');
+        const createPostForm = document.getElementById('create-post-form');
+
+        // Função para formatar a data (opcional, mas útil)
+        function formatarData(dataISO) {
+            const options = { 
+                year: 'numeric', month: 'long', day: 'numeric', 
+                hour: '2-digit', minute: '2-digit' 
+            };
+            return new Date(dataISO).toLocaleDateString('pt-BR', options);
+        }
+
+        // 1. FUNÇÃO PARA CARREGAR E EXIBIR OS POSTS
+        async function carregarPosts() {
+            postsListElement.innerHTML = 'Carregando posts...';
+            try {
+                const response = await fetch(POST_URL);
+                if (!response.ok) {
+                    throw new Error('Falha ao buscar posts: ' + response.statusText);
+                }
+                const posts = await response.json();
+
+                // Limpa a lista antes de inserir
+                postsListElement.innerHTML = ''; 
+
+                if (posts.length === 0) {
+                    postsListElement.innerHTML = '<p>Nenhum post encontrado.</p>';
+                    return;
+                }
+
+                posts.forEach(post => {
+                    const postElement = document.createElement('div');
+                    postElement.className = 'post-item';
+
+                    // Monta a lista de reações
+                    let reactionsHtml = '';
+                    for (const [emoji, count] of Object.entries(post.reactions)) {
+                        reactionsHtml += `<span>${emoji} (${count})</span> `;
+                    }
+
+                    postElement.innerHTML = `
+                        <h3>${post.mensagem}</h3>
+                        <p class="autor">Autor: <strong>${post.autor}</strong></p>
+                        <p class="data">Publicado em: ${formatarData(post.data)}</p>
+                        <div class="reactions">
+                            <strong>Reações:</strong> ${reactionsHtml || 'Nenhuma'}
+                        </div>
+                        <button onclick="adicionarReacao(${post.id}, '👍')">Gostei 👍</button>
+                    `;
+                    postsListElement.appendChild(postElement);
+                });
+
+            } catch (error) {
+                console.error('Erro ao carregar posts:', error);
+                postsListElement.innerHTML = `<p style="color: red;">Erro ao carregar posts: ${error.message}</p>`;
+            }
+        }
+
+        // 2. FUNÇÃO PARA CRIAR UM NOVO POST
+        createPostForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const autorInput = document.getElementById('autor').value;
+            const mensagemInput = document.getElementById('mensagem').value;
+            const isAnonimo = document.getElementById('status-anonimo').checked;
+
+            // Mapeia o checkbox para o TipoPost do Java
+            const status = isAnonimo ? 'ANONIMO' : 'PUBLICO';
+
+            const novoPost = {
+                mensagem: mensagemInput,
+                // O getter do Post.java cuidará de mostrar 'Spotted' se for anônimo
+                // mas precisamos enviar o autor original para o banco de dados.
+                autor: autorInput, 
+                status: status,
+                // Data será definida no lado do servidor (como feito no seu Controller)
+            };
+
+            try {
+                const response = await fetch(POST_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(novoPost)
+                });
+
+                if (response.ok) {
+                    alert('Post criado com sucesso!');
+                    createPostForm.reset();
+                    carregarPosts(); // Recarrega a lista para mostrar o novo post
+                } else {
+                    alert('Erro ao criar post: ' + response.statusText);
+                }
+            } catch (error) {
+                console.error('Erro de rede ao criar post:', error);
+                alert('Erro de rede ao criar post.');
+            }
+        });
+
+
+        async function adicionarReacao(postId, emoji) {
+
+            // **IMPORTANTE:** Não precisamos mais solicitar o nome do usuário.
+            // O Spring Security fará isso usando o cookie de sessão.
+
+            const reactionBody = {
+                // Não enviar o campo 'usuario'
+                emoji: emoji
+            };
+
+            try {
+                const response = await fetch(`${POST_URL}/${postId}/reaction`, {
+                    method: 'POST',
+                    // Para que o navegador envie o Cookie de Sessão do Spring Security
+                    credentials: 'include', 
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(reactionBody)
+                });
+
+                if (response.status === 201) {
+                    alert('Reação adicionada com sucesso!');
+                    carregarPosts();
+                } else if (response.status === 401) { // 401: Unauthorized/Não Autenticado
+                    alert('Você precisa fazer login para reagir.');
+                } else if (response.status === 409) {
+                    alert('Você já reagiu com este emoji neste post.');
+                } else {
+                    alert('Erro ao adicionar reação: ' + response.statusText);
+                }
+
+            } catch (error) {
+                console.error('Erro de rede ao adicionar reação:', error);
+                alert('Erro de rede ao adicionar reação.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', carregarPosts);
     </script>
 </body>
 </html>

@@ -55,3 +55,21 @@ CREATE TABLE IF NOT EXISTS `secretariado_profiles` (
   PRIMARY KEY (`user_id`),
   CONSTRAINT `fk_secretariado_user` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE posts (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  autor VARCHAR(255),
+  mensagem TEXT,
+  data TIMESTAMP
+);
+
+-- reações por post por usuário
+CREATE TABLE post_reactions (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  post_id BIGINT NOT NULL,
+  usuario VARCHAR(255),
+  emoji VARCHAR(50) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (post_id) REFERENCES posts(id),
+  UNIQUE KEY ux_post_user_emoji (post_id, usuario, emoji)
+);
