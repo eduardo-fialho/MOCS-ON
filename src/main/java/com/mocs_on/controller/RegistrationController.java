@@ -35,11 +35,10 @@ public class RegistrationController {
     public String showForm(Model model,
                            HttpSession session,
                            RedirectAttributes redirectAttributes) {
-        /*
         if (!isSecretariat(session)) {
             redirectAttributes.addFlashAttribute("error", "Acesso restrito ao Secretariado.");
             return "redirect:/login";
-        }*/
+        }
         return "redirect:/admin/users/new";
     }
 
@@ -47,11 +46,11 @@ public class RegistrationController {
     public String handleSubmit(@ModelAttribute("form") RegistrationForm form,
                                HttpSession session,
                                RedirectAttributes redirectAttributes) {
-        /*
+        
         if (!isSecretariat(session)) {
             redirectAttributes.addFlashAttribute("error", "Acesso restrito ao Secretariado.");
             return "redirect:/login";
-        }*/
+        }
         redirectAttributes.addFlashAttribute("info", "Fluxo de cadastro movido para a gestão de usuários.");
         return "redirect:/admin/users/new";
     }
