@@ -344,10 +344,6 @@
     </script>    
     
     <script>
-        /*
-          Mural (Alpine.js) - integra com seu backend Spring (/post, /user)
-          Cole este script antes do </body>.
-        */
 
         (function(){
           const API_BASE = '/post';
@@ -359,7 +355,7 @@
             return { token, header };
           }
 
-          // helper: time ago em pt-BR
+
           function timeAgo(dateString) {
             try {
               const d = new Date(dateString);
@@ -376,7 +372,6 @@
             } catch (e) { return 'data inválida'; }
           }
 
-          // Componente Alpine para o mural
           window.muralData = function() {
             return {
               posts: [],
@@ -387,9 +382,7 @@
               currentUser: null,
               error: null,
 
-              // Lifecycle
               async init() {
-                // tenta carregar usuário (para usar nas reações)
                 await this.loadCurrentUser();
                 await this.loadPosts();
               },
@@ -403,7 +396,7 @@
                     return;
                   }
                   const data = await res.json();
-                  // espera que o JSON tenha `nome` e possivelmente `isSecretario`
+                  
                   this.currentUser = data.nome || null;
                 } catch (err) {
                   console.error('Erro ao buscar usuário:', err);
@@ -416,8 +409,7 @@
                 try {
                   const res = await fetch(API_BASE);
                   if (!res.ok) throw new Error('status ' + res.status);
-                  const data = await res.json();
-                  // ordena por data decrescente caso necessário (backend já deve fazer)
+                  const data = await res.json();     
                   data.sort((a,b) => new Date(b.data) - new Date(a.data));
                   this.posts = data;
                 } catch (err) {
@@ -469,7 +461,6 @@
                 }
               },
 
-              // excluir post (se backend tiver endpoint DELETE /post/{id})
               async deletePost(postId) {
                 if (!confirm('Excluir este post?')) return;
                 const { token, header } = readCsrf();
@@ -488,7 +479,6 @@
                 }
               },
 
-              // adicionar reação (POST /post/{id}/reaction)
               async addReaction(postId, emoji) {
                 if (!emoji) return;
                 const usuario = this.currentUser || 'anônimo';
@@ -516,7 +506,6 @@
                 }
               },
 
-              // remover reação (DELETE /post/{id}/reaction com body)
               async removeReaction(postId, emoji) {
                 if (!emoji) return;
                 const usuario = this.currentUser || 'anônimo';
@@ -544,13 +533,11 @@
                 }
               },
 
-              // utilitário para mostrar contagem de reações (objeto reactions vindo do backend)
               reactionCount(post, emoji) {
                 if (!post || !post.reactions) return 0;
                 return post.reactions[emoji] || 0;
               },
 
-              // expõe helpers para o template
               timeAgo,
             };
           };
