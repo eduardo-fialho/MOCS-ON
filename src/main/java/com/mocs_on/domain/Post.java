@@ -12,7 +12,7 @@ public class Post {
     private TipoPost status;
     private LocalDateTime dataPublicacao;
     
-    public static final String DISPLAY_ANON = "Spotted";
+    public static final String DISPLAY_ANON = "Spotted by: CSNU";
     private Map<String, Integer> reactions = new HashMap<>();
     
     public enum TipoPost{
