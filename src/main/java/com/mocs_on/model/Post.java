@@ -8,8 +8,10 @@ public class Post {
     private String[] linksRelacionados;
     private PostStatus status;
     private LocalDateTime dataPublicacao;
-    private Reacoes qtdReacoes;
-    public static class Reacoes{
+    private Reacoes reacoes;
+    private int id;
+    private int comiteId;
+    private class Reacoes{
         public Reacoes(int like, int coracao, int riso, int surpresa, int triste, int raiva){
             this.like=like;
             this.coracao=coracao;
@@ -27,7 +29,7 @@ public class Post {
         int raiva;
 
     }
-    public enum PostStatus{
+    private enum PostStatus{
         PUBLICO,
         PRIVADO,
         EM_ANALISE,
@@ -40,21 +42,25 @@ public class Post {
         this.status = PostStatus.EM_ANALISE;
         this.dataPublicacao = LocalDateTime.now();
     }
-    
-    public Post(String mensagem, String nome, String[] links, PostStatus status, LocalDateTime data, Reacoes qtdReacoes){
+    public Post(String mensagem, String nome, String[] links, String status, LocalDateTime data, int like, int coracao, int riso, int surpresa, int triste, int raiva){
         this.mensagem = mensagem;
         this.nomeRemetente = nome;
         this.linksRelacionados = links;
-        this.status = status;
+        this.status = PostStatus.valueOf(status);
         this.dataPublicacao = data;
-        this.qtdReacoes=qtdReacoes;
+        setReacoes(like, coracao, riso, surpresa, triste, raiva);
     }
-
+    public int getId(){
+        return id;
+    }
     public String getMensagem() {
         return mensagem;
     }
-    public void setQtdReacoes(Reacoes reacoes){
-        this.qtdReacoes=reacoes;
+    public void setId(int id){
+        this.id=id;
+    }
+    public void setReacoes(int like, int coracao, int riso, int surpresa, int triste, int raiva){
+        reacoes=new Reacoes(like, coracao, riso, surpresa, triste, raiva);
     }
     public void setMensagem(String mensagem) {
         this.mensagem = mensagem;
@@ -76,8 +82,8 @@ public class Post {
         this.linksRelacionados = linksRelacionados;
     }
 
-    public PostStatus getStatus() {
-        return status;
+    public String getStatus() {
+        return status.name();
     }
 
     public void setStatus(PostStatus status) {
