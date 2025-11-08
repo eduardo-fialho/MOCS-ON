@@ -1,4 +1,3 @@
-
 package com.mocs_on.service;
 
 import java.sql.PreparedStatement;
@@ -51,10 +50,8 @@ public class PostDAO {
         String sqlReacoes = "SELECT emoji, COUNT(*) AS cnt FROM post_reactions WHERE post_id = ? GROUP BY emoji";
         for (Post p : posts) {
             Map<String, Integer> map = new HashMap<>();
-            jdbcTemplate.query(sqlReacoes, new Object[]{p.getId()}, (rs) -> {
-                String emoji = rs.getString("emoji");
-                int cnt = rs.getInt("cnt");
-                map.put(emoji, cnt);
+            jdbcTemplate.query(sqlReacoes, ps -> ps.setLong(1, p.getId()), rs -> {
+                map.put(rs.getString("emoji"), rs.getInt("cnt"));
             });
             p.setReactions(map);
         }
@@ -86,9 +83,7 @@ public class PostDAO {
         }
     }
     
-    //reações por Usuario:
-    
-     public int addReactionToPost(Long postId, String usuario, String emoji) {
+    public int addReactionToPost(Long postId, String usuario, String emoji) {
         String sql = "INSERT INTO post_reactions (post_id, usuario, emoji) VALUES (?, ?, ?)";
         try {
             return jdbcTemplate.update(sql, postId, usuario, emoji);
@@ -105,14 +100,11 @@ public class PostDAO {
     public Map<String, Integer> getReactionsForPost(Long postId) {
         String sql = "SELECT emoji, COUNT(*) AS cnt FROM post_reactions WHERE post_id = ? GROUP BY emoji";
         Map<String, Integer> map = new HashMap<>();
-        jdbcTemplate.query(sql, new Object[]{postId}, rs -> {
+        jdbcTemplate.query(sql, ps -> ps.setLong(1, postId), rs -> {
             map.put(rs.getString("emoji"), rs.getInt("cnt"));
         });
         return map;
     }
-    
-    //Implementei essa função aqui: "softDeletePost" para ao invés de deletar diretamente do banco
-    //ela apaneas alterar o status do post no banco:
     
     public int softDeletePost(Long id) {
         String sql = "UPDATE posts SET status = 'EXCLUIDO' WHERE id = ?";

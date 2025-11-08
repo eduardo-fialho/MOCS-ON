@@ -1,3 +1,9 @@
+CREATE DATABASE IF NOT EXISTS mocson
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE mocson;
+
 -- Schema inicial do banco MOCS ON
 CREATE TABLE IF NOT EXISTS `usuarios` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -56,6 +62,7 @@ CREATE TABLE IF NOT EXISTS `secretariado_profiles` (
 CREATE TABLE IF NOT EXISTS `posts` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `autor` VARCHAR(255) NOT NULL,
+  `status` varchar(30) NOT NULL,
   `mensagem` TEXT NOT NULL,
   `data` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
@@ -70,4 +77,13 @@ CREATE TABLE IF NOT EXISTS `post_reactions` (
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_post_reaction_post` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
   UNIQUE KEY `ux_post_user_emoji` (`post_id`, `usuario`, `emoji`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `avisos` (
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+    `autor` varchar(200) NOT NULL,
+    `titulo` varchar(200) NOT NULL,
+    `mensagem` varchar(10000) NOT NULL,
+    `data` datetime NOT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

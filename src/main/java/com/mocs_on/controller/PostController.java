@@ -34,7 +34,6 @@ public class PostController {
 
         Long id = postService.inserirPost(post);
         if (id != null) {
-            // cria Location: /post/{id}
             URI location = ServletUriComponentsBuilder
                     .fromCurrentRequest()
                     .path("/{id}")
@@ -78,7 +77,7 @@ public class PostController {
     public ResponseEntity<Void> excludePost(@PathVariable Long postId) {
         int updated = postService.softDeletePost(postId);
         if (updated > 0) {
-            return ResponseEntity.noContent().build(); // 204
+            return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
         }
