@@ -344,213 +344,204 @@
     </script>    
     
     <script>
+    (function(){
+      const API_BASE = '/post';
+      const USER_ENDPOINT = '/user';
 
-        (function(){
-          const API_BASE = '/post';
-          const USER_ENDPOINT = '/user';
+      function readCsrf() {
+        const token = document.querySelector('meta[name="_csrf"]')?.content || null;
+        const header = document.querySelector('meta[name="_csrf_header"]')?.content || 'X-CSRF-TOKEN';
+        return { token, header };
+      }
 
-          function readCsrf() {
-            const token = document.querySelector('meta[name="_csrf"]')?.content || null;
-            const header = document.querySelector('meta[name="_csrf_header"]')?.content || 'X-CSRF-TOKEN';
-            return { token, header };
-          }
+      function timeAgo(dateString) {
+        try {
+          const d = new Date(dateString);
+          const now = new Date();
+          const s = Math.floor((now - d) / 1000);
+          if (s < 60) return `${s} segundos atrás`;
+          const m = Math.floor(s / 60);
+          if (m < 60) return `${m} minutos atrás`;
+          const h = Math.floor(m / 60);
+          if (h < 24) return `${h} horas atrás`;
+          const days = Math.floor(h / 24);
+          if (days < 7) return `${days} dias atrás`;
+          return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+        } catch (e) { return 'data inválida'; }
+      }
 
+      window.muralData = function() {
+        return {
+          posts: [],
+          loading: false,
+          posting: false,
+          newMessage: '',
+          postAsAnon: false,
+          currentUser: null,
+          error: null,
 
-          function timeAgo(dateString) {
+          async init() {
+            await this.loadCurrentUser();
+            await this.loadPosts();
+          },
+
+          async loadCurrentUser() {
             try {
-              const d = new Date(dateString);
-              const now = new Date();
-              const s = Math.floor((now - d) / 1000);
-              if (s < 60) return `${s} segundos atrás`;
-              const m = Math.floor(s / 60);
-              if (m < 60) return `${m} minutos atrás`;
-              const h = Math.floor(m / 60);
-              if (h < 24) return `${h} horas atrás`;
-              const days = Math.floor(h / 24);
-              if (days < 7) return `${days} dias atrás`;
-              return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
-            } catch (e) { return 'data inválida'; }
-          }
+              const res = await fetch(USER_ENDPOINT);
+              if (!res.ok) {
+                console.warn('Falha ao buscar /user, status:', res.status);
+                this.currentUser = null;
+                return;
+              }
+              const data = await res.json();
+              this.currentUser = data.nome || null;
+            } catch (err) {
+              console.error('Erro ao buscar usuário:', err);
+              this.currentUser = null;
+            }
+          },
 
-          window.muralData = function() {
-            return {
-              posts: [],
-              loading: false,
-              posting: false,
-              newMessage: '',
-              postAsAnon: false,
-              currentUser: null,
-              error: null,
+          async loadPosts() {
+            this.loading = true;
+            try {
+              const res = await fetch(API_BASE);
+              if (!res.ok) throw new Error('status ' + res.status);
+              const data = await res.json();
+              data.sort((a,b) => new Date(b.data) - new Date(a.data));
+              // filtrar posts ocultos caso backend já retorne status EXCLUIDO
+              this.posts = data.filter(p => p.status !== 'EXCLUIDO');
+            } catch (err) {
+              console.error('Erro ao carregar posts:', err);
+              this.posts = [];
+              this.error = 'Erro ao carregar posts';
+            } finally {
+              this.loading = false;
+            }
+          },
 
-              async init() {
-                await this.loadCurrentUser();
-                await this.loadPosts();
-              },
-
-              async loadCurrentUser() {
-                try {
-                  const res = await fetch(USER_ENDPOINT);
-                  if (!res.ok) {
-                    console.warn('Falha ao buscar /user, status:', res.status);
-                    this.currentUser = null;
-                    return;
-                  }
-                  const data = await res.json();
-                  
-                  this.currentUser = data.nome || null;
-                } catch (err) {
-                  console.error('Erro ao buscar usuário:', err);
-                  this.currentUser = null;
-                }
-              },
-
-              async loadPosts() {
-                this.loading = true;
-                try {
-                  const res = await fetch(API_BASE);
-                  if (!res.ok) throw new Error('status ' + res.status);
-                  const data = await res.json();     
-                  data.sort((a,b) => new Date(b.data) - new Date(a.data));
-                  this.posts = data;
-                } catch (err) {
-                  console.error('Erro ao carregar posts:', err);
-                  this.posts = [];
-                  this.error = 'Erro ao carregar posts';
-                } finally {
-                  this.loading = false;
-                }
-              },
-
-              // criar post
-              async createPost() {
-                if (!this.newMessage || !this.newMessage.trim()) {
-                  alert('Digite uma mensagem para postar.');
-                  return;
-                }
-                this.posting = true;
-                const body = {
-                  autor: this.postAsAnon ? (this.currentUser || '') : (this.currentUser || 'Delegado'),
-                  mensagem: this.newMessage.trim(),
-                  status: this.postAsAnon ? 'ANONIMO' : 'PUBLICO'
-                };
-
-                const { token, header } = readCsrf();
-                const headers = { 'Content-Type': 'application/json' };
-                if (token) headers[header] = token;
-
-                try {
-                  const res = await fetch(API_BASE, {
-                    method: 'POST',
-                    headers,
-                    body: JSON.stringify(body)
-                  });
-                  if (res.status === 201) {
-                    // sucesso: recarrega posts
-                    this.newMessage = '';
-                    this.postAsAnon = false;
-                    await this.loadPosts();
-                  } else {
-                    console.error('Erro ao postar, status:', res.status);
-                    alert('Falha ao postar (status ' + res.status + ')');
-                  }
-                } catch (err) {
-                  console.error('Erro ao postar:', err);
-                  alert('Erro ao postar: ' + err.message);
-                } finally {
-                  this.posting = false;
-                }
-              },
-
-              async deletePost(postId) {
-                if (!confirm('Excluir este post?')) return;
-                const { token, header } = readCsrf();
-                const headers = {};
-                if (token) headers[header] = token;
-                try {
-                  const res = await fetch(`${API_BASE}/${postId}`, { method: 'DELETE', headers });
-                  if (res.ok) {
-                    await this.loadPosts();
-                  } else {
-                    alert('Falha ao excluir (status ' + res.status + ')');
-                  }
-                } catch (err) {
-                  console.error('Erro ao excluir:', err);
-                  alert('Erro ao excluir: ' + err.message);
-                }
-              },
-
-              async addReaction(postId, emoji) {
-                if (!emoji) return;
-                const usuario = this.currentUser || 'anônimo';
-                const body = { usuario, emoji };
-                const { token, header } = readCsrf();
-                const headers = { 'Content-Type': 'application/json' };
-                if (token) headers[header] = token;
-
-                try {
-                  const res = await fetch(`${API_BASE}/${postId}/reaction`, {
-                    method: 'POST',
-                    headers,
-                    body: JSON.stringify(body)
-                  });
-                  if (res.status === 201) {
-                    await this.loadPosts();
-                  } else if (res.status === 409) {
-                    alert('Você já reagiu com este emoji neste post.');
-                  } else {
-                    throw new Error('status ' + res.status);
-                  }
-                } catch (err) {
-                  console.error('Erro ao adicionar reação:', err);
-                  alert('Erro ao reagir: ' + err.message);
-                }
-              },
-
-              async removeReaction(postId, emoji) {
-                if (!emoji) return;
-                const usuario = this.currentUser || 'anônimo';
-                const body = { usuario, emoji };
-                const { token, header } = readCsrf();
-                const headers = { 'Content-Type': 'application/json' };
-                if (token) headers[header] = token;
-
-                try {
-                  const res = await fetch(`${API_BASE}/${postId}/reaction`, {
-                    method: 'DELETE',
-                    headers,
-                    body: JSON.stringify(body)
-                  });
-                  if (res.status === 204 || res.ok) {
-                    await this.loadPosts();
-                  } else if (res.status === 404) {
-                    alert('Reação não encontrada.');
-                  } else {
-                    throw new Error('status ' + res.status);
-                  }
-                } catch (err) {
-                  console.error('Erro ao remover reação:', err);
-                  alert('Erro ao remover reação: ' + err.message);
-                }
-              },
-
-              reactionCount(post, emoji) {
-                if (!post || !post.reactions) return 0;
-                return post.reactions[emoji] || 0;
-              },
-
-              timeAgo,
+          async createPost() {
+            if (!this.newMessage || !this.newMessage.trim()) {
+              alert('Digite uma mensagem para postar.');
+              return;
+            }
+            this.posting = true;
+            const body = {
+              autor: this.postAsAnon ? (this.currentUser || '') : (this.currentUser || 'Delegado'),
+              mensagem: this.newMessage.trim(),
+              status: this.postAsAnon ? 'ANONIMO' : 'PUBLICO'
             };
-          };
 
-          // registro opcional: se quiser iniciar automaticamente em um elemento com x-data="muralData()",
-          // Alpine chamará muralData().init() quando inicializar; ainda assim, podemos expor um método global
-          // para testes/debug:
-          window.__muralInit = async function(el) {
-            // encontra o componente Alpine e chama init através de dispatch (se necessário).
-            console.warn('Use x-data="muralData()" no container do mural. Alpine chamará init() automaticamente se usar x-init.');
-          };
-        })();
-        </script>
+            const { token, header } = readCsrf();
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers[header] = token;
+
+            try {
+              const res = await fetch(API_BASE, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(body)
+              });
+              if (res.status === 201) {
+                this.newMessage = '';
+                this.postAsAnon = false;
+                await this.loadPosts();
+              } else {
+                console.error('Erro ao postar, status:', res.status);
+                alert('Falha ao postar (status ' + res.status + ')');
+              }
+            } catch (err) {
+              console.error('Erro ao postar:', err);
+              alert('Erro ao postar: ' + err.message);
+            } finally {
+              this.posting = false;
+            }
+          },
+
+          
+          async deletePost(postId) {
+            if (!confirm('O post não será mais exibido a outros usuarios')) return;
+            const { token, header } = readCsrf();
+            const headers = {};
+            if (token) headers[header] = token;
+            try {
+              const res = await fetch(`/post/${postId}/exclude`, { method: 'PATCH', headers });
+              if (res.ok || res.status === 204) {
+                await this.loadPosts();
+              } else if (res.status === 404) {
+                alert('Post não encontrado (já removido?).');
+              } else {
+                alert('Falha ao ocultar post (status ' + res.status + ')');
+              }
+            } catch (err) {
+              console.error('Erro ao ocultar post:', err);
+              alert('Erro ao ocultar post: ' + err.message);
+            }
+          },
+
+          async addReaction(postId, emoji) {
+            if (!emoji) return;
+            const usuario = this.currentUser || 'anônimo';
+            const body = { usuario, emoji };
+            const { token, header } = readCsrf();
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers[header] = token;
+
+            try {
+              const res = await fetch(`${API_BASE}/${postId}/reaction`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(body)
+              });
+              if (res.status === 201) {
+                await this.loadPosts();
+              } else if (res.status === 409) {
+                alert('Você já reagiu com este emoji neste post.');
+              } else {
+                throw new Error('status ' + res.status);
+              }
+            } catch (err) {
+              console.error('Erro ao adicionar reação:', err);
+              alert('Erro ao reagir: ' + err.message);
+            }
+          },
+
+          async removeReaction(postId, emoji) {
+            if (!emoji) return;
+            const usuario = this.currentUser || 'anônimo';
+            const body = { usuario, emoji };
+            const { token, header } = readCsrf();
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers[header] = token;
+
+            try {
+              const res = await fetch(`${API_BASE}/${postId}/reaction`, {
+                method: 'DELETE',
+                headers,
+                body: JSON.stringify(body)
+              });
+              if (res.status === 204 || res.ok) {
+                await this.loadPosts();
+              } else if (res.status === 404) {
+                alert('Reação não encontrada.');
+              } else {
+                throw new Error('status ' + res.status);
+              }
+            } catch (err) {
+              console.error('Erro ao remover reação:', err);
+              alert('Erro ao remover reação: ' + err.message);
+            }
+          },
+
+          reactionCount(post, emoji) {
+            if (!post || !post.reactions) return 0;
+            return post.reactions[emoji] || 0;
+          },
+
+          timeAgo,
+        };
+      };
+    })();
+    </script>
 </body>
 </html>
 

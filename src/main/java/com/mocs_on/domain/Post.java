@@ -18,6 +18,7 @@ public class Post {
     public enum TipoPost{
         PUBLICO,
         ANONIMO,
+        EXCLUIDO,
     }
     
     public Post() {

@@ -1,4 +1,3 @@
-
 package com.mocs_on.controller;
 
 import java.net.URI;
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-
 import com.mocs_on.domain.Reaction;
 import com.mocs_on.domain.Post;
 import com.mocs_on.service.PostDAO;
@@ -20,7 +18,7 @@ import com.mocs_on.service.PostDAO;
 @RequestMapping("/post")
 @CrossOrigin(origins = "*")
 public class PostController {
-    
+
     @Autowired
     private PostDAO postService;
 
@@ -75,12 +73,12 @@ public class PostController {
             return ResponseEntity.notFound().build();
         }
     }
-    
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluirPost(@PathVariable("id") Long id) {
-        int removed = postService.deletePost(id);
-        if (removed > 0) {
-            return ResponseEntity.noContent().build();
+
+    @PatchMapping("/{postId}/exclude")
+    public ResponseEntity<Void> excludePost(@PathVariable Long postId) {
+        int updated = postService.softDeletePost(postId);
+        if (updated > 0) {
+            return ResponseEntity.noContent().build(); // 204
         } else {
             return ResponseEntity.notFound().build();
         }

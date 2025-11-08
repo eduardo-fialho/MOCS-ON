@@ -63,7 +63,13 @@ CREATE TABLE posts (
   data TIMESTAMP
 );
 
--- reações por post por usuário
+/*Como muito provavelmente muitos de vcs testaram sem essa coluna, recomendo rodar esse esquema de novo
+com esse trechinho slq aqui:*/
+
+ALTER TABLE posts ADD COLUMN status VARCHAR(20) DEFAULT 'PUBLICO';
+UPDATE posts SET status = 'PUBLICO' WHERE status IS NULL;
+/*Principalmente pra Alterar os status dos outros post pra público*/
+
 CREATE TABLE post_reactions (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   post_id BIGINT NOT NULL,
@@ -73,3 +79,12 @@ CREATE TABLE post_reactions (
   FOREIGN KEY (post_id) REFERENCES posts(id),
   UNIQUE KEY ux_post_user_emoji (post_id, usuario, emoji)
 );
+
+CREATE TABLE `avisos` (
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+    `autor` varchar(200) NOT NULL,
+    `titulo` varchar(200) NOT NULL,
+    `mensagem` varchar(10000) NOT NULL,
+    `data` datetime NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

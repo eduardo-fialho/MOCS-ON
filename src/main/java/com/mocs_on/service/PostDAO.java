@@ -26,13 +26,23 @@ public class PostDAO {
     private JdbcTemplate jdbcTemplate;
 
     public List<Post> recuperarTodos() {
-        String sql = "SELECT id, autor, mensagem, data FROM posts ORDER BY data DESC";
-        
+        String sql = "SELECT id, autor, mensagem, data, status FROM posts ORDER BY data DESC";
+
         List<Post> posts = jdbcTemplate.query(sql, (resultado, linha) -> {
             Post post = new Post();
             post.setId(resultado.getLong("id"));
             post.setAutor(resultado.getString("autor"));
             post.setMensagem(resultado.getString("mensagem"));
+
+            String statusStr = resultado.getString("status");
+            if (statusStr != null) {
+                try {
+                    post.setStatus(Post.TipoPost.valueOf(statusStr));
+                } catch (IllegalArgumentException ex) {
+                    post.setStatus(Post.TipoPost.PUBLICO);
+                }
+            }
+
             Timestamp data = resultado.getTimestamp("data");
             if (data != null) post.setData(data.toLocalDateTime());
             return post;
@@ -53,7 +63,7 @@ public class PostDAO {
     }
 
     public Long inserirPost(Post post) {
-        String sql = "INSERT INTO posts (autor, mensagem, data) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO posts (autor, mensagem, data, status) VALUES (?, ?, ?, ?)";
         Timestamp ts = Timestamp.valueOf(post.getData());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -62,6 +72,7 @@ public class PostDAO {
             ps.setString(1, post.getAutor());
             ps.setString(2, post.getMensagem());
             ps.setTimestamp(3, ts);
+            ps.setString(4, post.getStatus() == null ? Post.TipoPost.PUBLICO.name() : post.getStatus().name());
             return ps;
         }, keyHolder);
 
@@ -100,12 +111,19 @@ public class PostDAO {
         return map;
     }
     
+    //Implementei essa função aqui: "softDeletePost" para ao invés de deletar diretamente do banco
+    //ela apaneas alterar o status do post no banco:
+    
+    public int softDeletePost(Long id) {
+        String sql = "UPDATE posts SET status = 'EXCLUIDO' WHERE id = ?";
+        return jdbcTemplate.update(sql, id);
+    }
+    
     public int deletePost(Long postId) {
-    String sqlReacoes = "DELETE FROM post_reactions WHERE post_id = ?";
-    jdbcTemplate.update(sqlReacoes, postId);
+        String sqlReacoes = "DELETE FROM post_reactions WHERE post_id = ?";
+        jdbcTemplate.update(sqlReacoes, postId);
 
-    // depois remove o post principal
-    String sqlPost = "DELETE FROM posts WHERE id = ?";
-    return jdbcTemplate.update(sqlPost, postId);
-}
+        String sqlPost = "DELETE FROM posts WHERE id = ?";
+        return jdbcTemplate.update(sqlPost, postId);
+    }
 }
