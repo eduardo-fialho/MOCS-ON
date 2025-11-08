@@ -408,7 +408,7 @@
               if (!res.ok) throw new Error('status ' + res.status);
               const data = await res.json();
               data.sort((a,b) => new Date(b.data) - new Date(a.data));
-              // filtrar posts ocultos caso backend já retorne status EXCLUIDO
+              
               this.posts = data.filter(p => p.status !== 'EXCLUIDO');
             } catch (err) {
               console.error('Erro ao carregar posts:', err);
