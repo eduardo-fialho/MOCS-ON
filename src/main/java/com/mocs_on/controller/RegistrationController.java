@@ -46,6 +46,7 @@ public class RegistrationController {
     public String handleSubmit(@ModelAttribute("form") RegistrationForm form,
                                HttpSession session,
                                RedirectAttributes redirectAttributes) {
+        
         if (!isSecretariat(session)) {
             redirectAttributes.addFlashAttribute("error", "Acesso restrito ao Secretariado.");
             return "redirect:/login";

@@ -40,6 +40,7 @@ public class UserManagementController {
     public String listUsers(Model model,
                             HttpSession session,
                             RedirectAttributes redirectAttributes) {
+        
         if (!isSecretariat(session)) {
             redirectAttributes.addFlashAttribute("error", "Acesso restrito ao Secretariado.");
             return "redirect:/login";
@@ -54,6 +55,7 @@ public class UserManagementController {
     public String showCreateForm(Model model,
                                  HttpSession session,
                                  RedirectAttributes redirectAttributes) {
+        
         if (!isSecretariat(session)) {
             redirectAttributes.addFlashAttribute("error", "Acesso restrito ao Secretariado.");
             return "redirect:/login";
@@ -73,6 +75,7 @@ public class UserManagementController {
                                Model model,
                                HttpSession session,
                                RedirectAttributes redirectAttributes) {
+
         if (!isSecretariat(session)) {
             redirectAttributes.addFlashAttribute("error", "Acesso restrito ao Secretariado.");
             return "redirect:/login";
@@ -147,6 +150,7 @@ public class UserManagementController {
                            Model model,
                            HttpSession session,
                            RedirectAttributes redirectAttributes) {
+        
         if (!isSecretariat(session)) {
             redirectAttributes.addFlashAttribute("error", "Acesso restrito ao Secretariado.");
             return "redirect:/login";
@@ -186,6 +190,7 @@ public class UserManagementController {
                              @ModelAttribute("form") UserEditForm form,
                              HttpSession session,
                              RedirectAttributes redirectAttributes) {
+        
         if (!isSecretariat(session)) {
             redirectAttributes.addFlashAttribute("error", "Acesso restrito ao Secretariado.");
             return "redirect:/login";
