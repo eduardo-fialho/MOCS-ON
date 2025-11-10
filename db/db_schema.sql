@@ -88,3 +88,33 @@ CREATE TABLE `avisos` (
     `data` datetime NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Ouvidoria
+CREATE TABLE IF NOT EXISTS `ouvidoria_relatos` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` VARCHAR(50) NOT NULL DEFAULT 'novo',
+
+  `identificacao` VARCHAR(50) NOT NULL, -- 'anonimo', 'comite_apenas', 'comite_e_nome'
+  `nome_relator` VARCHAR(255) NULL,
+  `comite_relator` VARCHAR(255) NULL,
+
+  `categoria_relato` VARCHAR(100) NOT NULL, -- 'comite', 'secretariado', 'outros'
+
+  `comite_conducao` VARCHAR(50) NULL,
+  `comite_respeito` VARCHAR(50) NULL,
+  `comite_imparcialidade` VARCHAR(50) NULL,
+  `comite_apoio` VARCHAR(50) NULL,
+  `comite_mensagem` TEXT NULL,
+  
+  `secretariado_positivos` TEXT NULL,
+  `secretariado_negativos` TEXT NULL,
+  `secretariado_falta` TEXT NULL,
+  `secretariado_sugestoes` TEXT NULL,
+
+  `outros_mensagem` TEXT NULL,
+
+  PRIMARY KEY (`id`),
+  KEY `idx_status` (`status`),
+  KEY `idx_categoria_relato` (`categoria_relato`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
