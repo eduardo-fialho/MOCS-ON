@@ -33,6 +33,21 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a1a1aa; }
     </style>
+
+    <script>
+        const APP_CONTEXT_PATH = (() => {
+            const path = window.location.pathname || '';
+            const base = path.replace(/\/[^/]*$/, '');
+            if (!base || base === '/' || base === path) {
+                return '';
+            }
+            return base;
+        })();
+        const API_BASE_URL = `${window.location.origin}${APP_CONTEXT_PATH}`;
+        const API_ENDPOINT = `${API_BASE_URL}/aviso`;
+        const USER_ENDPOINT = `${API_BASE_URL}/user`;
+        const POST_API_BASE = `${API_BASE_URL}/post`;
+    </script>
 </head>
 
 <body class="bg-gray-100">
@@ -243,9 +258,6 @@
 
     <!-- Script Lógica Alpine -->
     <script>
-        const API_BASE_URL = 'http://localhost:8082';
-        const API_ENDPOINT = API_BASE_URL + '/aviso';
-
         // NOVO: Função para carregar o nome e o cargo do usuário logado
         function profileData() {
             return {
@@ -255,7 +267,7 @@
                 async loadUserInfo() {
                     try {
                         // Endpoint REST simplificado: /user
-                        const response = await fetch('/user'); 
+                        const response = await fetch(USER_ENDPOINT); 
 
                         if (!response.ok) {
                             this.userName = 'Erro ao carregar';
@@ -345,8 +357,7 @@
     
     <script>
     (function(){
-      const API_BASE = '/post';
-      const USER_ENDPOINT = '/user';
+      const API_BASE = POST_API_BASE;
 
       function readCsrf() {
         const token = document.querySelector('meta[name="_csrf"]')?.content || null;
@@ -464,7 +475,7 @@
             const headers = {};
             if (token) headers[header] = token;
             try {
-              const res = await fetch(`/post/${postId}/exclude`, { method: 'PATCH', headers });
+              const res = await fetch(`${API_BASE}/${postId}/exclude`, { method: 'PATCH', headers });
               if (res.ok || res.status === 204) {
                 await this.loadPosts();
               } else if (res.status === 404) {
