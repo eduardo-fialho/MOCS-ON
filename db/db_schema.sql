@@ -56,20 +56,17 @@ CREATE TABLE IF NOT EXISTS `secretariado_profiles` (
   CONSTRAINT `fk_secretariado_user` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE posts (
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  autor VARCHAR(255),
-  mensagem TEXT,
-  data TIMESTAMP
-);
-
-/*Como muito provavelmente muitos de vcs testaram sem essa coluna, recomendo rodar esse esquema de novo
-com esse trechinho slq aqui:*/
-
-ALTER TABLE posts ADD COLUMN status VARCHAR(20) DEFAULT 'PUBLICO';
-UPDATE posts SET status = 'PUBLICO' WHERE status IS NULL;
-/*Principalmente pra Alterar os status dos outros post pra público*/
-
+-- Ajuste registrado por Arthur Henrique: replicamos o contrato do mural (código do Samuel)
+-- para que ambientes manuais não precisem rodar ALTER TABLE de emergência.
+CREATE TABLE IF NOT EXISTS `posts` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `autor` VARCHAR(255) NOT NULL,
+  `mensagem` TEXT NOT NULL,
+  `data` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` VARCHAR(20) NOT NULL DEFAULT 'PUBLICO',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE post_reactions (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   post_id BIGINT NOT NULL,
