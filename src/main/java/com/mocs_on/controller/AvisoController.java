@@ -37,4 +37,9 @@ public class AvisoController {
         if (linhasAfetadas == 1) return ResponseEntity.status(HttpStatus.CREATED).build();
         else return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
+
+    @GetMapping("/quantidade")
+    public ResponseEntity<Integer> quantidadeAvisos() {
+        return ResponseEntity.ok(avisoService.quantidadeAvisos());
+    }
 }
