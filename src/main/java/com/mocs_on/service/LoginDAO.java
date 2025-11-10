@@ -40,14 +40,14 @@ public class LoginDAO {
             }
 
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao autenticar usuário", e);
+            throw new RuntimeException("Erro ao autenticar usuario", e);
         }
         return null;
     }
 
     public void salvarUsuario(Usuario usuario, String tipo) {
         if (emailExiste(usuario.getEmail())) {
-            throw new IllegalArgumentException("Email já cadastrado");
+            throw new IllegalArgumentException("Email ja cadastrado");
         }
         String hash = BCrypt.hashpw(usuario.getSenha(), BCrypt.gensalt());
         String sql = "INSERT INTO usuarios (nome, email, senha, tipo) VALUES (?, ?, ?, ?)";
@@ -65,22 +65,22 @@ public class LoginDAO {
 
     public Optional<Usuario> findByEmail(String email) {
         final String SQL = "SELECT id, nome, email, senha, tipo FROM usuarios WHERE email = ?";
-        
+
         List<Usuario> results = jdbcTemplate.query(
-            SQL, 
+            SQL,
             this::mapRowToUsuario,
-            email 
+            email
         );
-        
+
         Usuario usuario = DataAccessUtils.singleResult(results);
 
         if (usuario != null) {
-            usuario.setComites(findComitesByUsuarioId(usuario.getId().longValue())); 
+            usuario.setComites(findComitesByUsuarioId(usuario.getId()));
         }
-        
+
         return Optional.ofNullable(usuario);
     }
-    
+
     private Usuario mapRowToUsuario(ResultSet rs, int rowNum) throws SQLException {
         Usuario usuario = new Usuario();
         usuario.setId(rs.getLong("id"));
@@ -92,7 +92,6 @@ public class LoginDAO {
     }
 
     private List<Comite> findComitesByUsuarioId(Long usuarioId) {
-        
-        return List.of(); 
+        return List.of();
     }
 }

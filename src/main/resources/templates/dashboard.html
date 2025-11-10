@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -53,56 +53,115 @@
                         </button>
                         <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20" style="display: none;">
                             <!-- MUDANÇA: Usando o caminho absoluto (/secretariado.html) para garantir que a rota seja acessada corretamente a partir da raiz da aplicação. -->
+                            <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b">
+                                <i class="fas fa-user mr-2"></i> Meu perfil
+                            </a>
                             <template x-if="isSecretario">
-                                <a href="/secretariado.html" class="block px-4 py-2 text-sm text-mocs-blue font-semibold hover:bg-gray-100 border-b mb-1">
-                                    <i class="fas fa-user-tie mr-2"></i> Área do Secretariado
-                                </a>
+                                <div>
+                                    <a href="/secretariado.html" class="block px-4 py-2 text-sm text-mocs-blue font-semibold hover:bg-gray-100 border-b">
+                                        <i class="fas fa-user-tie mr-2"></i> Área do Secretariado
+                                    </a>
+                                </div>
                             </template>
-                            
-                            <a href="/logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
+
+                            <a href="/auth/logout" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
                         </div>
                     </div>
                 </div>
             </div>
         </header>
 
-        <!-- Conteúdo -->
         <main class="flex-grow container mx-auto p-4 md:p-6">
+            
+            
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Coluna principal -->
+
+                
                 <div class="lg:col-span-2 flex flex-col gap-6">
                     <div class="bg-white p-6 rounded-xl shadow-lg">
-                        <h2 class="text-2xl font-bold text-mocs-blue mb-4">Mural do Comitê - CSNU</h2>
+                    <!-- INÍCIO: MURAL-->
+                    <div x-data="muralData()" x-init="init()" class="bg-white p-6 rounded-xl shadow-lg">
+                      <h2 class="text-2xl font-bold text-mocs-blue mb-4">Mural do Comitê - CSNU</h2>
 
-                        <!-- Formulário de Postagem -->
-                        <div class="mb-6">
-                            <textarea class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue" rows="3" placeholder="Escreva um post no mural, envie um spotted anônimo..."></textarea>
-                            <div class="flex justify-end items-center mt-2">
-                                <label class="text-sm text-gray-600 mr-4"><input type="checkbox" class="mr-2 rounded">Postar como anônimo (Spotted)</label>
-                                <button class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">Postar</button>
-                            </div>
+                      <!-- Formulário de Postagem -->
+                      <div class="mb-6">
+                        <textarea x-model="newMessage"
+                                  class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue"
+                                  rows="3"
+                                  placeholder="Escreva um post no mural, envie um spotted anônimo..."></textarea>
+
+                        <div class="flex justify-end items-center mt-2 space-x-4">
+                          <label class="text-sm text-gray-600 mr-4 flex items-center">
+                            <input type="checkbox" x-model="postAsAnon" class="mr-2 rounded">Postar como anônimo (Spotted)
+                          </label>
+
+                          <button @click.prevent="createPost()"
+                                  :class="{ 'opacity-60 cursor-not-allowed': posting }"
+                                  :disabled="posting"
+                                  class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
+                            <span x-show="!posting">Postar</span>
+                            <span x-show="posting">Enviando...</span>
+                          </button>
                         </div>
+                      </div>
 
-                        <!-- Feed -->
-                        <div class="space-y-5">
-                            <!-- Exemplo de posts -->
-                            <div class="border-t pt-4">
-                                <div class="flex items-start space-x-4">
-                                    <div class="bg-mocs-orange text-white h-10 w-10 rounded-full flex items-center justify-center"><i class="fas fa-newspaper"></i></div>
-                                    <div>
-                                        <p class="font-bold text-gray-800">Jornal da Imprensa</p>
-                                        <p class="font-semibold text-gray-800 text-lg">Crise se intensifica: delegações buscam consenso no CSNU</p>
-                                        <p class="text-sm text-gray-600">Enquanto as negociações avançam, fontes indicam que um bloco de países está perto de apresentar a primeira proposta...</p>
-                                        <p class="text-xs text-gray-500 mt-1">15 minutos atrás</p>
-                                    </div>
+                      <!-- Mensagens de erro / carregamento -->
+                      <div class="text-sm text-red-600 mb-3" x-show="error" x-text="error" style="display:none"></div>
+                      <div class="text-sm text-gray-500 mb-3" x-show="loading" style="display:none"><i class="fas fa-spinner fa-spin mr-2"></i> Carregando feed...</div>
+
+                      <!-- Feed de Posts -->
+                      <div class="space-y-5">
+                        <template x-for="post in posts" :key="post.id">
+                          <div class="border-t pt-4">
+                            <div class="flex items-start space-x-4">
+                              <div class="h-10 w-10 rounded-full flex items-center justify-center bg-gray-200 text-gray-700">
+                                <template x-if="post.status === 'ANONIMO'">
+                                  <i class="fas fa-user-secret"></i>
+                                </template>
+                                <template x-if="post.status !== 'ANONIMO'">
+                                  <i class="fas fa-user"></i>
+                                </template>
+                              </div>
+
+                              <div class="flex-1">
+                                <p class="font-bold text-gray-800" x-text="post.autor"></p>
+                                <p class="text-gray-700" x-text="post.mensagem"></p>
+                                <p class="text-xs text-gray-500 mt-1" x-text="timeAgo(post.data)"></p>
+
+                                <!-- Reações rápidas -->
+                                <div class="mt-3 flex items-center gap-2 text-sm">
+                                  <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '👍')">👍 <span class="ml-1" x-text="reactionCount(post,'👍')"></span></button>
+                                  <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '❤️')">❤️ <span class="ml-1" x-text="reactionCount(post,'❤️')"></span></button>
+                                  <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '😂')">😂 <span class="ml-1" x-text="reactionCount(post,'😂')"></span></button>
+                                  <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '😮')">😮 <span class="ml-1" x-text="reactionCount(post,'😮')"></span></button>
                                 </div>
+                              </div>
+
+                              <div class="flex flex-col items-end gap-2">
+                                <button class="text-sm text-red-600" @click="deletePost(post.id)">Excluir</button>
+                              </div>
                             </div>
+                          </div>
+                        </template>
+
+                        <!-- Caso não haja posts -->
+                        <div x-show="!loading && posts.length === 0" class="text-center text-gray-500 py-6" style="display:none">
+                          Nenhum post disponível.
                         </div>
+                      </div>
                     </div>
-                </div>
+                    <!-- FIM: MURAL -->
+
+
+
+                <!-- Coluna Lateral -->
+                <div class="lg:col-span-1 flex flex-col gap-6">
+                    <!-- Card: Agenda -->
+
 
                 <!-- Coluna lateral -->
                 <div class="lg:col-span-1 flex flex-col gap-6" x-data="announcementsData()">
+
                     <div class="bg-white p-6 rounded-xl shadow-lg">
                         <h2 class="text-xl font-bold text-mocs-blue mb-4">Agenda do Dia</h2>
                         <ul class="space-y-3">
@@ -184,7 +243,7 @@
 
     <!-- Script Lógica Alpine -->
     <script>
-        const API_BASE_URL = 'http://localhost:8080';
+        const API_BASE_URL = 'http://localhost:8082';
         const API_ENDPOINT = API_BASE_URL + '/aviso';
 
         // NOVO: Função para carregar o nome e o cargo do usuário logado
@@ -282,6 +341,207 @@
                 }
             };
         }
+    </script>    
+    
+    <script>
+    (function(){
+      const API_BASE = '/post';
+      const USER_ENDPOINT = '/user';
+
+      function readCsrf() {
+        const token = document.querySelector('meta[name="_csrf"]')?.content || null;
+        const header = document.querySelector('meta[name="_csrf_header"]')?.content || 'X-CSRF-TOKEN';
+        return { token, header };
+      }
+
+      function timeAgo(dateString) {
+        try {
+          const d = new Date(dateString);
+          const now = new Date();
+          const s = Math.floor((now - d) / 1000);
+          if (s < 60) return `${s} segundos atrás`;
+          const m = Math.floor(s / 60);
+          if (m < 60) return `${m} minutos atrás`;
+          const h = Math.floor(m / 60);
+          if (h < 24) return `${h} horas atrás`;
+          const days = Math.floor(h / 24);
+          if (days < 7) return `${days} dias atrás`;
+          return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+        } catch (e) { return 'data inválida'; }
+      }
+
+      window.muralData = function() {
+        return {
+          posts: [],
+          loading: false,
+          posting: false,
+          newMessage: '',
+          postAsAnon: false,
+          currentUser: null,
+          error: null,
+
+          async init() {
+            await this.loadCurrentUser();
+            await this.loadPosts();
+          },
+
+          async loadCurrentUser() {
+            try {
+              const res = await fetch(USER_ENDPOINT);
+              if (!res.ok) {
+                console.warn('Falha ao buscar /user, status:', res.status);
+                this.currentUser = null;
+                return;
+              }
+              const data = await res.json();
+              this.currentUser = data.nome || null;
+            } catch (err) {
+              console.error('Erro ao buscar usuário:', err);
+              this.currentUser = null;
+            }
+          },
+
+          async loadPosts() {
+            this.loading = true;
+            try {
+              const res = await fetch(API_BASE);
+              if (!res.ok) throw new Error('status ' + res.status);
+              const data = await res.json();
+              data.sort((a,b) => new Date(b.data) - new Date(a.data));
+              
+              this.posts = data.filter(p => p.status !== 'EXCLUIDO');
+            } catch (err) {
+              console.error('Erro ao carregar posts:', err);
+              this.posts = [];
+              this.error = 'Erro ao carregar posts';
+            } finally {
+              this.loading = false;
+            }
+          },
+
+          async createPost() {
+            if (!this.newMessage || !this.newMessage.trim()) {
+              alert('Digite uma mensagem para postar.');
+              return;
+            }
+            this.posting = true;
+            const body = {
+              autor: this.postAsAnon ? (this.currentUser || '') : (this.currentUser || 'Delegado'),
+              mensagem: this.newMessage.trim(),
+              status: this.postAsAnon ? 'ANONIMO' : 'PUBLICO'
+            };
+
+            const { token, header } = readCsrf();
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers[header] = token;
+
+            try {
+              const res = await fetch(API_BASE, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(body)
+              });
+              if (res.status === 201) {
+                this.newMessage = '';
+                this.postAsAnon = false;
+                await this.loadPosts();
+              } else {
+                console.error('Erro ao postar, status:', res.status);
+                alert('Falha ao postar (status ' + res.status + ')');
+              }
+            } catch (err) {
+              console.error('Erro ao postar:', err);
+              alert('Erro ao postar: ' + err.message);
+            } finally {
+              this.posting = false;
+            }
+          },
+
+          
+          async deletePost(postId) {
+            if (!confirm('O post não será mais exibido a outros usuarios')) return;
+            const { token, header } = readCsrf();
+            const headers = {};
+            if (token) headers[header] = token;
+            try {
+              const res = await fetch(`/post/${postId}/exclude`, { method: 'PATCH', headers });
+              if (res.ok || res.status === 204) {
+                await this.loadPosts();
+              } else if (res.status === 404) {
+                alert('Post não encontrado (já removido?).');
+              } else {
+                alert('Falha ao ocultar post (status ' + res.status + ')');
+              }
+            } catch (err) {
+              console.error('Erro ao ocultar post:', err);
+              alert('Erro ao ocultar post: ' + err.message);
+            }
+          },
+
+          async addReaction(postId, emoji) {
+            if (!emoji) return;
+            const usuario = this.currentUser || 'anônimo';
+            const body = { usuario, emoji };
+            const { token, header } = readCsrf();
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers[header] = token;
+
+            try {
+              const res = await fetch(`${API_BASE}/${postId}/reaction`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(body)
+              });
+              if (res.status === 201) {
+                await this.loadPosts();
+              } else if (res.status === 409) {
+                alert('Você já reagiu com este emoji neste post.');
+              } else {
+                throw new Error('status ' + res.status);
+              }
+            } catch (err) {
+              console.error('Erro ao adicionar reação:', err);
+              alert('Erro ao reagir: ' + err.message);
+            }
+          },
+
+          async removeReaction(postId, emoji) {
+            if (!emoji) return;
+            const usuario = this.currentUser || 'anônimo';
+            const body = { usuario, emoji };
+            const { token, header } = readCsrf();
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers[header] = token;
+
+            try {
+              const res = await fetch(`${API_BASE}/${postId}/reaction`, {
+                method: 'DELETE',
+                headers,
+                body: JSON.stringify(body)
+              });
+              if (res.status === 204 || res.ok) {
+                await this.loadPosts();
+              } else if (res.status === 404) {
+                alert('Reação não encontrada.');
+              } else {
+                throw new Error('status ' + res.status);
+              }
+            } catch (err) {
+              console.error('Erro ao remover reação:', err);
+              alert('Erro ao remover reação: ' + err.message);
+            }
+          },
+
+          reactionCount(post, emoji) {
+            if (!post || !post.reactions) return 0;
+            return post.reactions[emoji] || 0;
+          },
+
+          timeAgo,
+        };
+      };
+    })();
     </script>
 </body>
 </html>
+
