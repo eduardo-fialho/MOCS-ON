@@ -1,8 +1,12 @@
 package com.mocs_on.service;
 
-import java.sql.*;
-import com.mocs_on.model.Comite;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Vector;
+
+import com.mocs_on.model.Comite;
 
 public class ComiteDao extends DaoBase {
     private static final String SELECT_COMITES = "SELECT * FROM comites ORDER BY nome";
@@ -13,11 +17,7 @@ public class ComiteDao extends DaoBase {
     private static Connection conn;
 
     public static void init() throws SQLException {
-        try {
-            getConnection();
-        } catch (SQLException e) {
-            // a fazer
-        }
+        getConnection();
         Statement statement = conn.createStatement();
         statement.executeUpdate(CREATE_COMITE);
         closeResource(statement);

@@ -50,6 +50,14 @@ public class Post {
         this.dataPublicacao = data;
         setReacoes(like, coracao, riso, surpresa, triste, raiva);
     }
+        public Post(String mensagem, String nome, String[] links, String status, LocalDateTime data){
+        this.mensagem = mensagem;
+        this.nomeRemetente = nome;
+        this.linksRelacionados = links;
+        this.status = PostStatus.valueOf(status);
+        this.dataPublicacao = data;
+        setReacoes(0, 0, 0, 0, 0, 0);
+    }
     public int getId(){
         return id;
     }
