@@ -1,3 +1,9 @@
+CREATE DATABASE IF NOT EXISTS mocson
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE mocson;
+
 -- Schema inicial do banco MOCS ON
 CREATE TABLE IF NOT EXISTS `usuarios` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -38,4 +44,46 @@ CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
   KEY `idx_email` (`email`),
   KEY `idx_expires_at` (`expires_at`),
   CONSTRAINT `fk_token_user` FOREIGN KEY (`email`) REFERENCES `usuarios` (`email`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `secretariado_profiles` (
+  `user_id` INT UNSIGNED NOT NULL,
+  `funcao` VARCHAR(50) NOT NULL,
+  `departamento` VARCHAR(255) NOT NULL,
+  `matricula` VARCHAR(100) NULL,
+  `telefone` VARCHAR(50) NULL,
+  `turno_atendimento` VARCHAR(100) NULL,
+  `responsabilidades` VARCHAR(255) NULL,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `fk_secretariado_user` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `posts` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `autor` VARCHAR(255) NOT NULL,
+  `status` varchar(30) NOT NULL,
+  `mensagem` TEXT NOT NULL,
+  `data` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `post_reactions` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `post_id` BIGINT UNSIGNED NOT NULL,
+  `usuario` VARCHAR(255) NOT NULL,
+  `emoji` VARCHAR(50) NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_post_reaction_post` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
+  UNIQUE KEY `ux_post_user_emoji` (`post_id`, `usuario`, `emoji`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `avisos` (
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+    `autor` varchar(200) NOT NULL,
+    `titulo` varchar(200) NOT NULL,
+    `mensagem` varchar(10000) NOT NULL,
+    `data` datetime NOT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
