@@ -3,6 +3,9 @@ package com.mocs_on.service;
 import com.mocs_on.domain.Comite;
 import com.mocs_on.domain.Login;
 import com.mocs_on.domain.Usuario;
+import com.mocs_on.security.CargoEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,6 +19,8 @@ import java.util.Optional;
 
 @Repository
 public class LoginDAO {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoginDAO.class);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -87,7 +92,17 @@ public class LoginDAO {
         usuario.setNome(rs.getString("nome"));
         usuario.setEmail(rs.getString("email"));
         usuario.setSenha(rs.getString("senha"));
-        usuario.setTipo(rs.getString("tipo"));
+        String rawTipo = rs.getString("tipo");
+        if (rawTipo != null) {
+            try {
+                usuario.setTipo(rawTipo);
+            } catch (IllegalArgumentException ex) {
+                LOGGER.warn("Tipo '{}' invalido para usuario {}. Aplicando VISITANTE.", rawTipo, usuario.getEmail());
+                usuario.setTipo(CargoEnum.VISITANTE.name());
+            }
+        } else {
+            usuario.setTipo(CargoEnum.VISITANTE.name());
+        }
         return usuario;
     }
 
