@@ -1,8 +1,7 @@
-package com.mocs_on.controller;
+package com.mocs_on.service;
 
 import java.sql.*;
 
-/*
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import com.zaxxer.hikari.*;
@@ -103,4 +102,4 @@ public class HDataSource {
             conn = null;
         }
     }	    
-} */
+}

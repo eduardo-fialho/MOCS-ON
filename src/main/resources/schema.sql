@@ -1,4 +1,10 @@
--- Tabela principal de usuarios
+CREATE DATABASE IF NOT EXISTS mocson
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE mocson;
+
+-- Schema inicial do banco MOCS ON
 CREATE TABLE IF NOT EXISTS `usuarios` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(255) NOT NULL,
@@ -11,7 +17,6 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   KEY `idx_usuarios_tipo` (`tipo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Historico de alteracoes de perfis
 CREATE TABLE IF NOT EXISTS `user_change_logs` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` INT UNSIGNED NOT NULL,
@@ -25,7 +30,6 @@ CREATE TABLE IF NOT EXISTS `user_change_logs` (
   CONSTRAINT `fk_change_user` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Tabela para tokens de redefinicao de senha
 CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `email` VARCHAR(255) NOT NULL,
@@ -42,7 +46,6 @@ CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
   CONSTRAINT `fk_token_user` FOREIGN KEY (`email`) REFERENCES `usuarios` (`email`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Perfil detalhado para membros do secretariado
 CREATE TABLE IF NOT EXISTS `secretariado_profiles` (
   `user_id` INT UNSIGNED NOT NULL,
   `funcao` VARCHAR(50) NOT NULL,
@@ -56,65 +59,31 @@ CREATE TABLE IF NOT EXISTS `secretariado_profiles` (
   CONSTRAINT `fk_secretariado_user` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE posts (
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  autor VARCHAR(255),
-  mensagem TEXT,
-  data TIMESTAMP
-);
+CREATE TABLE IF NOT EXISTS `posts` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `autor` VARCHAR(255) NOT NULL,
+  `status` varchar(30) NOT NULL,
+  `mensagem` TEXT NOT NULL,
+  `data` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-/*Como muito provavelmente muitos de vcs testaram sem essa coluna, recomendo rodar esse esquema de novo
-com esse trechinho slq aqui:*/
+CREATE TABLE IF NOT EXISTS `post_reactions` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `post_id` BIGINT UNSIGNED NOT NULL,
+  `usuario` VARCHAR(255) NOT NULL,
+  `emoji` VARCHAR(50) NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_post_reaction_post` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
+  UNIQUE KEY `ux_post_user_emoji` (`post_id`, `usuario`, `emoji`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-ALTER TABLE posts ADD COLUMN status VARCHAR(20) DEFAULT 'PUBLICO';
-UPDATE posts SET status = 'PUBLICO' WHERE status IS NULL;
-/*Principalmente pra Alterar os status dos outros post pra público*/
-
-CREATE TABLE post_reactions (
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  post_id BIGINT NOT NULL,
-  usuario VARCHAR(255),
-  emoji VARCHAR(50) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (post_id) REFERENCES posts(id),
-  UNIQUE KEY ux_post_user_emoji (post_id, usuario, emoji)
-);
-
-CREATE TABLE `avisos` (
+CREATE TABLE IF NOT EXISTS `avisos` (
     `id` bigint unsigned NOT NULL AUTO_INCREMENT,
     `autor` varchar(200) NOT NULL,
     `titulo` varchar(200) NOT NULL,
     `mensagem` varchar(10000) NOT NULL,
     `data` datetime NOT NULL,
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Ouvidoria
-CREATE TABLE IF NOT EXISTS `ouvidoria_relatos` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `status` VARCHAR(50) NOT NULL DEFAULT 'novo',
-
-  `identificacao` VARCHAR(50) NOT NULL, -- 'anonimo', 'comite_apenas', 'comite_e_nome'
-  `nome_relator` VARCHAR(255) NULL,
-  `comite_relator` VARCHAR(255) NULL,
-
-  `categoria_relato` VARCHAR(100) NOT NULL, -- 'comite', 'secretariado', 'outros'
-
-  `comite_conducao` VARCHAR(50) NULL,
-  `comite_respeito` VARCHAR(50) NULL,
-  `comite_imparcialidade` VARCHAR(50) NULL,
-  `comite_apoio` VARCHAR(50) NULL,
-  `comite_mensagem` TEXT NULL,
-  
-  `secretariado_positivos` TEXT NULL,
-  `secretariado_negativos` TEXT NULL,
-  `secretariado_falta` TEXT NULL,
-  `secretariado_sugestoes` TEXT NULL,
-
-  `outros_mensagem` TEXT NULL,
-
-  PRIMARY KEY (`id`),
-  KEY `idx_status` (`status`),
-  KEY `idx_categoria_relato` (`categoria_relato`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
