@@ -1,0 +1,27 @@
+body {
+    font-family: "Inter", sans-serif;
+}
+
+.bg-mocs-blue {
+    background-color: #205395;
+}
+
+.text-mocs-blue {
+    color: #205395;
+}
+
+.bg-mocs-orange {
+    background-color: #FF8C00;
+}
+
+.text-mocs-orange {
+    color: #FF8C00;
+}
+
+.border-mocs-blue {
+    border-color: #205395;
+}
+
+.background-pattern {
+    background-color: #000000;
+}
