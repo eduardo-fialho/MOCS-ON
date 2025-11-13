@@ -5,40 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MOCS ON - Dashboard do Delegado</title>
 
-    <!-- Tailwind CSS (CDN - apenas para testes; use build local em produção) -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Alpine.js v3 (corrigido) -->
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
-    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
-
-    <script>
-        const APP_CONTEXT_PATH = (() => {
-            const path = window.location.pathname || '';
-            const base = path.replace(/\/[^/]*$/, '');
-            if (!base || base === '/' || base === path) {
-                return '';
-            }
-            return base;
-        })();
-        const API_BASE_URL = `${window.location.origin}${APP_CONTEXT_PATH}`;
-        const API_ENDPOINT = `${API_BASE_URL}/aviso`;
-        const USER_ENDPOINT = `${API_BASE_URL}/user`;
-        const POST_API_BASE = `${API_BASE_URL}/post`;
-    </script>
 </head>
 
 <body class="bg-gray-100">
     <div class="flex flex-col min-h-screen">
-        <!-- Cabeçalho (Adicionado x-data para o perfil) -->
         <header class="bg-white shadow-md z-10 sticky top-0" x-data="profileData()" x-init="loadUserInfo()">
             <div class="container mx-auto px-4 py-3 flex justify-between items-center">
                 <div class="flex items-center space-x-4">
@@ -53,7 +33,6 @@
                             <i class="fas fa-chevron-down text-xs text-gray-500"></i>
                         </button>
                         <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20" style="display: none;">
-                            <!-- MUDANÇA: Usando o caminho absoluto (/secretariado.html) para garantir que a rota seja acessada corretamente a partir da raiz da aplicação. -->
                             <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b">
                                 <i class="fas fa-user mr-2"></i> Meu perfil
                             </a>
@@ -73,18 +52,12 @@
         </header>
 
         <main class="flex-grow container mx-auto p-4 md:p-6">
-            
-            
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
                 
                 <div class="lg:col-span-2 flex flex-col gap-6">
-                    <div class="bg-white p-6 rounded-xl shadow-lg">
-                    <!-- INÍCIO: MURAL-->
                     <div x-data="muralData()" x-init="init()" class="bg-white p-6 rounded-xl shadow-lg">
                       <h2 class="text-2xl font-bold text-mocs-blue mb-4">Mural do Comitê - CSNU</h2>
 
-                      <!-- Formulário de Postagem -->
                       <div class="mb-6">
                         <textarea x-model="newMessage"
                                   class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue"
@@ -106,11 +79,9 @@
                         </div>
                       </div>
 
-                      <!-- Mensagens de erro / carregamento -->
                       <div class="text-sm text-red-600 mb-3" x-show="error" x-text="error" style="display:none"></div>
                       <div class="text-sm text-gray-500 mb-3" x-show="loading" style="display:none"><i class="fas fa-spinner fa-spin mr-2"></i> Carregando feed...</div>
 
-                      <!-- Feed de Posts -->
                       <div class="space-y-5">
                         <template x-for="post in posts" :key="post.id">
                           <div class="border-t pt-4">
@@ -129,7 +100,6 @@
                                 <p class="text-gray-700" x-text="post.mensagem"></p>
                                 <p class="text-xs text-gray-500 mt-1" x-text="timeAgo(post.data)"></p>
 
-                                <!-- Reações rápidas -->
                                 <div class="mt-3 flex items-center gap-2 text-sm">
                                   <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '👍')">👍 <span class="ml-1" x-text="reactionCount(post,'👍')"></span></button>
                                   <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '❤️')">❤️ <span class="ml-1" x-text="reactionCount(post,'❤️')"></span></button>
@@ -145,22 +115,13 @@
                           </div>
                         </template>
 
-                        <!-- Caso não haja posts -->
                         <div x-show="!loading && posts.length === 0" class="text-center text-gray-500 py-6" style="display:none">
                           Nenhum post disponível.
                         </div>
                       </div>
                     </div>
-                    <!-- FIM: MURAL -->
+                </div>
 
-
-
-                <!-- Coluna Lateral -->
-                <div class="lg:col-span-1 flex flex-col gap-6">
-                    <!-- Card: Agenda -->
-
-
-                <!-- Coluna lateral -->
                 <div class="lg:col-span-1 flex flex-col gap-6" x-data="announcementsData()">
 
                     <div class="bg-white p-6 rounded-xl shadow-lg">
@@ -190,7 +151,6 @@
                         </ul>
                     </div>
 
-                    <!-- Avisos -->
                     <div class="bg-white p-6 rounded-xl shadow-lg">
                         <h2 class="text-xl font-bold text-mocs-blue mb-4">Avisos da Organização</h2>
                         <div class="space-y-3" x-init="loadAvisos()">
@@ -209,7 +169,6 @@
                             </template>
                         </div>
 
-                        <!-- Paginação -->
                         <div x-show="totalPages > 1" class="flex justify-between items-center mt-4 pt-3 border-t">
                             <button @click="prevPage()" :disabled="currentPage === 1" class="bg-mocs-orange text-white text-sm font-semibold py-1 px-3 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed">
                                 Anterior
@@ -221,7 +180,6 @@
                         </div>
                     </div>
 
-                    <!-- Modal -->
                     <div x-show="isModalOpen" x-transition class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50" style="display:none" @click.away="closeAvisoModal()">
                         <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg mx-auto" @click.stop>
                             <div class="flex justify-between items-start mb-4">
@@ -242,303 +200,9 @@
         </main>
     </div>
 
-    <!-- Script Lógica Alpine -->
-    <script>
-        // NOVO: Função para carregar o nome e o cargo do usuário logado
-        function profileData() {
-            return {
-                userName: 'Carregando...', // Estado inicial
-                isSecretario: false, // Estado inicial
-                
-                async loadUserInfo() {
-                    try {
-                        // Endpoint REST simplificado: /user
-                        const response = await fetch(USER_ENDPOINT); 
-
-                        if (!response.ok) {
-                            this.userName = 'Erro ao carregar';
-                            return;
-                        }
-
-                        const data = await response.json();
-                        
-                        // Atualiza as variáveis Alpine com os dados do Spring Security
-                        this.userName = data.nome || 'Delegado';
-                        this.isSecretario = data.isSecretario || false;
-                    } catch (error) {
-                        console.error('Falha ao buscar info do usuário:', error);
-                        this.userName = 'Delegado (Offline)';
-                    }
-                }
-            };
-        }
-
-        function announcementsData() {
-            return {
-                avisos: [],
-                currentPage: 1,
-                itemsPerPage: 5,
-                isLoading: false,
-                isModalOpen: false,
-                currentAviso: { titulo: '', mensagem: '', autor: '', data: '' },
-
-                get paginatedAvisos() {
-                    const start = (this.currentPage - 1) * this.itemsPerPage;
-                    const end = start + this.itemsPerPage;
-                    return this.avisos.slice(start, end);
-                },
-                get totalPages() {
-                    return Math.ceil(this.avisos.length / this.itemsPerPage);
-                },
-                nextPage() {
-                    if (this.currentPage < this.totalPages) this.currentPage++;
-                },
-                prevPage() {
-                    if (this.currentPage > 1) this.currentPage--;
-                },
-                showAvisoModal(aviso) {
-                    this.currentAviso = aviso;
-                    this.isModalOpen = true;
-                },
-                closeAvisoModal() {
-                    this.isModalOpen = false;
-                    this.currentAviso = { titulo: '', mensagem: '', autor: '', data: '' };
-                },
-                formatTimeAgo(dateString) {
-                    try {
-                        const postDate = new Date(dateString);
-                        const now = new Date();
-                        const diffInSeconds = Math.floor((now - postDate) / 1000);
-                        if (diffInSeconds < 60) return `${diffInSeconds} segundos atrás`;
-                        const diffInMinutes = Math.floor(diffInSeconds / 60);
-                        if (diffInMinutes < 60) return `${diffInMinutes} minutos atrás`;
-                        const diffInHours = Math.floor(diffInMinutes / 60);
-                        if (diffInHours < 24) return `${diffInHours} horas atrás`;
-                        const diffInDays = Math.floor(diffInHours / 24);
-                        if (diffInDays < 7) return `${diffInDays} dias atrás`;
-                        return postDate.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' });
-                    } catch {
-                        return 'Data inválida';
-                    }
-                },
-                async loadAvisos() {
-                    this.isLoading = true;
-                    try {
-                        const response = await fetch(API_ENDPOINT);
-                        if (!response.ok) throw new Error('Erro ao carregar avisos.');
-                        const data = await response.json();
-                        data.sort((a, b) => new Date(b.data) - new Date(a.data));
-                        this.avisos = data;
-                        this.currentPage = 1;
-                    } catch (error) {
-                        console.error('Falha ao buscar avisos:', error);
-                        this.avisos = [];
-                    } finally {
-                        this.isLoading = false;
-                    }
-                }
-            };
-        }
-    </script>    
-    
-    <script>
-    (function(){
-      const API_BASE = POST_API_BASE;
-
-      function readCsrf() {
-        const token = document.querySelector('meta[name="_csrf"]')?.content || null;
-        const header = document.querySelector('meta[name="_csrf_header"]')?.content || 'X-CSRF-TOKEN';
-        return { token, header };
-      }
-
-      function timeAgo(dateString) {
-        try {
-          const d = new Date(dateString);
-          const now = new Date();
-          const s = Math.floor((now - d) / 1000);
-          if (s < 60) return `${s} segundos atrás`;
-          const m = Math.floor(s / 60);
-          if (m < 60) return `${m} minutos atrás`;
-          const h = Math.floor(m / 60);
-          if (h < 24) return `${h} horas atrás`;
-          const days = Math.floor(h / 24);
-          if (days < 7) return `${days} dias atrás`;
-          return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
-        } catch (e) { return 'data inválida'; }
-      }
-
-      window.muralData = function() {
-        return {
-          posts: [],
-          loading: false,
-          posting: false,
-          newMessage: '',
-          postAsAnon: false,
-          currentUser: null,
-          error: null,
-
-          async init() {
-            await this.loadCurrentUser();
-            await this.loadPosts();
-          },
-
-          async loadCurrentUser() {
-            try {
-              const res = await fetch(USER_ENDPOINT);
-              if (!res.ok) {
-                console.warn('Falha ao buscar /user, status:', res.status);
-                this.currentUser = null;
-                return;
-              }
-              const data = await res.json();
-              this.currentUser = data.nome || null;
-            } catch (err) {
-              console.error('Erro ao buscar usuário:', err);
-              this.currentUser = null;
-            }
-          },
-
-          async loadPosts() {
-            this.loading = true;
-            try {
-              const res = await fetch(API_BASE);
-              if (!res.ok) throw new Error('status ' + res.status);
-              const data = await res.json();
-              data.sort((a,b) => new Date(b.data) - new Date(a.data));
-              
-              this.posts = data.filter(p => p.status !== 'EXCLUIDO');
-            } catch (err) {
-              console.error('Erro ao carregar posts:', err);
-              this.posts = [];
-              this.error = 'Erro ao carregar posts';
-            } finally {
-              this.loading = false;
-            }
-          },
-
-          async createPost() {
-            if (!this.newMessage || !this.newMessage.trim()) {
-              alert('Digite uma mensagem para postar.');
-              return;
-            }
-            this.posting = true;
-            const body = {
-              autor: this.postAsAnon ? (this.currentUser || '') : (this.currentUser || 'Delegado'),
-              mensagem: this.newMessage.trim(),
-              status: this.postAsAnon ? 'ANONIMO' : 'PUBLICO'
-            };
-
-            const { token, header } = readCsrf();
-            const headers = { 'Content-Type': 'application/json' };
-            if (token) headers[header] = token;
-
-            try {
-              const res = await fetch(API_BASE, {
-                method: 'POST',
-                headers,
-                body: JSON.stringify(body)
-              });
-              if (res.status === 201) {
-                this.newMessage = '';
-                this.postAsAnon = false;
-                await this.loadPosts();
-              } else {
-                console.error('Erro ao postar, status:', res.status);
-                alert('Falha ao postar (status ' + res.status + ')');
-              }
-            } catch (err) {
-              console.error('Erro ao postar:', err);
-              alert('Erro ao postar: ' + err.message);
-            } finally {
-              this.posting = false;
-            }
-          },
-
-          
-          async deletePost(postId) {
-            if (!confirm('O post não será mais exibido a outros usuarios')) return;
-            const { token, header } = readCsrf();
-            const headers = {};
-            if (token) headers[header] = token;
-            try {
-              const res = await fetch(`${API_BASE}/${postId}/exclude`, { method: 'PATCH', headers });
-              if (res.ok || res.status === 204) {
-                await this.loadPosts();
-              } else if (res.status === 404) {
-                alert('Post não encontrado (já removido?).');
-              } else {
-                alert('Falha ao ocultar post (status ' + res.status + ')');
-              }
-            } catch (err) {
-              console.error('Erro ao ocultar post:', err);
-              alert('Erro ao ocultar post: ' + err.message);
-            }
-          },
-
-          async addReaction(postId, emoji) {
-            if (!emoji) return;
-            const usuario = this.currentUser || 'anônimo';
-            const body = { usuario, emoji };
-            const { token, header } = readCsrf();
-            const headers = { 'Content-Type': 'application/json' };
-            if (token) headers[header] = token;
-
-            try {
-              const res = await fetch(`${API_BASE}/${postId}/reaction`, {
-                method: 'POST',
-                headers,
-                body: JSON.stringify(body)
-              });
-              if (res.status === 201) {
-                await this.loadPosts();
-              } else if (res.status === 409) {
-                alert('Você já reagiu com este emoji neste post.');
-              } else {
-                throw new Error('status ' + res.status);
-              }
-            } catch (err) {
-              console.error('Erro ao adicionar reação:', err);
-              alert('Erro ao reagir: ' + err.message);
-            }
-          },
-
-          async removeReaction(postId, emoji) {
-            if (!emoji) return;
-            const usuario = this.currentUser || 'anônimo';
-            const body = { usuario, emoji };
-            const { token, header } = readCsrf();
-            const headers = { 'Content-Type': 'application/json' };
-            if (token) headers[header] = token;
-
-            try {
-              const res = await fetch(`${API_BASE}/${postId}/reaction`, {
-                method: 'DELETE',
-                headers,
-                body: JSON.stringify(body)
-              });
-              if (res.status === 204 || res.ok) {
-                await this.loadPosts();
-              } else if (res.status === 404) {
-                alert('Reação não encontrada.');
-              } else {
-                throw new Error('status ' + res.status);
-              }
-            } catch (err) {
-              console.error('Erro ao remover reação:', err);
-              alert('Erro ao remover reação: ' + err.message);
-            }
-          },
-
-          reactionCount(post, emoji) {
-            if (!post || !post.reactions) return 0;
-            return post.reactions[emoji] || 0;
-          },
-
-          timeAgo,
-        };
-      };
-    })();
-    </script>
+    <script th:src="@{/js/dashboard_config.js}"></script>
+    <script th:src="@{/js/profile_data.js}"></script>
+    <script th:src="@{/js/announcements_data.js}"></script>
+    <script th:src="@{/js/mural_data.js}"></script>
 </body>
 </html>
-
