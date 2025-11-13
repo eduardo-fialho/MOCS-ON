@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ouvidoria - MOCS ON</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,9 +15,7 @@
 
 <body class="bg-gray-100 flex items-center justify-center min-h-screen py-10">
     <main class="w-full max-w-2xl mx-auto p-6">
-        <div class="bg-white p-8 rounded-2xl shadow-lg w-full"
-            x-data="{ identificacao: 'anonimo', categoria_relato: '' }">
-
+        <div class="bg-white p-8 rounded-2xl shadow-lg w-full">
             <div class="text-center mb-6">
                 <a href="index.html" class="inline-flex items-center text-mocs-blue hover:underline text-sm"><i
                         class="fa fa-arrow-left mr-2"></i>Voltar ao Início</a>
@@ -26,29 +23,22 @@
                 <p class="text-gray-600 mt-2">Este é seu canal de comunicação direto com o Secretariado. Seu feedback é
                     essencial.</p>
             </div>
-
             <div id="msg-sucesso" class="hidden bg-green-50 text-green-800 border border-green-200 p-4 rounded-md mb-4">
-                Seu relato foi enviado com sucesso! Agradecemos sua contribuição.
-            </div>
-            <div id="msg-erro" class="hidden bg-red-50 text-red-800 border border-red-200 p-4 rounded-md mb-4">
-                Ocorreu um erro. Por favor, preencha os campos obrigatórios e tente novamente.
-            </div>
-
+                Seu relato foi enviado com sucesso! Agradecemos sua contribuição.</div>
+            <div id="msg-erro" class="hidden bg-red-50 text-red-800 border border-red-200 p-4 rounded-md mb-4">Ocorreu
+                um erro. Por favor, preencha os campos obrigatórios e tente novamente.</div>
             <form method="POST" action="submit_ouvidoria.php">
-
                 <fieldset class="mb-6 border border-gray-300 p-4 rounded-lg">
                     <legend class="text-lg font-semibold text-gray-800 px-2">1. Identificação</legend>
                     <p class="text-sm text-gray-600 mb-4">Como você prefere enviar este relato?</p>
-                    <select name="identificacao" x-model="identificacao" required
+                    <select id="identificacao" name="identificacao" required
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
                         <option value="anonimo">Continuar Anônimo</option>
                         <option value="comite_apenas">Mostrar apenas meu Comitê</option>
                         <option value="comite_e_nome">Mostrar meu Nome e Comitê</option>
                     </select>
-
-                    <div x-show="identificacao === 'comite_apenas' || identificacao === 'comite_e_nome'" x-cloak
-                        class="mt-4 space-y-4">
-                        <div x-show="identificacao === 'comite_e_nome'" x-cloak>
+                    <div id="dados-identificacao" class="mt-4 space-y-4 hidden">
+                        <div id="campo-nome" class="hidden">
                             <label for="nome_relator" class="block text-sm font-medium text-gray-700 mb-1">Seu
                                 Nome</label>
                             <input type="text" id="nome_relator" name="nome_relator"
@@ -64,10 +54,9 @@
                         </div>
                     </div>
                 </fieldset>
-
                 <fieldset class="mb-6 border border-gray-300 p-4 rounded-lg">
                     <legend class="text-lg font-semibold text-gray-800 px-2">2. Sobre o que é o seu relato?</legend>
-                    <select name="categoria_relato" x-model="categoria_relato" required
+                    <select id="categoria_relato" name="categoria_relato" required
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
                         <option value="" disabled selected>Selecione uma categoria...</option>
                         <option value="comite">Feedback sobre meu Comitê (Mesa, debate, etc.)</option>
@@ -76,11 +65,8 @@
                         <option value="outros">Outros Assuntos (Denúncias, sugestões gerais, etc.)</option>
                     </select>
                 </fieldset>
-
-                <fieldset x-show="categoria_relato === 'comite'" x-cloak
-                    class="mb-6 border border-mocs-blue p-4 rounded-lg space-y-6">
+                <fieldset id="secao-comite" class="mb-6 border border-mocs-blue p-4 rounded-lg space-y-6 hidden">
                     <legend class="text-lg font-semibold text-mocs-blue px-2">Feedback sobre o Comitê</legend>
-
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">A Mesa Diretora está conduzindo os
                             debates de forma organizada?</label>
@@ -136,9 +122,7 @@
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea>
                     </div>
                 </fieldset>
-
-                <fieldset x-show="categoria_relato === 'secretariado'" x-cloak
-                    class="mb-6 border border-mocs-blue p-4 rounded-lg space-y-4">
+                <fieldset id="secao-secretariado" class="mb-6 border border-mocs-blue p-4 rounded-lg space-y-4 hidden">
                     <legend class="text-lg font-semibold text-mocs-blue px-2">Feedback sobre Secretariado e Logística
                     </legend>
                     <div>
@@ -166,9 +150,7 @@
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea>
                     </div>
                 </fieldset>
-
-                <fieldset x-show="categoria_relato === 'outros'" x-cloak
-                    class="mb-6 border border-mocs-blue p-4 rounded-lg">
+                <fieldset id="secao-outros" class="mb-6 border border-mocs-blue p-4 rounded-lg hidden">
                     <legend class="text-lg font-semibold text-mocs-blue px-2">Outros Assuntos (Denúncias, etc.)</legend>
                     <div>
                         <label for="outros_mensagem" class="block text-sm font-medium text-gray-700 mb-1">Descreva seu
@@ -178,25 +160,13 @@
                             placeholder="Por favor, forneça o máximo de detalhes possível, especialmente em caso de denúncias."></textarea>
                     </div>
                 </fieldset>
-
-                <button type="submit" x-show="categoria_relato !== ''" x-cloak
-                    class="w-full bg-mocs-blue text-white font-semibold py-2.5 rounded-lg hover:bg-opacity-90 transition">
-                    Enviar Relato
-                </button>
+                <button id="btn-enviar" type="submit"
+                    class="w-full bg-mocs-blue text-white font-semibold py-2.5 rounded-lg hover:bg-opacity-90 transition hidden">Enviar
+                    Relato</button>
             </form>
         </div>
     </main>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('success')) {
-                document.getElementById('msg-sucesso').classList.remove('hidden');
-            } else if (urlParams.has('error')) {
-                document.getElementById('msg-erro').classList.remove('hidden');
-            }
-        });
-    </script>
+    <script th:src="@{/js/ouvidoria.js}"></script>
 </body>
 
 </html>

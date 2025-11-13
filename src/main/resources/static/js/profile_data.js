@@ -5,7 +5,7 @@ function profileData() {
 
         async loadUserInfo() {
             try {
-                const response = await fetch(USER_ENDPOINT); 
+                const response = await fetch(USER_ENDPOINT);
 
                 if (!response.ok) {
                     this.userName = 'Erro ao carregar';
@@ -13,7 +13,7 @@ function profileData() {
                 }
 
                 const data = await response.json();
-                
+
                 this.userName = data.nome || 'Delegado';
                 this.isSecretario = data.isSecretario || false;
             } catch (error) {

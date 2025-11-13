@@ -1,4 +1,4 @@
-(function(){
+(function () {
     const API_BASE = POST_API_BASE;
 
     function readCsrf() {
@@ -23,7 +23,7 @@
         } catch (e) { return 'data inválida'; }
     }
 
-    window.muralData = function() {
+    window.muralData = function () {
         return {
             posts: [],
             loading: false,
@@ -58,8 +58,8 @@
                     const res = await fetch(API_BASE);
                     if (!res.ok) throw new Error('status ' + res.status);
                     const data = await res.json();
-                    data.sort((a,b) => new Date(b.data) - new Date(a.data));
-                    
+                    data.sort((a, b) => new Date(b.data) - new Date(a.data));
+
                     this.posts = data.filter(p => p.status !== 'EXCLUIDO');
                 } catch (err) {
                     this.posts = [];
@@ -105,7 +105,7 @@
                 }
             },
 
-            
+
             async deletePost(postId) {
                 if (!confirm('O post não será mais exibido a outros usuarios')) return;
                 const { token, header } = readCsrf();
@@ -142,7 +142,7 @@
                     if (res.status === 201) {
                         await this.loadPosts();
                     } else if (res.status === 409) {
-                      
+
                     } else {
                         throw new Error('status ' + res.status);
                     }
