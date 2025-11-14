@@ -3,6 +3,9 @@ package com.mocs_on.service;
 import com.mocs_on.domain.Comite;
 import com.mocs_on.domain.Login;
 import com.mocs_on.domain.Usuario;
+import com.mocs_on.security.CargoEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,6 +19,8 @@ import java.util.Optional;
 
 @Repository
 public class LoginDAO {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoginDAO.class);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -40,14 +45,14 @@ public class LoginDAO {
             }
 
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao autenticar usuário", e);
+            throw new RuntimeException("Erro ao autenticar usuario", e);
         }
         return null;
     }
 
     public void salvarUsuario(Usuario usuario, String tipo) {
         if (emailExiste(usuario.getEmail())) {
-            throw new IllegalArgumentException("Email já cadastrado");
+            throw new IllegalArgumentException("Email ja cadastrado");
         }
         String hash = BCrypt.hashpw(usuario.getSenha(), BCrypt.gensalt());
         String sql = "INSERT INTO usuarios (nome, email, senha, tipo) VALUES (?, ?, ?, ?)";
@@ -65,34 +70,43 @@ public class LoginDAO {
 
     public Optional<Usuario> findByEmail(String email) {
         final String SQL = "SELECT id, nome, email, senha, tipo FROM usuarios WHERE email = ?";
-        
+
         List<Usuario> results = jdbcTemplate.query(
-            SQL, 
+            SQL,
             this::mapRowToUsuario,
-            email 
+            email
         );
-        
+
         Usuario usuario = DataAccessUtils.singleResult(results);
 
         if (usuario != null) {
-            usuario.setComites(findComitesByUsuarioId(usuario.getId().longValue())); 
+            usuario.setComites(findComitesByUsuarioId(usuario.getId()));
         }
-        
+
         return Optional.ofNullable(usuario);
     }
-    
+
     private Usuario mapRowToUsuario(ResultSet rs, int rowNum) throws SQLException {
         Usuario usuario = new Usuario();
         usuario.setId(rs.getLong("id"));
         usuario.setNome(rs.getString("nome"));
         usuario.setEmail(rs.getString("email"));
         usuario.setSenha(rs.getString("senha"));
-        usuario.setTipo(rs.getString("tipo"));
+        String rawTipo = rs.getString("tipo");
+        if (rawTipo != null) {
+            try {
+                usuario.setTipo(rawTipo);
+            } catch (IllegalArgumentException ex) {
+                LOGGER.warn("Tipo '{}' invalido para usuario {}. Aplicando VISITANTE.", rawTipo, usuario.getEmail());
+                usuario.setTipo(CargoEnum.VISITANTE.name());
+            }
+        } else {
+            usuario.setTipo(CargoEnum.VISITANTE.name());
+        }
         return usuario;
     }
 
     private List<Comite> findComitesByUsuarioId(Long usuarioId) {
-        
-        return List.of(); 
+        return List.of();
     }
 }
