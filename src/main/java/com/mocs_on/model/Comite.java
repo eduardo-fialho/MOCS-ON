@@ -1,8 +1,10 @@
 
 package com.mocs_on.model;
+
 import java.util.HashMap;
+
 public class Comite {
-    
+
     private String sigla;
     private String nome;
     private StatusComite status;
@@ -15,61 +17,81 @@ public class Comite {
         NAO_INICIADO,
         ENCERRADO
     }
-    public String getNome(){
+
+    public String getNome() {
         return nome;
     }
-    public String getSigla(){
+
+    public String getSigla() {
         return sigla;
     }
-    public String getStatus(){
+
+    public String getStatus() {
         return status.name();
     }
-    public int getNumDelegados(){
+
+    public int getNumDelegados() {
         return numeroDelegados;
     }
-    public int getId(){
+
+    public int getId() {
         return id;
     }
-    public void setNome(String nome){
-        this.nome=nome;
+
+    public void setNome(String nome) {
+        this.nome = nome;
     }
-    public void setSigla(String sigla){
-        this.sigla=sigla;
+
+    public void setSigla(String sigla) {
+        this.sigla = sigla;
     }
-    public void setStatus(String status){
-        this.status=StatusComite.valueOf(status);
+
+    public void setStatus(String status) {
+        this.status = StatusComite.valueOf(status);
     }
-    public void setNumDelegados(int numeroDelegados){
-        this.numeroDelegados=numeroDelegados;
+
+    public void setNumDelegados(int numeroDelegados) {
+        this.numeroDelegados = numeroDelegados;
     }
-    public void setId(int id){
-        this.id=id;
+
+    public void setId(int id) {
+        this.id = id;
     }
-    public Comite(){
+
+    public Comite() {
         this.sigla = "";
         this.nome = "";
         this.status = StatusComite.NAO_INICIADO;
         this.numeroDelegados = 0;
     }
-    
-    public Comite(String sigla, String nome){
+
+    public Comite(String sigla, String nome) {
         this.sigla = sigla;
         this.nome = nome;
         this.status = StatusComite.NAO_INICIADO;
         this.numeroDelegados = 0;
     }
-    
-    public Comite(String sigla, String nome, String status){
+
+    public Comite(String sigla, String nome, String status) {
         this.sigla = sigla;
         this.nome = nome;
         this.status = StatusComite.valueOf(status);
         this.numeroDelegados = 0;
     }
-    
-    public Comite(String sigla, String nome, String status, int numeroDelegados){
+
+    public Comite(String sigla, String nome, String status, int numeroDelegados) {
         this.sigla = sigla;
         this.nome = nome;
         this.status = StatusComite.valueOf(status);
         this.numeroDelegados = numeroDelegados;
+    }
+
+    public Comite(String sigla, String nome, String status, int numeroDelegados, int id) {
+        this.sigla = sigla;
+        this.nome = nome;
+        this.status = StatusComite.valueOf(status);
+        this.numeroDelegados = numeroDelegados;
+        this.id = id;
+
     }
 }

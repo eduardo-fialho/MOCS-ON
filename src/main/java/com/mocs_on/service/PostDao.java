@@ -1,82 +1,94 @@
 package com.mocs_on.service;
-
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Vector;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.HashMap;
 import com.mocs_on.model.Post;
 
 public class PostDao extends DaoBase {
     private static final String DASHBOARD_POST_DATA = "dashboard_post_data";
-    private static final String DASHBOARD_REACTION_DATA = "dashboard_post_reaction_data";
     private static final String SELECT_POSTS_BY_COMITE = "SELECT * FROM " + DASHBOARD_POST_DATA
-            + "WHERE comite_id=";
-    private static final String SELECT_REACTION = "SELECT * FROM " + DASHBOARD_REACTION_DATA + " WHERE message_id=";
+            + " WHERE comite_id=?";
     private static final String CREATE_DASHBOARD_POST_DATA = "CREATE TABLE IF NOT EXISTS " + DASHBOARD_POST_DATA
-            + "(message VARCHAR(2000), author VARCHAR(50), date DATETIME, status VARCHAR(20), comite_id INTEGER, id INTEGER PRIMARY KEY AUTO_INCREMENT)";
-    private static final String CREATE_DASHBOARD_REACTION_DATA = "CREATE TABLE IF NOT EXISTS " + DASHBOARD_REACTION_DATA
-            + "(like INTEGER, coracao INTEGER, riso INTEGER, surpresa INTEGER, triste INTEGER, raiva INTEGER, message_id INTEGER, FOREIGN KEY (message id) REFERENCES "
-            + DASHBOARD_POST_DATA + "(id) ON DELETE CASCADE)";
-    private static final String DELETE_MESSAGE = "DELETE FROM " + DASHBOARD_POST_DATA + " WHERE id=";
+            + "(message VARCHAR(2000), author VARCHAR(50), date DATETIME, status VARCHAR(20), curtir INTEGER, coracao INTEGER, riso INTEGER, surpresa INTEGER, triste INTEGER, raiva INTEGER, comite_id INTEGER, id INTEGER PRIMARY KEY AUTO_INCREMENT)";
+    private static final String DELETE_MESSAGE = "DELETE FROM " + DASHBOARD_POST_DATA + " WHERE id=?";
+    private static final String CREATE_POST = "INSERT INTO " + DASHBOARD_POST_DATA
+            + "(mensagem, autor, data, status, curtida, coracao, riso, surpresa, triste, raiva, comite_id) VALUES (?, ?, ?, ?, 0, 0, 0, 0, 0, 0, ?)";
 
     public static void init() throws SQLException {
         getConnection();
-        Statement statement = conn.createStatement();
-        statement.executeUpdate(CREATE_DASHBOARD_POST_DATA);
-        statement = conn.createStatement();
-        statement.executeUpdate(CREATE_DASHBOARD_REACTION_DATA);
+        PreparedStatement statement = conn.prepareStatement(CREATE_DASHBOARD_POST_DATA);
+        statement.executeUpdate();
         closeResource(statement);
     }
 
-    public static Post[] getPostsByComite(int comiteId) throws SQLException {
-        Statement statement = conn.createStatement();
-        ResultSet rs = statement.executeQuery(SELECT_POSTS_BY_COMITE);
-        Vector<Post> posts = new Vector<>();
-        do {
-            String mensagem = rs.getString(1);
-            String remetente = rs.getString(2);
-            Timestamp dataSql = rs.getTimestamp(3);
-            LocalDateTime data = dataSql.toLocalDateTime();
-            String status = rs.getString(4);
-            int id = rs.getInt(5);
-            statement = conn.createStatement();
-            rs = statement.executeQuery(SELECT_REACTION + id);
-            int like = rs.getInt(1);
-            int coracao = rs.getInt(2);
-            int riso = rs.getInt(3);
-            int surpresa = rs.getInt(4);
-            int triste = rs.getInt(5);
-            int raiva = rs.getInt(6);
-            Post post = new Post(mensagem, remetente, null, status, data, like, coracao, riso, surpresa, triste, raiva);
+    public static ArrayList<Post> getPostsByComite(int comiteId) throws SQLException {
+        PreparedStatement statement = conn.prepareStatement(SELECT_POSTS_BY_COMITE);
+        statement.setInt(1, comiteId);
+        ResultSet rs=statement.executeQuery();
+        ArrayList<Post> posts = new ArrayList<>();
+        while(rs.next()) {
+            String mensagem = rs.getString("mensagem");
+            String remetente = rs.getString("autor");
+            LocalDateTime data = rs.getTimestamp("data").toLocalDateTime();
+            //LocalDateTime data = dataSql.toLocalDateTime();
+            String status = rs.getString("status");
+            int id = rs.getInt("id");
+            int curtida=rs.getInt("curtida");
+            int coracao=rs.getInt("coracao");
+            int riso=rs.getInt("riso");
+            int surpresa=rs.getInt("surpresa");
+            int triste=rs.getInt("triste");
+            int raiva=rs.getInt("raiva");
+            Post post = new Post(mensagem, remetente, null, status, data, curtida, coracao, riso, surpresa, triste, raiva, id);
             posts.add(post);
-        } while (rs.next());
-        Post[] postsArray = (Post[]) posts.toArray();
+        }
+
         closeResource(statement, rs);
-        return postsArray;
+        return posts;
     }
 
     public static void setStatus(int id, String status) throws SQLException {
-        String sql = "UPDATE " + DASHBOARD_REACTION_DATA + " SET status=" + status + " WHERE id=" + id;
-        Statement statement = conn.createStatement();
+        String sql="UPDATE "+DASHBOARD_POST_DATA+" SET status="+status+" WHERE id="+id;
+        PreparedStatement statement = conn.prepareStatement(sql);
         statement.executeUpdate(sql);
         closeResource(statement);
     }
 
     public static void setReacao(String tipo, int id, int quantidade) throws SQLException {
-        String sql = "UPDATE " + DASHBOARD_REACTION_DATA + " SET " + tipo + "=" + tipo + "+" + quantidade + " WHERE id="
-                + id;
-        Statement statement = conn.createStatement();
+        String sql = "UPDATE "+DASHBOARD_POST_DATA+" SET "+tipo+"="+tipo+quantidade+" WHERE id="+id;
+        PreparedStatement statement = conn.prepareStatement(sql);
+        statement.executeUpdate(sql);
+        closeResource(statement);
+    }
+
+    public static void setMensagem(String mensagem, int id) throws SQLException {
+        String sql = "UPDATE " + DASHBOARD_POST_DATA + " SET mensagem=" + mensagem + " WHERE id=" + id;
+        PreparedStatement statement = conn.prepareStatement(sql);
         statement.executeUpdate(sql);
         closeResource(statement);
     }
 
     public static void deletePost(int id) throws SQLException {
-        Statement statement = conn.createStatement();
-        statement.executeUpdate(DELETE_MESSAGE + id);
+        PreparedStatement statement = conn.prepareStatement(DELETE_MESSAGE);
+        statement.setInt(1, id);
+        statement.executeUpdate();
+        closeResource(statement);
+    }
+
+    public static void createPost(String mensagem, String autor, LocalDateTime tempo, String status, int comiteId) throws SQLException{
+        PreparedStatement statement = conn.prepareStatement(CREATE_POST);
+        statement.setString(1, mensagem);
+        statement.setString(2, autor);
+        statement.setTimestamp(3, Timestamp.valueOf(tempo.toString()));
+        statement.setString(4, status);
+        statement.setInt(5, comiteId);
+        statement.executeUpdate();
         closeResource(statement);
     }
 }

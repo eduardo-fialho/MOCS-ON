@@ -1,100 +1,108 @@
 
 package com.mocs_on.model;
-import java.time.LocalDateTime;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 public class Post {
     private String mensagem;
     private String nomeRemetente;
     private String[] linksRelacionados;
-    private PostStatus status;
+    private PostStatus postStatus;
     private LocalDateTime dataPublicacao;
-    private Reacoes reacoes;
     private int id;
-    private int comiteId;
-    private class Reacoes{
-        public Reacoes(int like, int coracao, int riso, int surpresa, int triste, int raiva){
-            this.like=like;
-            this.coracao=coracao;
-            this.riso=riso;
-            this.surpresa=surpresa;
-            this.triste=triste;
-            this.raiva=raiva;
+    private HashMap<String, int> reacoes;
 
-        }
-        int like;
-        int coracao;
-        int riso;
-        int surpresa;
-        int triste;
-        int raiva;
-
-    }
-    private enum PostStatus{
+    private enum PostStatus {
         PUBLICO,
         PRIVADO,
         EM_ANALISE,
     }
-    
+
     public Post() {
         this.mensagem = "";
         this.nomeRemetente = "";
         this.linksRelacionados = new String[0];
-        this.status = PostStatus.EM_ANALISE;
+        this.postStatus = PostStatus.EM_ANALISE;
         this.dataPublicacao = LocalDateTime.now();
+        reacoes=new HashMap<>();
     }
-    public Post(String mensagem, String nome, String[] links, String status, LocalDateTime data, int like, int coracao, int riso, int surpresa, int triste, int raiva){
+
+    public Post(String mensagem, String nome, String[] links, String status, LocalDateTime data) {
         this.mensagem = mensagem;
         this.nomeRemetente = nome;
         this.linksRelacionados = links;
-        this.status = PostStatus.valueOf(status);
+        this.postStatus = PostStatus.valueOf(status);
         this.dataPublicacao = data;
-        setReacoes(like, coracao, riso, surpresa, triste, raiva);
+        reacoes=new HashMap<>();
     }
-    public int getId(){
+
+    public Post(String mensagem, String nome, String[] links, String status, LocalDateTime data, int curtida,
+            int coracao, int riso, int surpresa, int triste, int raiva, int id) {
+        this.mensagem = mensagem;
+        this.nomeRemetente = nome;
+        this.linksRelacionados = links;
+        this.postStatus = PostStatus.valueOf(status);
+        this.dataPublicacao = data;
+        setReacoes(curtida, coracao, riso, surpresa, triste, raiva);
+        reacoes=new HashMap<>();
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
         return id;
     }
+
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
+    }
+
     public String getMensagem() {
         return mensagem;
     }
-    public void setId(int id){
-        this.id=id;
+    public void setReacoes(int curtida, int coracao, int riso, int surpresa, int triste, int raiva){
+        reacoes.put("curtida", curtida);
+        reacoes.put("coracao", coracao);
+        reacoes.put("riso", riso);
+        reacoes.put("surpresa", surpresa);
+        reacoes.put("triste", triste);
+        reacoes.put("raiva", raiva);
     }
-    public void setReacoes(int like, int coracao, int riso, int surpresa, int triste, int raiva){
-        reacoes=new Reacoes(like, coracao, riso, surpresa, triste, raiva);
+    public HashMap<String, int> getReacoes(){
+        return reacoes;
     }
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
+    public void setNome_remetente(String nomeRemetente) {
+        this.nomeRemetente = nomeRemetente;
     }
 
     public String getNome_remetente() {
         return nomeRemetente;
     }
 
-    public void setNome_remetente(String nomeRemetente) {
-        this.nomeRemetente = nomeRemetente;
+    public void setLinks_relacionados(String[] linksRelacionados) {
+        this.linksRelacionados = linksRelacionados;
     }
 
     public String[] getLinks_relacionados() {
         return linksRelacionados;
     }
 
-    public void setLinks_relacionados(String[] linksRelacionados) {
-        this.linksRelacionados = linksRelacionados;
+    public void setStatus(String status) {
+        this.postStatus = PostStatus.valueOf(status);
     }
 
     public String getStatus() {
-        return status.name();
+        return postStatus.name();
     }
 
-    public void setStatus(PostStatus status) {
-        this.status = status;
+    public void setDataPublicacao(LocalDateTime dataPublicacao) {
+        this.dataPublicacao = dataPublicacao;
     }
 
     public LocalDateTime getDataPublicacao() {
         return dataPublicacao;
     }
 
-    public void setDataPublicacao(LocalDateTime dataPublicacao) {
-        this.dataPublicacao = dataPublicacao;
-    }
 }

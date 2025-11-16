@@ -14,7 +14,7 @@ abstract class DaoBase {
         String pwd = "";
         String user = "root";
         // altere conforme os dados do usuario
-        Connection conn = DriverManager.getConnection(url, user, pwd);
+        conn = DriverManager.getConnection(url, user, pwd);
         conn.setAutoCommit(false);
     }
 
