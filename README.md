@@ -145,8 +145,8 @@ Planejamento da construção do projeto resumido em 3 sprints.
 | Responsável | Item | Descrição resumida |
 |:-----------|:-----|:-------------------|
 | Ana Sofia de Miranda |CSU15 | Publicação das agendas de cada comitê. |
-| Hike Penedo Mendes | CSU10 | Consulta informal e painel de informações públicas. |
+| Hike Penedo Mendes | CSU16 | Agenda diária consolidada para logística do evento. |
 | Eduardo Lopes Fialho | CSU18 | Publicação de guias e materiais de estudo centralizados. |
 | Samuel Soares dos Santos | CSU12 | Workflow completo do comitê de imprensa. |
 | Arthur Henrique Neves | CSU09 | Registro avançado de listas de presença. |
-| Túlio Araújo Grossi | CSU16 | Agenda diária consolidada para logística do evento. |
+| Túlio Araújo Grossi | CSU10 | Consulta informal e painel de informações públicas. |
