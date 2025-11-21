@@ -1,128 +1,142 @@
+async function carregarEventosDoBackend(ano, mes) {
+    const response = await fetch(`/agenda/eventos?ano=${ano}&mes=${mes + 1}`);
+    return await response.json();
+}
+
 function calendarComponent() {
-  return {
-    // abas
-    aba: 'hoje',
+    return {
+        aba: 'hoje',
 
-    // data
-    month: new Date().getMonth(),
-    year: new Date().getFullYear(),
-    monthName: '',
-    blanks: [],
-    days: [],
+        month: new Date().getMonth(),
+        year: new Date().getFullYear(),
+        monthName: '',
+        blanks: [],
+        days: [],
 
-    // tooltip
-    tooltipVisible: false,
-    tooltipHtml: '',
-    tooltipX: 0,
-    tooltipY: 0,
+        tooltipVisible: false,
+        tooltipHtml: '',
+        tooltipX: 0,
+        tooltipY: 0,
 
-    // modal
-    modalVisible: false,
-    modalDateFormatted: '',
-    modalEvents: [],
+        modalVisible: false,
+        modalDateFormatted: '',
+        modalEvents: [],
 
-    // hoje
-    hojeEventos: [],
+        hojeEventos: [],
+        eventos: {},
 
-    // MOCK de eventos para testar (substitua por fetch)
-    eventosMock: {
-      "2025-11-02": [
-        { titulo: "Reunião de Diretoria", horario: "09:00 - 10:30", local: "Sala A", descricao: "Discussão metas." },
-        { titulo: "Planejamento de Comitê", horario: "14:00 - 16:00", local: "Sala B", descricao: "Agenda semanal." }
-      ],
-      "2025-11-04": [
-        { titulo: "Sessão de Debate", horario: "08:00 - 12:00", local: "Plenária", descricao: "Debate temático." }
-      ]
-    },
+        async init() {
+            await this.carregarEventosMes();
+            this.updateCalendar();
+            this.loadTodayEvents();
+        },
 
-    init() {
-      this.updateCalendar();
-      this.setHojeEventos();
-    },
+        async carregarEventosMes() {
+            const eventosBackend = await carregarEventosDoBackend(this.year, this.month);
+            this.eventos = {};
 
-    updateCalendar() {
-      const first = new Date(this.year, this.month, 1);
-      const totalDays = new Date(this.year, this.month + 1, 0).getDate();
-      const firstDayIndex = first.getDay(); // 0=Dom .. 6=Sáb
+            eventosBackend.forEach(ev => {
+                const data = ev.data_evento;
 
-      this.blanks = Array(firstDayIndex).fill(null);
+                if (!this.eventos[data]) {
+                    this.eventos[data] = [];
+                }
 
-      const today = new Date();
-      const monthNames = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho",
-                          "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-      this.monthName = monthNames[this.month];
+                this.eventos[data].push({
+                    titulo: ev.titulo,
+                    horario: ev.hora_evento,
+                    descricao: ev.descricao,
+                    local: ev.local || ''
+                });
+            });
+        },
 
-      const daysArr = [];
-      for (let i = 1; i <= totalDays; i++) {
-        const iso = `${this.year}-${String(this.month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-        daysArr.push({
-          number: i,
-          date: iso,
-          isToday: (i === today.getDate() && this.month === today.getMonth() && this.year === today.getFullYear()),
-          events: this.eventosMock[iso] ? this.eventosMock[iso] : []
-        });
-      }
-      this.days = daysArr;
-    },
+        updateCalendar() {
+            const firstDay = new Date(this.year, this.month, 1).getDay();
+            const daysInMonth = new Date(this.year, this.month + 1, 0).getDate();
 
-    nextMonth() {
-      if (this.month === 11) { this.month = 0; this.year++; } else { this.month++; }
-      this.updateCalendar();
-    },
+            this.monthName = new Date(this.year, this.month)
+                .toLocaleString("pt-BR", { month: "long" })
+                .replace(/^\w/, c => c.toUpperCase());
 
-    prevMonth() {
-      if (this.month === 0) { this.month = 11; this.year--; } else { this.month--; }
-      this.updateCalendar();
-    },
+            this.blanks = [...Array(firstDay).keys()];
+            this.days = [];
 
-    // TOOLTIP
-    showTooltip(e, day) {
-      if (!day.events || day.events.length === 0) return;
-      this.tooltipHtml = day.events.map(ev => `<div class="mb-1"><strong>${ev.titulo}</strong><div class="text-xs text-gray-500">${ev.horario}</div></div>`).join('');
-      const padding = 12;
-      const vw = window.innerWidth;
-      let left = e.clientX + 10;
-      if (left + 260 > vw) left = vw - 270;
-      let top = e.clientY - 10;
-      if (top < 60) top = e.clientY + 20;
-      this.tooltipX = left;
-      this.tooltipY = top;
-      this.tooltipVisible = true;
-    },
+            for (let i = 1; i <= daysInMonth; i++) {
+                const date = `${this.year}-${String(this.month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+                this.days.push({
+                    number: i,
+                    date: date,
+                    isToday: this.isToday(i),
+                    events: this.eventos[date] || []
+                });
+            }
+        },
 
-    hideTooltip() {
-      this.tooltipVisible = false;
-    },
+        async prevMonth() {
+            if (this.month === 0) {
+                this.month = 11;
+                this.year--;
+            } else {
+                this.month--;
+            }
+            await this.carregarEventosMes();
+            this.updateCalendar();
+        },
 
-    // MODAL
-    openModal(day) {
-      this.modalEvents = day.events ? day.events : [];
-      const d = new Date(day.date);
-      this.modalDateFormatted = d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
-      this.modalVisible = true;
-    },
+        async nextMonth() {
+            if (this.month === 11) {
+                this.month = 0;
+                this.year++;
+            } else {
+                this.month++;
+            }
+            await this.carregarEventosMes();
+            this.updateCalendar();
+        },
 
-    closeModal() {
-      this.modalVisible = false;
-    },
+        isToday(day) {
+            const hoje = new Date();
+            return (
+                day === hoje.getDate() &&
+                this.month === hoje.getMonth() &&
+                this.year === hoje.getFullYear()
+            );
+        },
 
-    // ABA HOJE
-    setHojeEventos() {
-      const today = new Date();
-      const iso = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-      this.hojeEventos = this.eventosMock[iso] ? this.eventosMock[iso] : [];
-    }, 
+        loadTodayEvents() {
+            const hoje = new Date();
+            const hojeStr = `${hoje.getFullYear()}-${String(
+                hoje.getMonth() + 1
+            ).padStart(2, "0")}-${String(hoje.getDate()).padStart(2, "0")}`;
 
-    // exemplo: carregar eventos do backend para o mês atual (substituir)
-    carregarEventosDoBackend(ano, mes) {
-      // fetch(`/agenda?ano=${ano}&mes=${mes+1}`)
-      //   .then(r => r.json())
-      //   .then(data => {
-      //     // transformar data em map yyyy-mm-dd => [eventos]
-      //     // this.eventosMock = {...this.eventosMock, ...novoMapa};
-      //     // this.updateCalendar();
-      //   });
-    }
-    
-  };
+            this.hojeEventos = this.eventos[hojeStr] || [];
+        },
+
+        showTooltip(event, day) {
+            if (!day.events.length) return;
+
+            this.tooltipHtml = day.events
+                .map(ev => `<div><b>${ev.titulo}</b><br>${ev.horario}</div>`)
+                .join("<hr>");
+
+            this.tooltipX = event.target.offsetLeft + 20;
+            this.tooltipY = event.target.offsetTop + 40;
+            this.tooltipVisible = true;
+        },
+
+        hideTooltip() {
+            this.tooltipVisible = false;
+        },
+
+        openModal(day) {
+            this.modalDateFormatted = `${day.number} de ${this.monthName} de ${this.year}`;
+            this.modalEvents = day.events;
+            this.modalVisible = true;
+        },
+
+        closeModal() {
+            this.modalVisible = false;
+        }
+    };
 }

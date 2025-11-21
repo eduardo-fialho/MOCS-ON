@@ -142,13 +142,10 @@
                 </div>
 
                 <div class="lg:col-span-1 flex flex-col gap-6" x-data="announcementsData()">
-                    <!-- ===== AGENDA COMPLETA (substitua sua div antiga por ESTA) ===== -->
                     <div x-data="calendarComponent()" x-init="init()" class="bg-white p-6 rounded-xl shadow-lg">
 
-                    <!-- TÍTULO -->
                     <h2 class="text-xl font-bold text-mocs-blue mb-4 text-center">Agenda do Dia</h2>
 
-                    <!-- TABS -->
                     <div class="flex justify-center border-b mb-4">
                         <button
                         @click="aba = 'calendario'"
@@ -165,23 +162,19 @@
                         </button>
                     </div>
 
-                    <!-- ABA: CALENDÁRIO -->
                     <div x-show="aba === 'calendario'" x-transition class="p-2">
                         <div class="p-4 border rounded-xl bg-white">
 
-                        <!-- Top bar -->
                         <div class="flex justify-between items-center mb-4">
                             <button @click="prevMonth()" class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300">‹</button>
                             <h3 class="text-lg font-semibold text-gray-800"><span x-text="monthName + ' ' + year"></span></h3>
                             <button @click="nextMonth()" class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300">›</button>
                         </div>
 
-                        <!-- Dias da semana -->
                         <div class="grid grid-cols-7 text-center text-sm font-semibold text-gray-600 mb-2">
                             <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
                         </div>
 
-                        <!-- Grid -->
                         <div class="relative">
                             <div class="grid grid-cols-7 gap-1 text-center text-sm">
 
@@ -203,7 +196,6 @@
 
                             </div>
 
-                            <!-- Tooltip -->
                             <div
                             x-show="tooltipVisible"
                             x-html="tooltipHtml"
@@ -217,7 +209,6 @@
                         </div>
                     </div>
 
-                    <!-- ABA: HOJE -->
                     <div x-show="aba === 'hoje'" x-transition>
                         <ul class="space-y-3 mt-2">
                         <template x-for="ev in hojeEventos" :key="ev.titulo + ev.horario">
@@ -238,7 +229,6 @@
                         </ul>
                     </div>
 
-                    <!-- MODAL -->
                     <div
                         x-show="modalVisible"
                         x-transition.opacity
@@ -272,8 +262,8 @@
                         </div>
                     </div>
 
-                    </div>
-                    <!-- ===== FIM AGENDA ===== -->
+                </div>
+
 
 
                     <div class="bg-white p-6 rounded-xl shadow-lg">

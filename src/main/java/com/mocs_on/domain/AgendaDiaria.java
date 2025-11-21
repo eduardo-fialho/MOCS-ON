@@ -4,25 +4,24 @@ public class AgendaDiaria {
     private Long id;
     private String titulo;
     private String descricao;
-    private String data;
-    private String hora;
+    private String data_evento;
+    private String hora_evento;
 
     public AgendaDiaria() {}
 
-    public AgendaDiaria(String titulo, String descricao, String data, String hora) {
+    public AgendaDiaria(String titulo, String descricao, String data_evento, String hora_evento) {
         this.titulo = titulo;
         this.descricao = descricao;
-        this.data = data;
-        this.hora = hora;
+        this.data_evento = data_evento;
+        this.hora_evento = hora_evento;
     }
 
-    public Long getId() {
+    public Long getId() { 
         return id; 
     }
     public void setId(Long id) { 
         this.id = id;
     }
-
 
     public String getTitulo() { 
         return titulo; 
@@ -31,7 +30,6 @@ public class AgendaDiaria {
         this.titulo = titulo; 
     }
 
-
     public String getDescricao() { 
         return descricao; 
     }
@@ -39,21 +37,18 @@ public class AgendaDiaria {
         this.descricao = descricao; 
     }
 
-
-    public String getData() { 
-        return data;
+    public String getData_evento() { 
+        return data_evento; 
     }
-    public void setData(String data) { 
-        this.data = data; 
-    }
-
-    
-    public String getHora() { 
-        return hora; 
-    }
-    public void setHora(String hora) { 
-        this.hora = hora; 
+    public void setData_evento(String data_evento) { 
+        this.data_evento = data_evento; 
     }
 
+    public String getHora_evento() { 
+        return hora_evento; 
+    }
+    public void setHora_evento(String hora_evento) { 
+        this.hora_evento = hora_evento; 
+    }
 }
 
