@@ -6,10 +6,12 @@ public class Comite implements Serializable {
     
     private static final long serialVersionUID = 1L; 
 
+    private long id;
     private String sigla;
     private String nome;
     private StatusComite status;
     private int numeroDelegados;
+    private String descricao;
     
     public enum StatusComite {
         EM_ANDAMENTO,
@@ -22,6 +24,7 @@ public class Comite implements Serializable {
         this.nome = "";
         this.status = StatusComite.NAO_INICIADO;
         this.numeroDelegados = 0;
+        this.descricao = "";
     }
     
     public Comite(String sigla, String nome){
@@ -29,6 +32,7 @@ public class Comite implements Serializable {
         this.nome = nome;
         this.status = StatusComite.NAO_INICIADO;
         this.numeroDelegados = 0;
+        this.descricao = "";
     }
     
     public Comite(String sigla, String nome, StatusComite status){
@@ -36,6 +40,7 @@ public class Comite implements Serializable {
         this.nome = nome;
         this.status = status;
         this.numeroDelegados = 0;
+        this.descricao = "";
     }
     
     public Comite(String sigla, String nome, StatusComite status, int numeroDelegados){
@@ -43,7 +48,17 @@ public class Comite implements Serializable {
         this.nome = nome;
         this.status = status;
         this.numeroDelegados = numeroDelegados;
+        this.descricao = "";
     }
+    
+    public Comite(String sigla, String nome, StatusComite status, int numeroDelegados, String descricao){
+        this.sigla = sigla;
+        this.nome = nome;
+        this.status = status;
+        this.numeroDelegados = numeroDelegados;
+        this.descricao = descricao;
+    }
+
 
     public String getSigla() {
         return sigla;
@@ -60,6 +75,14 @@ public class Comite implements Serializable {
     public int getNumeroDelegados() {
         return numeroDelegados;
     }
+    
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public void setSigla(String sigla) {
         this.sigla = sigla;
@@ -75,5 +98,9 @@ public class Comite implements Serializable {
 
     public void setNumeroDelegados(int numeroDelegados) {
         this.numeroDelegados = numeroDelegados;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 }
