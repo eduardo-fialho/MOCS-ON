@@ -94,8 +94,7 @@
                             <template x-for="post in posts" :key="post.id">
                                 <div class="border-t pt-4">
                                     <div class="flex items-start space-x-4">
-                                        <div
-                                            class="h-10 w-10 rounded-full flex items-center justify-center bg-gray-200 text-gray-700">
+                                        <div class="h-10 w-10 rounded-full flex items-center justify-center bg-gray-200 text-gray-700">
                                             <template x-if="post.status === 'ANONIMO'">
                                                 <i class="fas fa-user-secret"></i>
                                             </template>
@@ -110,31 +109,31 @@
                                             <p class="text-xs text-gray-500 mt-1" x-text="timeAgo(post.data)"></p>
 
                                             <div class="mt-3 flex items-center gap-2 text-sm">
-                                                <button class="px-2 py-1 bg-gray-100 rounded-full"
-                                                    @click="addReaction(post.id, '👍')">👍 <span class="ml-1"
-                                                        x-text="reactionCount(post,'👍')"></span></button>
-                                                <button class="px-2 py-1 bg-gray-100 rounded-full"
-                                                    @click="addReaction(post.id, '❤️')">❤️ <span class="ml-1"
-                                                        x-text="reactionCount(post,'❤️')"></span></button>
-                                                <button class="px-2 py-1 bg-gray-100 rounded-full"
-                                                    @click="addReaction(post.id, '😂')">😂 <span class="ml-1"
-                                                        x-text="reactionCount(post,'😂')"></span></button>
-                                                <button class="px-2 py-1 bg-gray-100 rounded-full"
-                                                    @click="addReaction(post.id, '😮')">😮 <span class="ml-1"
-                                                        x-text="reactionCount(post,'😮')"></span></button>
+                                                <template x-for="emoji in emojis" :key="emoji">
+                                                    <button
+                                                        :class="{
+                                                            'ring-2 ring-offset-1 ring-blue-300': post.myReaction === emoji,
+                                                            'opacity-50 cursor-not-allowed': post._reacting
+                                                        }"
+                                                        class="px-2 py-1 bg-gray-100 rounded-full flex items-center"
+                                                        :disabled="post._reacting"
+                                                        @click="addReaction(post, emoji)"
+                                                    >
+                                                        <span x-text="emoji"></span>
+                                                        <span class="ml-1" x-text="reactionCount(post, emoji)"></span>
+                                                    </button>
+                                                </template>
                                             </div>
                                         </div>
 
                                         <div class="flex flex-col items-end gap-2">
-                                            <button class="text-sm text-red-600"
-                                                @click="deletePost(post.id)">Excluir</button>
+                                            <button class="text-sm text-red-600" @click="deletePost(post.id)">Excluir</button>
                                         </div>
                                     </div>
                                 </div>
                             </template>
 
-                            <div x-show="!loading && posts.length === 0" class="text-center text-gray-500 py-6"
-                                style="display:none">
+                            <div x-show="!loading && posts.length === 0" class="text-center text-gray-500 py-6" style="display:none">
                                 Nenhum post disponível.
                             </div>
                         </div>

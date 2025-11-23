@@ -25,6 +25,7 @@
 
     window.muralData = function () {
         return {
+            // estado
             posts: [],
             loading: false,
             posting: false,
@@ -32,6 +33,9 @@
             postAsAnon: false,
             currentUser: null,
             error: null,
+
+            // lista de emojis centralizada
+            emojis: ['❤️', '📢', '📌', '✅', '❌'],
 
             async init() {
                 await this.loadCurrentUser();
@@ -55,12 +59,17 @@
             async loadPosts() {
                 this.loading = true;
                 try {
-                    const res = await fetch(API_BASE);
+                    // se currentUser existe, peça myReaction do backend
+                    const url = this.currentUser ? `${API_BASE}?usuario=${encodeURIComponent(this.currentUser)}` : API_BASE;
+                    const res = await fetch(url);
                     if (!res.ok) throw new Error('status ' + res.status);
                     const data = await res.json();
                     data.sort((a, b) => new Date(b.data) - new Date(a.data));
 
-                    this.posts = data.filter(p => p.status !== 'EXCLUIDO');
+                    // inicializa flags locais para cada post (_reacting)
+                    this.posts = data
+                        .filter(p => p.status !== 'EXCLUIDO')
+                        .map(p => ({ ...p, _reacting: false })); // cria campo local _reacting
                 } catch (err) {
                     this.posts = [];
                     this.error = 'Erro ao carregar posts';
@@ -105,7 +114,6 @@
                 }
             },
 
-
             async deletePost(postId) {
                 if (!confirm('O post não será mais exibido a outros usuarios')) return;
                 const { token, header } = readCsrf();
@@ -125,8 +133,17 @@
                 }
             },
 
-            async addReaction(postId, emoji) {
-                if (!emoji) return;
+            /**
+             * Faz a ação de reagir ao post.
+             * Recebe o objeto `post` (referência do array) e o emoji.
+             * Atualiza o post localmente conforme o response status (201/200/204).
+             */
+            async addReaction(post, emoji) {
+                if (!emoji || !post) return;
+                // evita cliques múltiplos enquanto aguarda
+                if (post._reacting) return;
+                post._reacting = true;
+
                 const usuario = this.currentUser || 'anônimo';
                 const body = { usuario, emoji };
                 const { token, header } = readCsrf();
@@ -134,20 +151,52 @@
                 if (token) headers[header] = token;
 
                 try {
-                    const res = await fetch(`${API_BASE}/${postId}/reaction`, {
+                    const res = await fetch(`${API_BASE}/${post.id}/reaction`, {
                         method: 'POST',
                         headers,
                         body: JSON.stringify(body)
                     });
-                    if (res.status === 201) {
-                        await this.loadPosts();
-                    } else if (res.status === 409) {
 
+                    // snapshot do prev (string ou null)
+                    const prev = post.myReaction || null;
+
+                    if (res.status === 201) {
+                        // criada: incrementa contador do emoji e marca myReaction
+                        post.reactions = post.reactions || {};
+                        post.reactions[emoji] = (post.reactions[emoji] || 0) + 1;
+                        post.myReaction = emoji;
+
+                        // se havia prev diferente (improvável neste caso), decrementa
+                        if (prev && prev !== emoji) {
+                            post.reactions[prev] = Math.max(0, (post.reactions[prev] || 1) - 1);
+                            if (post.reactions[prev] === 0) delete post.reactions[prev];
+                        }
+                    } else if (res.status === 200) {
+                        // atualizada: decrementa prev e incrementa novo
+                        if (prev && prev !== emoji) {
+                            post.reactions[prev] = Math.max(0, (post.reactions[prev] || 1) - 1);
+                            if (post.reactions[prev] === 0) delete post.reactions[prev];
+                        }
+                        post.reactions = post.reactions || {};
+                        post.reactions[emoji] = (post.reactions[emoji] || 0) + 1;
+                        post.myReaction = emoji;
+                    } else if (res.status === 204) {
+                        // removida: decrementa prev e limpa myReaction
+                        if (prev) {
+                            post.reactions[prev] = Math.max(0, (post.reactions[prev] || 1) - 1);
+                            if (post.reactions[prev] === 0) delete post.reactions[prev];
+                        }
+                        post.myReaction = null;
                     } else {
-                        throw new Error('status ' + res.status);
+                        // fallback: se der erro inesperado, recarrega para sincronizar
+                        await this.loadPosts();
                     }
                 } catch (err) {
                     alert('Erro ao reagir: ' + err.message);
+                    // em caso de erro, recarrega para garantir consistência
+                    await this.loadPosts();
+                } finally {
+                    post._reacting = false;
                 }
             },
 

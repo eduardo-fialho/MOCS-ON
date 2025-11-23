@@ -1,6 +1,7 @@
 package com.mocs_on.controller;
 
 import java.net.URI;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,9 +24,19 @@ public class PostController {
     private PostDAO postService;
 
     @GetMapping
-    public ResponseEntity<List<Post>> recuperarAviso() {
-        List<Post> avisos = postService.recuperarTodos();
-        return ResponseEntity.ok(avisos);
+    public ResponseEntity<List<Post>> recuperarAviso(
+            @RequestParam(name = "usuario", required = false) String usuario,
+            Principal principal) {
+
+        String effectiveUser = (principal != null) ? principal.getName() : usuario;
+
+        List<Post> posts;
+        if (effectiveUser != null && !effectiveUser.isBlank()) {
+            posts = postService.recuperarTodosParaUsuario(effectiveUser);
+        } else {
+            posts = postService.recuperarTodos();
+        }
+        return ResponseEntity.ok(posts);
     }
 
     @PostMapping
@@ -47,16 +58,27 @@ public class PostController {
     }
 
     @PostMapping("/{postId}/reaction")
-    public ResponseEntity<Void> addReaction(@PathVariable Long postId, @RequestBody Reaction body) {
+    public ResponseEntity<Void> addReaction(@PathVariable Long postId, @RequestBody Reaction body, Principal principal) {
         if (body == null || body.getEmoji() == null || body.getEmoji().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
 
-        int result = postService.addReactionToPost(postId, body.getUsuario(), body.getEmoji());
-        if (result == 1) {
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        String usuario = (principal != null) ? principal.getName() : body.getUsuario();
+        if (usuario == null || usuario.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        PostDAO.ReactionResult result = postService.reactToPost(postId, usuario, body.getEmoji());
+
+        switch (result) {
+            case CREATED:
+                return ResponseEntity.status(HttpStatus.CREATED).build();
+            case UPDATED:
+                return ResponseEntity.ok().build();
+            case REMOVED:
+                return ResponseEntity.noContent().build();
+            default:
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

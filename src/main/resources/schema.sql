@@ -59,8 +59,6 @@ CREATE TABLE IF NOT EXISTS `secretariado_profiles` (
   CONSTRAINT `fk_secretariado_user` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Ajuste feito por Arthur Henrique: mantemos o mesmo contrato criado pelo Samuel no PostDAO,
--- garantindo que toda nova tabela já tenha a coluna `status` com padrão 'PUBLICO'.
 CREATE TABLE IF NOT EXISTS `posts` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `autor` VARCHAR(255) NOT NULL,
@@ -78,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `post_reactions` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_post_reaction_post` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
-  UNIQUE KEY `ux_post_user_emoji` (`post_id`, `usuario`, `emoji`)
+  UNIQUE KEY `ux_post_user` (`post_id`, `usuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `avisos` (
