@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOCS ON - Submissão de Documento</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body class="bg-gray-100">
+    <div class="flex flex-col min-h-screen">
+        <header class="bg-white shadow-md z-10 sticky top-0">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <a href="documentos.html"><img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON" class="h-8"></a>
+                    <h1 class="text-xl font-bold text-mocs-blue hidden md:block">Submissão de Documento</h1>
+                </div>
+                <a href="documentos.html" class="text-gray-600 hover:text-mocs-blue font-semibold py-2 px-4 rounded-lg hover:bg-gray-100">
+                    <i class="fas fa-arrow-left mr-2"></i> Voltar à Lista
+                </a>
+            </div>
+        </header>
+
+        <main class="flex-grow container mx-auto p-4 md:p-6">
+            <div class="bg-white p-6 rounded-xl shadow-lg max-w-3xl mx-auto">
+                <h2 class="text-2xl font-bold text-mocs-blue mb-6">Formulário de Submissão</h2>
+
+                <form id="submission-form" class="space-y-4" enctype="multipart/form-data">
+                    <div>
+                        <label for="nome" class="block text-sm font-semibold text-gray-700 mb-1">Nome do Documento <span class="text-red-500">*</span></label>
+                        <input type="text" id="nome" name="nome" required
+                            class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue"
+                            placeholder="Digite o nome do documento">
+                    </div>
+
+                    <div>
+                        <label for="autor" class="block text-sm font-semibold text-gray-700 mb-1">Autor <span class="text-red-500">*</span></label>
+                        <input type="text" id="autor" name="autor" required
+                            class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue"
+                            placeholder="Digite o nome do autor">
+                    </div>
+
+                    <div>
+                        <label for="arquivo" class="block text-sm font-semibold text-gray-700 mb-1">Arquivo (PDF) <span class="text-red-500">*</span></label>
+                        <input type="file" id="arquivo" name="arquivo" accept="application/pdf" required
+                            class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
+                        <p class="text-xs text-gray-500 mt-1">Tamanho máximo: 10MB</p>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-mocs-blue text-white font-semibold py-3 rounded-lg hover:bg-opacity-90 transition duration-150">
+                        <i class="fas fa-upload mr-2"></i> Enviar Documento
+                    </button>
+                </form>
+
+                <div id="message-area" class="mt-4 text-sm font-medium p-3 rounded-lg text-center" style="display: none;"></div>
+            </div>
+        </main>
+    </div>
+
+    <script th:src="@{/js/submissao_documentos.js}"></script>
+</body>
+
+</html>

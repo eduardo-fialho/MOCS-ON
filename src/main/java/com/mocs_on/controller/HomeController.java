@@ -1,13 +1,15 @@
 package com.mocs_on.controller;
 
-import com.mocs_on.security.SecaoUsuario;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import com.mocs_on.security.SecaoUsuario;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @CrossOrigin(origins = "*")
@@ -59,6 +61,33 @@ public class HomeController {
         }
         populateUserAttributes(model);
         return "secretariado";
+    }
+
+    @GetMapping("/documentos.html")
+    public String documentos(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        populateUserAttributes(model);
+        return "documentos";
+    }
+
+    @GetMapping("/avaliar_documentos.html")
+    public String avaliar(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        populateUserAttributes(model);
+        return "avaliar_documentos";
+    }
+
+    @GetMapping("/submissao_documentos.html")
+    public String submeterDocumento(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        populateUserAttributes(model);
+        return "submissao_documentos";
     }
 
     private boolean isAuthenticated(HttpSession session) {

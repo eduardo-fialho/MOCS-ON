@@ -89,3 +89,17 @@ CREATE TABLE IF NOT EXISTS `avisos` (
     `data` datetime NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `documentos` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `nome` VARCHAR(255) NOT NULL,
+    `autor` VARCHAR(255) NOT NULL,
+    `arquivo` LONGBLOB NOT NULL,
+    `status` VARCHAR(50) NOT NULL DEFAULT 'EM ENVIO',
+    `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_documentos_status` (`status`),
+    KEY `idx_documentos_ativo` (`ativo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
