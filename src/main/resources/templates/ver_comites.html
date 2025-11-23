@@ -81,6 +81,7 @@
                             <td class="py-4 px-6" th:text="${comite.status}">Status</td>
                             <td class="py-4 px-6" th:text="${comite.numeroDelegados}">0</td>
                             <td class="py-4 px-6" th:text="${comite.descricao}">0</td>
+
                             <td class="py-4 px-6">
                                 <!--(comiteId=${comite.id})-->
                                 <a th:href="@{/dashboard}"><button class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
@@ -99,7 +100,7 @@
         </main>
     </div>
 
-     <script th:src="@{/js/dashboard_config.js}"></script>
+    <script th:src="@{/js/dashboard_config.js}"></script>
     <script th:src="@{/js/profile_data.js}"></script>
     <script th:src="@{/js/announcements_data.js}"></script>
     <script th:src="@{/js/mural_data.js}"></script>
