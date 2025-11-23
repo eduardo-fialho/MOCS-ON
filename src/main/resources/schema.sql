@@ -95,5 +95,6 @@ CREATE TABLE IF NOT EXISTS agenda_diaria (
     titulo VARCHAR(255),
     descricao VARCHAR(255),
     data_evento DATE,
-    hora_evento TIME
+    hora_evento TIME,
+    visivel BOOLEAN DEFAULT TRUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

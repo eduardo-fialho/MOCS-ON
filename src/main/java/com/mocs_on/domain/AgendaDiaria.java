@@ -6,14 +6,26 @@ public class AgendaDiaria {
     private String descricao;
     private String data_evento;
     private String hora_evento;
+    private Boolean visivel = true;
 
-    public AgendaDiaria() {}
-
+    public AgendaDiaria() {
+        this.visivel = true;
+    }
+    
     public AgendaDiaria(String titulo, String descricao, String data_evento, String hora_evento) {
         this.titulo = titulo;
         this.descricao = descricao;
         this.data_evento = data_evento;
         this.hora_evento = hora_evento;
+        this.visivel = true;
+    }
+
+    public AgendaDiaria(String titulo, String descricao, String data_evento, String hora_evento, Boolean visivel) {
+        this.titulo = titulo;
+        this.descricao = descricao;
+        this.data_evento = data_evento;
+        this.hora_evento = hora_evento;
+        this.visivel = (visivel == null ? true : visivel);
     }
 
     public Long getId() { 
@@ -49,6 +61,13 @@ public class AgendaDiaria {
     }
     public void setHora_evento(String hora_evento) { 
         this.hora_evento = hora_evento; 
+    }
+
+    public Boolean getVisivel() {
+        return visivel;
+    }
+    public void setVisivel(Boolean visivel) {
+        this.visivel = visivel;
     }
 }
 

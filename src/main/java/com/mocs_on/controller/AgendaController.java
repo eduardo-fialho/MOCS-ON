@@ -35,4 +35,21 @@ public class AgendaController {
     public void salvar(@RequestBody AgendaDiaria agenda) {
         service.salvar(agenda);
     }
+
+    @GetMapping("/todos")
+    public List<AgendaDiaria> listarTodos() {
+        return service.listarTodos();
+    }
+
+    @PutMapping("/editar/{id}")
+    public ResponseEntity<?> editar(@PathVariable Long id, @RequestBody AgendaDiaria dados) {
+
+        if (dados.getVisivel() != null && !dados.getVisivel()) {
+            service.atualizarVisibilidade(id, false);
+            return ResponseEntity.ok("Evento excluido.");
+        }
+
+        service.editar(id, dados);
+        return ResponseEntity.ok("Evento atualizado.");
+    }
 }

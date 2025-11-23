@@ -22,5 +22,17 @@ public class AgendaService {
     public List<AgendaDiaria> listarPorMes(int ano, int mes) {
         return dao.listarPorMes(ano, mes);
     }
+
+    public List<AgendaDiaria> listarTodos() {
+        return dao.listarTodos();
+    }
+
+    public void editar(Long id, AgendaDiaria dados) {
+        dao.editar(id, dados);
+    }
+
+    public void atualizarVisibilidade(Long id, boolean visivel) {
+        dao.atualizarVisibilidade(id, visivel);
+    }
 }
 
