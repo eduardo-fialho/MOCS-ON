@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOCS ON - Criar um comitê</title>
+    <title>MOCS ON - Ver comitês</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -60,42 +60,35 @@
         </header>
 
         <main class="flex-grow container mx-auto p-4 md:p-6">
-            <form action="/comite/salvar" method="post" class="bg-white p-6 rounded-xl shadow-lg max-w-lg mx-auto">
-                <h2 class="text-2xl font-bold mb-4 text-gray-800">Criar Novo Comitê</h2>
-                <article class="mb-4">
-                    <label for="nomeComite" class="block text-gray-700 font-semibold mb-2">Nome do Comitê</label>
-                    <input type="text" id="nomeComite" name="nome" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
-                </article>
-                <article class="mb-4">
-                    <label for="nomeComite" class="block text-gray-700 font-semibold mb-2">Sigla</label>
-                    <input type="text" id="nomeComite" name="sigla" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
-                </article>
-                <article class="mb-4">
-                    <label for="statusComite" class="block text-gray-700 font-semibold mb-2">Status</label>
-                    <select id="statusComite" name="status" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
-                        <option th:each="s : ${T(com.mocs_on.domain.Comite.StatusComite).values()}"
-                                th:value="${s}"
-                                th:text="${s}">EM_ANDAMENTO</option>
-                    </select>
-                </article>
-                <article class="mb-4">
-                    <label for="nomeComite" class="block text-gray-700 font-semibold mb-2">Número de delegados</label>
-                    <input type="number" id="nomeComite" name="numeroDelegados" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
-                </article>
-                <article class="mb-4">
-                    <label for="descricaoComite" class="block text-gray-700 font-semibold mb-2">Descrição</label>
-                    <textarea id="descricaoComite" name="descricao" rows="4" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue"></textarea>
-                </article>
-                <button type="submit"
-                    class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">Criar
-                    Comitê
-                </button>
-            </form>
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Ver comitês</h2>
+            <section>
+                <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+                    <thead class="bg-mocs-blue text-white">
+                        <tr>
+                            <th class="py-3 px-6 text-left">Sigla</th>
+                            <th class="py-3 px-6 text-left">Nome</th>
+                            <th class="py-3 px-6 text-left">Status</th>
+                            <th class="py-3 px-6 text-left">Número de Delegados</th>
+                            <th class="py-3 px-6 text-left">Descrição</th>
+                            <th class="py-3 px-6 text-left">Editar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="comite : ${comites}" class="border-b hover:bg-gray-100">
+                            <td class="py-4 px-6" th:text="${comite.sigla}">SIGLA</td>
+                            <td class="py-4 px-6" th:text="${comite.nome}">Nome do Comitê</td>
+                            <td class="py-4 px-6" th:text="${comite.status}">Status</td>
+                            <td class="py-4 px-6" th:text="${comite.numeroDelegados}">0</td>
+                            <td class="py-4 px-6" th:text="${comite.descricao}">0</td>
+                            <td class="py-4 px-6">  
+                                <a th:href="@{editar/{id}(id=${comite.id})}"><button class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
+                                    Editar
+                                </button></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
         </main>
     </div>
 </body>

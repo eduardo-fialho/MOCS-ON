@@ -59,6 +59,14 @@ public class Comite implements Serializable {
         this.descricao = descricao;
     }
 
+    public Comite(long id, String sigla, String nome, StatusComite status, int numeroDelegados, String descricao){
+        this.id = id;
+        this.sigla = sigla;
+        this.nome = nome;
+        this.status = status;
+        this.numeroDelegados = numeroDelegados;
+        this.descricao = descricao;
+    }
 
     public String getSigla() {
         return sigla;
@@ -76,6 +84,10 @@ public class Comite implements Serializable {
         return numeroDelegados;
     }
     
+    public long getId() {
+        return id;
+    }
+
     public String getDescricao() {
         return descricao;
     }

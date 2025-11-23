@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOCS ON - Criar um comitê</title>
+    <title>MOCS ON - Erro!</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -60,42 +60,17 @@
         </header>
 
         <main class="flex-grow container mx-auto p-4 md:p-6">
-            <form action="/comite/salvar" method="post" class="bg-white p-6 rounded-xl shadow-lg max-w-lg mx-auto">
-                <h2 class="text-2xl font-bold mb-4 text-gray-800">Criar Novo Comitê</h2>
-                <article class="mb-4">
-                    <label for="nomeComite" class="block text-gray-700 font-semibold mb-2">Nome do Comitê</label>
-                    <input type="text" id="nomeComite" name="nome" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
-                </article>
-                <article class="mb-4">
-                    <label for="nomeComite" class="block text-gray-700 font-semibold mb-2">Sigla</label>
-                    <input type="text" id="nomeComite" name="sigla" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
-                </article>
-                <article class="mb-4">
-                    <label for="statusComite" class="block text-gray-700 font-semibold mb-2">Status</label>
-                    <select id="statusComite" name="status" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
-                        <option th:each="s : ${T(com.mocs_on.domain.Comite.StatusComite).values()}"
-                                th:value="${s}"
-                                th:text="${s}">EM_ANDAMENTO</option>
-                    </select>
-                </article>
-                <article class="mb-4">
-                    <label for="nomeComite" class="block text-gray-700 font-semibold mb-2">Número de delegados</label>
-                    <input type="number" id="nomeComite" name="numeroDelegados" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
-                </article>
-                <article class="mb-4">
-                    <label for="descricaoComite" class="block text-gray-700 font-semibold mb-2">Descrição</label>
-                    <textarea id="descricaoComite" name="descricao" rows="4" required
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue"></textarea>
-                </article>
-                <button type="submit"
-                    class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">Criar
-                    Comitê
-                </button>
-            </form>
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Erro!</h2>
+            <section>
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <strong class="font-bold">Ocorreu um erro:</strong>
+                    <span class="block sm:inline" th:text="${errorMessage}">Mensagem de erro padrão.</span>
+                    <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                        <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"><title>Fechar</title><path
+                                d="M14.348 5.652a1 1 0 00-1.414 0L10 8.586 7.066 5.652a1 1 0 10-1.414 1.414L8.586 10l-2.934 2.934a1 1 0 101.414 1.414L10 11.414l2.934 2.934a1 1 0 001.414-1.414L11.414 10l2.934-2.934a1 1 0 000-1.414z" /></svg>
+                    </span>
+            </section>
         </main>
     </div>
 </body>
