@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.dao.DataAccessException;
 
 import com.mocs_on.domain.Post;
+import com.mocs_on.domain.PostComment;
 
 @Repository
 public class PostDAO {
@@ -25,9 +27,69 @@ public class PostDAO {
     private JdbcTemplate jdbcTemplate;
 
     public List<Post> recuperarTodos() {
-        String sql = "SELECT id, autor, mensagem, data, status FROM posts ORDER BY data DESC";
+        String sql = "SELECT id, autor, mensagem, data, status FROM posts " +
+                "WHERE mensagem IS NULL OR mensagem NOT LIKE 'PHOTO|%' " +
+                "ORDER BY data DESC";
 
-        List<Post> posts = jdbcTemplate.query(sql, (resultado, linha) -> {
+        List<Post> posts = mapPosts(sql);
+        populateReactions(posts);
+        return posts;
+    }
+
+    public List<Post> recuperarGaleria() {
+        String sql = "SELECT id, autor, mensagem, data, status FROM posts " +
+                "WHERE mensagem LIKE 'PHOTO|%' " +
+                "ORDER BY data DESC";
+        List<Post> posts = mapPosts(sql);
+        populateReactions(posts);
+        return posts;
+    }
+
+    public Optional<Post> findById(Long id) {
+        if (id == null) {
+            return Optional.empty();
+        }
+        String sql = "SELECT id, autor, mensagem, data, status FROM posts WHERE id = ?";
+        List<Post> result = mapPosts(sql, id);
+        return result.stream().findFirst();
+    }
+
+    public Optional<Post> findLatestVisiblePostByAuthor(String author) {
+        if (author == null || author.isBlank()) {
+            return Optional.empty();
+        }
+
+        String sql = "SELECT id, autor, mensagem, data, status FROM posts " +
+                "WHERE autor = ? AND status <> 'EXCLUIDO' ORDER BY data DESC LIMIT 1";
+
+        List<Post> result = jdbcTemplate.query(sql, (resultado, linha) -> {
+            Post post = new Post();
+            post.setId(resultado.getLong("id"));
+            post.setAutor(resultado.getString("autor"));
+            post.setMensagem(resultado.getString("mensagem"));
+
+            String statusStr = resultado.getString("status");
+            if (statusStr != null) {
+                try {
+                    post.setStatus(Post.TipoPost.valueOf(statusStr));
+                } catch (IllegalArgumentException ex) {
+                    post.setStatus(Post.TipoPost.PUBLICO);
+                }
+            }
+
+            Timestamp data = resultado.getTimestamp("data");
+            if (data != null) {
+                post.setData(data.toLocalDateTime());
+            }
+            return post;
+        }, author);
+
+        return result.stream().findFirst();
+    }
+
+    /** Ajuste solicitado pelo usuário: separar feed de texto e fotos para a curadoria (#galeria). */
+    private List<Post> mapPosts(String sql, Object... args) {
+        return jdbcTemplate.query(sql, (resultado, linha) -> {
             Post post = new Post();
             post.setId(resultado.getLong("id"));
             post.setAutor(resultado.getString("autor"));
@@ -45,8 +107,10 @@ public class PostDAO {
             Timestamp data = resultado.getTimestamp("data");
             if (data != null) post.setData(data.toLocalDateTime());
             return post;
-        });
+        }, args);
+    }
 
+    private void populateReactions(List<Post> posts) {
         String sqlReacoes = "SELECT emoji, COUNT(*) AS cnt FROM post_reactions WHERE post_id = ? GROUP BY emoji";
         for (Post p : posts) {
             Map<String, Integer> map = new HashMap<>();
@@ -55,8 +119,29 @@ public class PostDAO {
             });
             p.setReactions(map);
         }
+    }
 
-        return posts;
+    public List<PostComment> listComments(Long postId) {
+        String sql = "SELECT id, post_id, autor, mensagem, created_at FROM post_comments " +
+                "WHERE post_id = ? ORDER BY created_at DESC";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            PostComment comment = new PostComment();
+            comment.setId(rs.getLong("id"));
+            comment.setPostId(rs.getLong("post_id"));
+            comment.setAutor(rs.getString("autor"));
+            comment.setMensagem(rs.getString("mensagem"));
+            Timestamp created = rs.getTimestamp("created_at");
+            if (created != null) {
+                comment.setCreatedAt(created.toLocalDateTime());
+            }
+            return comment;
+        }, postId);
+    }
+
+    public int addComment(Long postId, String autor, String mensagem) {
+        String sql = "INSERT INTO post_comments (post_id, autor, mensagem, created_at) VALUES (?, ?, ?, ?)";
+        Timestamp now = Timestamp.valueOf(java.time.LocalDateTime.now());
+        return jdbcTemplate.update(sql, postId, autor, mensagem, now);
     }
 
     public Long inserirPost(Post post) {
@@ -117,5 +202,10 @@ public class PostDAO {
 
         String sqlPost = "DELETE FROM posts WHERE id = ?";
         return jdbcTemplate.update(sqlPost, postId);
+    }
+
+    /** Remove todas as reações (likes) de todos os posts. */
+    public int deleteAllReactions() {
+        return jdbcTemplate.update("DELETE FROM post_reactions");
     }
 }

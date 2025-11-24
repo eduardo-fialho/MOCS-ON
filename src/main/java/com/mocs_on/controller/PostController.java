@@ -10,8 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.mocs_on.domain.Reaction;
 import com.mocs_on.domain.Post;
+import com.mocs_on.domain.PostComment;
+import com.mocs_on.domain.Reaction;
 import com.mocs_on.service.PostDAO;
 
 @RestController
@@ -26,6 +27,11 @@ public class PostController {
     public ResponseEntity<List<Post>> recuperarAviso() {
         List<Post> avisos = postService.recuperarTodos();
         return ResponseEntity.ok(avisos);
+    }
+
+    @GetMapping("/gallery")
+    public ResponseEntity<List<Post>> recuperarGaleria() {
+        return ResponseEntity.ok(postService.recuperarGaleria());
     }
 
     @PostMapping
@@ -72,6 +78,40 @@ public class PostController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    /** Zera todas as reações (likes) de todos os posts. */
+    @DeleteMapping("/reactions")
+    public ResponseEntity<Void> deleteAllReactions() {
+        postService.deleteAllReactions();
+        return ResponseEntity.noContent().build();
+    }
+
+    /** Ajuste solicitado pelo usuário: permitir comentários individuais nas fotos da curadoria. */
+    @GetMapping("/{postId}/comments")
+    public ResponseEntity<List<PostComment>> listComments(@PathVariable Long postId) {
+        return ResponseEntity.ok(postService.listComments(postId));
+    }
+
+    @PostMapping("/{postId}/comments")
+    public ResponseEntity<Void> addComment(@PathVariable Long postId, @RequestBody CommentRequest body) {
+        if (body == null || body.mensagem() == null || body.mensagem().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        String autor = sanitize(body.autor(), "Delegado");
+        String mensagem = sanitize(body.mensagem(), null);
+        postService.addComment(postId, autor, mensagem);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    private String sanitize(String value, String defaultValue) {
+        if (value == null || value.isBlank()) {
+            return defaultValue == null ? "" : defaultValue;
+        }
+        String trimmed = value.trim();
+        return trimmed.length() > 500 ? trimmed.substring(0, 500) : trimmed;
+    }
+
+    private record CommentRequest(String autor, String mensagem) {}
 
     @PatchMapping("/{postId}/exclude")
     public ResponseEntity<Void> excludePost(@PathVariable Long postId) {

@@ -7,9 +7,17 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   `tipo` VARCHAR(50) NOT NULL DEFAULT 'DELEGADO',
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `profile_photo` LONGBLOB NULL,
+  `profile_photo_content_type` VARCHAR(100) NULL,
   PRIMARY KEY (`id`),
   KEY `idx_usuarios_tipo` (`tipo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE `usuarios`
+  ADD COLUMN IF NOT EXISTS `profile_photo` LONGBLOB NULL;
+
+ALTER TABLE `usuarios`
+  ADD COLUMN IF NOT EXISTS `profile_photo_content_type` VARCHAR(100) NULL;
 
 -- Historico de alteracoes de perfis
 CREATE TABLE IF NOT EXISTS `user_change_logs` (
@@ -56,6 +64,17 @@ CREATE TABLE IF NOT EXISTS `secretariado_profiles` (
   CONSTRAINT `fk_secretariado_user` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `user_profiles` (
+  `user_id` INT UNSIGNED NOT NULL,
+  `instituicao` VARCHAR(255) NULL,
+  `telefone` VARCHAR(100) NULL,
+  `comite_preferido` VARCHAR(255) NULL,
+  `observacoes` TEXT NULL,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `fk_user_profiles_user` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Ajuste registrado por Arthur Henrique: replicamos o contrato do mural (código do Samuel)
 -- para que ambientes manuais não precisem rodar ALTER TABLE de emergência.
 CREATE TABLE IF NOT EXISTS `posts` (
@@ -77,6 +96,17 @@ CREATE TABLE post_reactions (
   UNIQUE KEY ux_post_user_emoji (post_id, usuario, emoji)
 );
 
+CREATE TABLE IF NOT EXISTS `post_comments` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `post_id` BIGINT UNSIGNED NOT NULL,
+  `autor` VARCHAR(255) NOT NULL,
+  `mensagem` VARCHAR(500) NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_post_comments_post` (`post_id`),
+  CONSTRAINT `fk_post_comments_post` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE `avisos` (
     `id` bigint unsigned NOT NULL AUTO_INCREMENT,
     `autor` varchar(200) NOT NULL,
@@ -85,6 +115,23 @@ CREATE TABLE `avisos` (
     `data` datetime NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS `pre_registrations` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `nome` VARCHAR(255) NOT NULL,
+    `email` VARCHAR(255) NOT NULL,
+    `instituicao` VARCHAR(255) NULL,
+    `telefone` VARCHAR(100) NULL,
+    `comite_preferido` VARCHAR(255) NULL,
+    `mensagem` TEXT NULL,
+    `status` VARCHAR(20) NOT NULL DEFAULT 'PENDENTE',
+    `secretariado_notified` TINYINT(1) NOT NULL DEFAULT 0,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `processed_at` DATETIME NULL,
+    `processed_by` VARCHAR(255) NULL,
+    PRIMARY KEY (`id`),
+    KEY `idx_pre_reg_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Ouvidoria
 CREATE TABLE IF NOT EXISTS `ouvidoria_relatos` (

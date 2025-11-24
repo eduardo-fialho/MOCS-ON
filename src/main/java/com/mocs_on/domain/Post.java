@@ -1,4 +1,4 @@
-
+﻿
 package com.mocs_on.domain;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -58,6 +58,11 @@ public class Post {
         return autor;
     }
 
+    /** Retorna o autor conforme armazenado, sem anonimizacao. */
+    public String getAutorRaw() {
+        return autor;
+    }
+
     public void setAutor(String autor) {
         this.autor = autor;
     }
@@ -94,3 +99,4 @@ public class Post {
         reactions.computeIfPresent(emoji, (k,v) -> (v <= 1) ? null : v - 1);
     }
 }
+

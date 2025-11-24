@@ -86,6 +86,32 @@ public class LoginDAO {
         return Optional.ofNullable(usuario);
     }
 
+    public List<Usuario> searchUsers(String query, int limit) {
+        if (query == null || query.isBlank()) {
+            return List.of();
+        }
+
+        String like = "%" + query.toLowerCase() + "%";
+        String sql = """
+                SELECT id, nome, email, senha, tipo
+                FROM usuarios
+                WHERE LOWER(nome) LIKE ? OR LOWER(email) LIKE ?
+                ORDER BY updated_at DESC
+                LIMIT ?
+                """;
+
+        List<Usuario> usuarios = jdbcTemplate.query(
+                sql,
+                this::mapRowToUsuario,
+                like,
+                like,
+                limit
+        );
+
+        usuarios.forEach(usuario -> usuario.setComites(findComitesByUsuarioId(usuario.getId())));
+        return usuarios;
+    }
+
     private Usuario mapRowToUsuario(ResultSet rs, int rowNum) throws SQLException {
         Usuario usuario = new Usuario();
         usuario.setId(rs.getLong("id"));

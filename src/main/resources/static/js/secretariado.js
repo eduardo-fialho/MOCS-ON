@@ -6,24 +6,59 @@ const APP_CONTEXT_PATH = (() => {
 })();
 const API_BASE_URL = `${window.location.origin}${APP_CONTEXT_PATH}`;
 const AVISO_ENDPOINT = `${API_BASE_URL}/aviso`;
+const USER_AVATAR_ENDPOINT = `${API_BASE_URL}/user/avatar`;
 
 document.addEventListener("DOMContentLoaded", () => {
     const usuarioNome = document.body.getAttribute("data-usuario-nome");
     const usuarioTipo = document.body.getAttribute("data-usuario-tipo");
+    const avatarImg = document.querySelector("#usuario-info img");
+    const defaultAvatar = "https://placehold.co/40x40/205395/ffffff?text=S";
 
     const modal = document.getElementById("modal-anuncio");
-    const abrirModalBtn = document.getElementById("abrir-modal-anuncio");
     const fecharModalBtn = document.getElementById("fechar-modal-btn");
     const fecharModalArea = document.getElementById("fechar-modal");
     const formAnuncio = document.getElementById("form-anuncio-modal");
+    const anunciosCountLabel = document.getElementById("anuncios-count");
+    let anunciosCount = 0;
 
-    abrirModalBtn.addEventListener("click", () => modal.classList.remove("hidden"));
+    const modalTriggers = document.querySelectorAll("[data-open-anuncio]");
+    modalTriggers.forEach(trigger => {
+        trigger.addEventListener("click", (event) => {
+            event.preventDefault();
+            modal.classList.remove("hidden");
+        });
+    });
     fecharModalBtn.addEventListener("click", () => modal.classList.add("hidden"));
     fecharModalArea.addEventListener("click", () => modal.classList.add("hidden"));
 
-    document.getElementById("botao-usuario").addEventListener("click", () => {
-        document.getElementById("menu-usuario").classList.toggle("hidden");
-    });
+    const botaoUsuario = document.getElementById("botao-usuario");
+    const menuUsuario = document.getElementById("menu-usuario");
+    if (botaoUsuario && menuUsuario) {
+        botaoUsuario.addEventListener("click", () => {
+            menuUsuario.classList.toggle("hidden");
+        });
+    }
+
+    async function carregarAvatar() {
+        if (!avatarImg || !usuarioNome) {
+            return;
+        }
+        try {
+            const encoded = encodeURIComponent(usuarioNome.trim());
+            const url = `${USER_AVATAR_ENDPOINT}?name=${encoded}&ts=${Date.now()}`;
+            const response = await fetch(url);
+            if (!response.ok) {
+                avatarImg.src = defaultAvatar;
+                return;
+            }
+            avatarImg.src = url;
+        } catch (err) {
+            console.warn("Falha ao carregar avatar do secretariado", err);
+            avatarImg.src = defaultAvatar;
+        }
+    }
+
+    carregarAvatar();
 
     function tempoDecorrido(timestamp) {
         const agora = new Date();
@@ -55,6 +90,35 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(atualizarTempos, 60000);
     atualizarTempos();
 
+    carregarAnunciosExistentes();
+
+    function atualizarTextoAnuncios() {
+        if (!anunciosCountLabel) return;
+        if (anunciosCount <= 0) {
+            anunciosCountLabel.textContent = "Nenhum anúncio postado ainda.";
+        } else {
+            anunciosCountLabel.textContent = `${anunciosCount} anúncio${anunciosCount > 1 ? 's' : ''} postado${anunciosCount > 1 ? 's' : ''}.`;
+        }
+    }
+
+    async function carregarAnunciosExistentes() {
+        if (!anunciosCountLabel) return;
+        try {
+            const response = await fetch(AVISO_ENDPOINT);
+            if (!response.ok) {
+                return;
+            }
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                anunciosCount = data.length;
+                atualizarTextoAnuncios();
+            }
+        } catch (err) {
+            console.warn("Não foi possível carregar anúncios existentes.", err);
+            atualizarTextoAnuncios();
+        }
+    }
+
     formAnuncio.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -75,15 +139,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (response.status === 201) {
                 const postData = new Date().toISOString();
-                const lista = document.getElementById("lista-anuncios");
-                const div = document.createElement("div");
-                div.className = "bg-white p-4 rounded-xl shadow-md mb-4";
-                div.innerHTML = `
-                    <h3 class="font-bold text-mocs-blue text-lg">${titulo}</h3>
-                    <p class="text-gray-700 mt-1">${mensagem}</p>
-                    <span class="text-gray-500 text-sm" data-post="${postData}">agora</span>
-                `;
-                lista.prepend(div);
+                anunciosCount += 1;
+                atualizarTextoAnuncios();
                 formAnuncio.reset();
                 modal.classList.add("hidden");
                 atualizarTempos();
@@ -97,4 +154,37 @@ document.addEventListener("DOMContentLoaded", () => {
             botao.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Publicar';
         }
     });
+
+    // Galeria visual (dashboard): modal de expansão
+    const galleryGrid = document.getElementById("dashboardGalleryGrid");
+    const galleryModal = document.getElementById("dashboardGalleryModal");
+    const galleryImg = document.getElementById("dashboardGalleryImg");
+    const galleryCaption = document.getElementById("dashboardGalleryCaption");
+    const galleryMeta = document.getElementById("dashboardGalleryMeta");
+
+    const closeGalleryModal = () => {
+        if (!galleryModal) return;
+        galleryModal.classList.add("hidden");
+    };
+
+    if (galleryModal) {
+        galleryModal.querySelectorAll("[data-gallery-dismiss]").forEach(btn => {
+            btn.addEventListener("click", closeGalleryModal);
+        });
+    }
+
+    if (galleryGrid) {
+        galleryGrid.addEventListener("click", (evt) => {
+            const card = evt.target.closest(".dashboard-gallery-card");
+            if (!card || !galleryModal || !galleryImg) return;
+            const imgEl = card.querySelector("img");
+            const captionEl = card.querySelector("p");
+            const metaEl = card.querySelector("span");
+            galleryImg.src = imgEl ? imgEl.src : "";
+            galleryImg.alt = imgEl ? imgEl.alt : "Foto da galeria";
+            if (galleryCaption) galleryCaption.textContent = captionEl ? captionEl.textContent : "";
+            if (galleryMeta) galleryMeta.textContent = metaEl ? metaEl.textContent : "";
+            galleryModal.classList.remove("hidden");
+        });
+    }
 });
