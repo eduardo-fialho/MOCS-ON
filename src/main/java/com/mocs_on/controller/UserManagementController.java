@@ -3,7 +3,7 @@
 import com.mocs_on.auth.EmailService;
 import com.mocs_on.auth.UserAccountService;
 import com.mocs_on.domain.PreRegistration;
-import jákarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import jáva.time.LocalDateTime;
-import jáva.time.format.DateTimeFormatter;
-import jáva.util.List;
-import jáva.util.Locale;
-import jáva.util.Optional;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
 import com.mocs_on.service.PreRegistrationService;
 
@@ -165,7 +165,7 @@ public class UserManagementController {
                 form.setTelefone(pre.getTelefone());
             }
             if (!StringUtils.hasText(form.getcomitePreferido())) {
-                form.setcomitePreferido(pre.getcomitePreferido());
+                form.setcomitePreferido(pre.getComitePreferido());
             }
             if (!StringUtils.hasText(form.getObservacoes())) {
                 form.setObservacoes(pre.getMensagem());
@@ -302,7 +302,7 @@ public class UserManagementController {
         form.setEmail(user.email());
         form.setTipo(user.type());
         userAccountService.findUserProfileDetails(user.id()).ifPresent(details -> {
-            form.setInstituicao(details.Instituicao());
+            form.setInstituicao(details.instituicao());
             form.setTelefone(details.telefone());
             form.setcomitePreferido(details.comitePreferido());
             form.setObservacoes(details.observacoes());
@@ -450,7 +450,7 @@ public class UserManagementController {
                                         String newPasswordPlain) {
         String emailDestino = updated.email();
         StringBuilder body = new StringBuilder();
-        body.append("Ola ").append(safe(updated.name())).append(",\n\n");
+        body.append("Olá ").append(safe(updated.name())).append(",\n\n");
         body.append("O Secretariado atualizou o seu cadastro no MOCS ON em ")
                 .append(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
                 .append(".\n");
@@ -480,12 +480,12 @@ public class UserManagementController {
         body.append("\nSe você não reconhece esta alteração, procure o Secretariado imediatamente.\n\n");
         body.append("Equipe MOCS ON\n");
 
-        emailService.send(emailDestino, "MOCS ON - Atualizacao do seu cadastro", body.toString());
+        emailService.send(emailDestino, "MOCS ON - Atualização do seu cadastro", body.toString());
     }
 
     private void sendWelcomeEmail(String name, String email, String tipo, String plainPassword) {
         StringBuilder body = new StringBuilder();
-        body.append("Ola ").append(safe(name)).append(",\n\n");
+        body.append("Olá ").append(safe(name)).append(",\n\n");
         body.append("Seu acesso ao portal MOCS ON foi criado pelo Secretariado.\n");
         body.append("Dados de acesso:\n");
         body.append("- E-mail: ").append(email).append("\n");
@@ -501,8 +501,8 @@ public class UserManagementController {
         if (session == null) {
             return false;
         }
-        Object rOla = session.getAttribute(AuthController.SESSION_USER_ROLE);
-        return rOla != null && "SECRETARIADO".equalsIgnoreCase(role.toString());
+        Object role = session.getAttribute(AuthController.SESSION_USER_ROLE);
+        return role != null && "SECRETARIADO".equalsIgnoreCase(role.toString());
     }
 
     private String safe(String value) {
@@ -803,6 +803,9 @@ public class UserManagementController {
         }
     }
 }
+
+
+
 
 
 
