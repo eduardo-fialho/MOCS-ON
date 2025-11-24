@@ -25,3 +25,18 @@ body {
 .background-pattern {
     background-color: #000000;
 }
+
+.login-bg {
+    min-height: 100vh;
+    background: url("/images/dashboard-wallpaper-aura3.jpg") center/cover no-repeat;
+}
+
+.social-link {
+    color: #fff;
+    transition: transform .3s ease, text-shadow .3s ease;
+}
+
+.social-link:hover {
+    transform: scale(1.15);
+    text-shadow: 0 0 12px rgba(255,255,255,.9);
+}
