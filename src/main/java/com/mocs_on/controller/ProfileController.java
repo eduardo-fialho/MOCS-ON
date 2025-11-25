@@ -387,26 +387,15 @@ public class ProfileController {
             Path root = galleryRoot();
             Path requested = root.resolve(filename).normalize();
             if (!requested.startsWith(root) || !Files.exists(requested)) {
-                // fallback para placeholder quando a imagem original n�o est� mais presente
-                ClassPathResource placeholder = new ClassPathResource("static/images/gallery-placeholder.png");
-                if (!placeholder.exists()) {
-                    return ResponseEntity.notFound().build();
-                }
-                byte[] data = placeholder.getInputStream().readAllBytes();
-                Resource resource = new ByteArrayResource(data);
-                return ResponseEntity.ok()
-                        .cacheControl(CacheControl.noCache())
-                        .contentType(MediaType.IMAGE_PNG)
-                        .body(resource);
-            } else {
-                MediaType mediaType = resolveMediaType(filename);
-                byte[] data = Files.readAllBytes(requested);
-                Resource resource = new ByteArrayResource(data);
-                return ResponseEntity.ok()
-                        .cacheControl(CacheControl.noCache())
-                        .contentType(mediaType)
-                        .body(resource);
+                return ResponseEntity.notFound().build();
             }
+            MediaType mediaType = resolveMediaType(filename);
+            byte[] data = Files.readAllBytes(requested);
+            Resource resource = new ByteArrayResource(data);
+            return ResponseEntity.ok()
+                    .cacheControl(CacheControl.noCache())
+                    .contentType(mediaType)
+                    .body(resource);
         } catch (IOException ex) {
             return ResponseEntity.notFound().build();
         }
