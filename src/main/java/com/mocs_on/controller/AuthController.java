@@ -74,7 +74,7 @@ public class AuthController {
     }
 
     private String failLogin(String email, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("error", "E-mail ou senha invalidos.");
+        redirectAttributes.addFlashAttribute("error", "E-mail ou senha inválidos.");
         redirectAttributes.addFlashAttribute("email", email == null ? "" : email);
         return "redirect:/login";
     }

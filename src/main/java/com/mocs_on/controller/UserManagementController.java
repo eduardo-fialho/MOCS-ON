@@ -200,11 +200,11 @@ public class UserManagementController {
         String observacoes = trimToNull(form.getObservacoes());
 
         if (name.isBlank()) {
-            model.addAttribute("error", "Informe o nome completo do usuÇ­rio.");
+            model.addAttribute("error", "Informe o nome completo do usuário.");
             return "admin_user_create";
         }
         if (!userAccountService.isValidEmail(email)) {
-            model.addAttribute("error", "Informe um e-mail vÇ­lido.");
+            model.addAttribute("error", "Informe um e-mail válido.");
             return "admin_user_create";
         }
         if (form.getPassword() == null || form.getPassword().length() < 8) {
@@ -216,7 +216,7 @@ public class UserManagementController {
             return "admin_user_create";
         }
         if (userAccountService.userExists(email)) {
-            model.addAttribute("error", "Este e-mail jÇ­ estÇ­ cadastrado.");
+            model.addAttribute("error", "Este e-mail já está cadastrado.");
             return "admin_user_create";
         }
         if (!StringUtils.hasText(Instituicao) || !StringUtils.hasText(telefone) || !StringUtils.hasText(comitePreferido)) {
@@ -226,9 +226,9 @@ public class UserManagementController {
 
         String tipo = form.getTipo() == null || form.getTipo().isBlank() ? "DELEGADO" : form.getTipo().trim();
         if ("SECRETARIADO".equalsIgnoreCase(tipo)) {
-            if (form.getSecretariadofuncao() == null || form.getSecretariadofuncao().isBlank()
+            if (form.getSecretariadoFuncao() == null || form.getSecretariadoFuncao().isBlank()
                     || form.getSecretariadoDepartamento() == null || form.getSecretariadoDepartamento().isBlank()
-                    || form.getSecretariadoresponsabilidades() == null || form.getSecretariadoresponsabilidades().isBlank()) {
+                    || form.getSecretariadoResponsabilidades() == null || form.getSecretariadoResponsabilidades().isBlank()) {
                 model.addAttribute("error", "Informe funcao, departamento e responsabilidades para o Secretariado.");
                 return "admin_user_create";
             }
@@ -247,12 +247,12 @@ public class UserManagementController {
             if ("SECRETARIADO".equalsIgnoreCase(tipo)) {
                 userAccountService.upsertSecretariadoProfile(created.id(),
                         new UserAccountService.SecretariadoProfile(
-                                form.getSecretariadofuncao().trim().toUpperCase(Locale.ROOT),
+                                form.getSecretariadoFuncao().trim().toUpperCase(Locale.ROOT),
                                 form.getSecretariadoDepartamento().trim(),
                                 safe(form.getSecretariadoMatricula()),
                                 safe(form.getSecretariadoTelefone()),
                                 safe(form.getSecretariadoTurno()),
-                                safe(form.getSecretariadoresponsabilidades())
+                                safe(form.getSecretariadoResponsabilidades())
                         ));
             }
             userAccountService.upsertUserProfileDetails(created.id(),
@@ -292,7 +292,7 @@ public class UserManagementController {
         }
         Optional<UserAccountService.UserRecord> userOpt = userAccountService.findUserById(id);
         if (userOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Usuário Nao encontrado.");
+            redirectAttributes.addFlashAttribute("error", "Usuário não encontrado.");
             return "redirect:/admin/users";
         }
 
@@ -310,12 +310,12 @@ public class UserManagementController {
 
         if ("SECRETARIADO".equalsIgnoreCase(user.type())) {
             userAccountService.findSecretariadoProfile(user.id()).ifPresent(profile -> {
-                form.setSecretariadofuncao(profile.funcao());
+                form.setSecretariadoFuncao(profile.funcao());
                 form.setSecretariadoDepartamento(profile.departamento());
                 form.setSecretariadoMatricula(profile.matricula());
                 form.setSecretariadoTelefone(profile.telefone());
                 form.setSecretariadoTurno(profile.turnoAtendimento());
-                form.setSecretariadoresponsabilidades(profile.responsabilidades());
+                form.setSecretariadoResponsabilidades(profile.responsabilidades());
             });
         }
 
@@ -338,7 +338,7 @@ public class UserManagementController {
         }
         Optional<UserAccountService.UserRecord> existingOpt = userAccountService.findUserById(id);
         if (existingOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Usuário Nao encontrado.");
+            redirectAttributes.addFlashAttribute("error", "Usuário não encontrado.");
             return "redirect:/admin/users";
         }
 
@@ -361,9 +361,9 @@ public class UserManagementController {
         String comitePreferido = trimToNull(form.getcomitePreferido());
         String observacoes = trimToNull(form.getObservacoes());
         if ("SECRETARIADO".equalsIgnoreCase(tipo)) {
-            if (form.getSecretariadofuncao() == null || form.getSecretariadofuncao().isBlank()
+            if (form.getSecretariadoFuncao() == null || form.getSecretariadoFuncao().isBlank()
                     || form.getSecretariadoDepartamento() == null || form.getSecretariadoDepartamento().isBlank()
-                    || form.getSecretariadoresponsabilidades() == null || form.getSecretariadoresponsabilidades().isBlank()) {
+                    || form.getSecretariadoResponsabilidades() == null || form.getSecretariadoResponsabilidades().isBlank()) {
                 redirectAttributes.addFlashAttribute("error", "Informe funcao, departamento e responsabilidades para o Secretariado.");
                 return String.format("redirect:/admin/users/%d/edit", id);
             }
@@ -396,19 +396,19 @@ public class UserManagementController {
         }
 
         Optional<UserAccountService.UserRecord> updatedOpt = userAccountService.findUserById(id);
-        if (updatedOpt.isPresent()) {
-            UserAccountService.UserRecord updated = updatedOpt.get();
-            if ("SECRETARIADO".equalsIgnoreCase(updated.type())) {
-                userAccountService.upsertSecretariadoProfile(updated.id(),
-                        new UserAccountService.SecretariadoProfile(
-                                form.getSecretariadofuncao().trim().toUpperCase(Locale.ROOT),
-                                form.getSecretariadoDepartamento().trim(),
-                                safe(form.getSecretariadoMatricula()),
-                                safe(form.getSecretariadoTelefone()),
-                                safe(form.getSecretariadoTurno()),
-                                safe(form.getSecretariadoresponsabilidades())
-                        ));
-            } else {
+            if (updatedOpt.isPresent()) {
+                UserAccountService.UserRecord updated = updatedOpt.get();
+                if ("SECRETARIADO".equalsIgnoreCase(updated.type())) {
+                    userAccountService.upsertSecretariadoProfile(updated.id(),
+                            new UserAccountService.SecretariadoProfile(
+                                    form.getSecretariadoFuncao().trim().toUpperCase(Locale.ROOT),
+                                    form.getSecretariadoDepartamento().trim(),
+                                    safe(form.getSecretariadoMatricula()),
+                                    safe(form.getSecretariadoTelefone()),
+                                    safe(form.getSecretariadoTurno()),
+                                    safe(form.getSecretariadoResponsabilidades())
+                            ));
+                } else {
                 userAccountService.deleteSecretariadoProfile(updated.id());
             }
             userAccountService.upsertUserProfileDetails(updated.id(),
@@ -436,7 +436,7 @@ public class UserManagementController {
         }
         Optional<UserAccountService.UserRecord> userOpt = userAccountService.findUserById(id);
         if (userOpt.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "Usuário Nao encontrado.");
+            redirectAttributes.addFlashAttribute("error", "Usuário não encontrado.");
             return "redirect:/admin/users";
         }
 
@@ -537,12 +537,12 @@ public class UserManagementController {
         private String password;
         private String confirmPassword;
         private String tipo;
-        private String secretariadofuncao;
+        private String secretariadoFuncao;
         private String secretariadoDepartamento;
         private String secretariadoMatricula;
         private String secretariadoTelefone;
         private String secretariadoTurno;
-        private String secretariadoresponsabilidades;
+        private String secretariadoResponsabilidades;
         private Long preRegistrationId;
 
         public String getName() {
@@ -617,12 +617,12 @@ public class UserManagementController {
             this.tipo = tipo;
         }
 
-        public String getSecretariadofuncao() {
-            return secretariadofuncao;
+        public String getSecretariadoFuncao() {
+            return secretariadoFuncao;
         }
 
-        public void setSecretariadofuncao(String secretariadofuncao) {
-            this.secretariadofuncao = secretariadofuncao;
+        public void setSecretariadoFuncao(String secretariadoFuncao) {
+            this.secretariadoFuncao = secretariadoFuncao;
         }
 
         public String getSecretariadoDepartamento() {
@@ -657,12 +657,12 @@ public class UserManagementController {
             this.secretariadoTurno = secretariadoTurno;
         }
 
-        public String getSecretariadoresponsabilidades() {
-            return secretariadoresponsabilidades;
+        public String getSecretariadoResponsabilidades() {
+            return secretariadoResponsabilidades;
         }
 
-        public void setSecretariadoresponsabilidades(String secretariadoresponsabilidades) {
-            this.secretariadoresponsabilidades = secretariadoresponsabilidades;
+        public void setSecretariadoResponsabilidades(String secretariadoResponsabilidades) {
+            this.secretariadoResponsabilidades = secretariadoResponsabilidades;
         }
 
         public Long getPreRegistrationId() {
@@ -683,12 +683,12 @@ public class UserManagementController {
         private String comitePreferido;
         private String observacoes;
         private String newPassword;
-        private String secretariadofuncao;
+        private String secretariadoFuncao;
         private String secretariadoDepartamento;
         private String secretariadoMatricula;
         private String secretariadoTelefone;
         private String secretariadoTurno;
-        private String secretariadoresponsabilidades;
+        private String secretariadoResponsabilidades;
 
         public String getName() {
             return name;
@@ -754,12 +754,12 @@ public class UserManagementController {
             this.newPassword = newPassword;
         }
 
-        public String getSecretariadofuncao() {
-            return secretariadofuncao;
+        public String getSecretariadoFuncao() {
+            return secretariadoFuncao;
         }
 
-        public void setSecretariadofuncao(String secretariadofuncao) {
-            this.secretariadofuncao = secretariadofuncao;
+        public void setSecretariadoFuncao(String secretariadoFuncao) {
+            this.secretariadoFuncao = secretariadoFuncao;
         }
 
         public String getSecretariadoDepartamento() {
@@ -794,12 +794,12 @@ public class UserManagementController {
             this.secretariadoTurno = secretariadoTurno;
         }
 
-        public String getSecretariadoresponsabilidades() {
-            return secretariadoresponsabilidades;
+        public String getSecretariadoResponsabilidades() {
+            return secretariadoResponsabilidades;
         }
 
-        public void setSecretariadoresponsabilidades(String secretariadoresponsabilidades) {
-            this.secretariadoresponsabilidades = secretariadoresponsabilidades;
+        public void setSecretariadoResponsabilidades(String secretariadoResponsabilidades) {
+            this.secretariadoResponsabilidades = secretariadoResponsabilidades;
         }
     }
 }

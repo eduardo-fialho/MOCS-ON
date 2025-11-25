@@ -1,4 +1,4 @@
-﻿package com.mocs_on.controller;
+package com.mocs_on.controller;
 
 import com.mocs_on.domain.PreRegistration;
 import com.mocs_on.service.PreRegistrationService;
@@ -24,7 +24,7 @@ public class PreRegistrationController {
         this.preRegistrationService = preRegistrationService;
     }
 
-    @GetMapping("/preinscrição")
+    @GetMapping("/preinscricao")
     public String showForm(Model model) {
         if (!model.containsAttribute("form")) {
             model.addAttribute("form", new PreRegistrationForm());
@@ -32,7 +32,7 @@ public class PreRegistrationController {
         return "pre_registration_form";
     }
 
-    @PostMapping("/preinscrição")
+    @PostMapping("/preinscricao")
     public String submit(@ModelAttribute("form") PreRegistrationForm form,
                          RedirectAttributes redirectAttributes) {
         sanitizeForm(form);
@@ -41,13 +41,13 @@ public class PreRegistrationController {
             redirectAttributes.addFlashAttribute("form", form);
             redirectAttributes.addFlashAttribute("error",
                     "Preencha todos os campos obrigatórios: " + String.join(", ", missing) + ".");
-            return "redirect:/preinscrição";
+            return "redirect:/preinscricao";
         }
 
         if (!isValidEmail(form.getEmail())) {
             redirectAttributes.addFlashAttribute("form", form);
             redirectAttributes.addFlashAttribute("error", "Informe um e-mail válido.");
-            return "redirect:/preinscrição";
+            return "redirect:/preinscricao";
         }
 
         PreRegistration entity = new PreRegistration();
@@ -61,8 +61,8 @@ public class PreRegistrationController {
         preRegistrationService.registerInterest(entity);
 
         redirectAttributes.addFlashAttribute("success",
-                "Recebemos sua inscrição! O secretariado entrará em contato em breve.");
-        return "redirect:/preinscrição";
+                "Recebemos sua pré-inscrição! O Secretariado entrará em contato em breve.");
+        return "redirect:/preinscricao";
     }
 
     private void sanitizeForm(PreRegistrationForm form) {
@@ -162,4 +162,3 @@ public class PreRegistrationController {
         }
     }
 }
-

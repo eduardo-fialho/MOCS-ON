@@ -123,7 +123,7 @@ public class LoginDAO {
             try {
                 usuario.setTipo(rawTipo);
             } catch (IllegalArgumentException ex) {
-                LOGGER.warn("Tipo '{}' invalido para usuario {}. Aplicando VISITANTE.", rawTipo, usuario.getEmail());
+                LOGGER.warn("Tipo '{}' inválido para usuário {}. Aplicando VISITANTE.", rawTipo, usuario.getEmail());
                 usuario.setTipo(CargoEnum.VISITANTE.name());
             }
         } else {

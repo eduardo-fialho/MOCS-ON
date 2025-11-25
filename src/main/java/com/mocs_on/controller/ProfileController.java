@@ -134,7 +134,7 @@ public class ProfileController {
             return SETTINGS_REDIRECT;
         }
         if (!userAccountService.isValidEmail(email)) {
-            redirectAttributes.addFlashAttribute("profileError", "Informe um e-mail valido.");
+            redirectAttributes.addFlashAttribute("profileError", "Informe um e-mail válido.");
             redirectAttributes.addFlashAttribute("profileForm", form);
             return SETTINGS_REDIRECT;
         }
