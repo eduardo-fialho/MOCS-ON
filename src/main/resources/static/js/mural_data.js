@@ -25,16 +25,15 @@
 
     window.muralData = function () {
         return {
-            // estado
             posts: [],
             loading: false,
             posting: false,
             newMessage: '',
             postAsAnon: false,
             currentUser: null,
+            currentUserEmail: null,
             error: null,
-
-            // lista de emojis centralizada
+            isSecretary: false,
             emojis: ['❤️', '📢', '📌', '✅', '❌'],
 
             async init() {
@@ -45,31 +44,29 @@
             async loadCurrentUser() {
                 try {
                     const res = await fetch(USER_ENDPOINT);
-                    if (!res.ok) {
-                        this.currentUser = null;
-                        return;
-                    }
+                    if (!res.ok) throw new Error();
                     const data = await res.json();
-                    this.currentUser = data.nome || null;
-                } catch (err) {
+                    this.currentUser = data.nome ?? data.username ?? null;
+                    this.currentUserEmail = data.email ?? data.username ?? null;
+                    this.isSecretary = !!data.isSecretario;
+                } catch {
                     this.currentUser = null;
+                    this.currentUserEmail = null;
+                    this.isSecretary = false;
                 }
             },
 
             async loadPosts() {
                 this.loading = true;
                 try {
-                    // se currentUser existe, peça myReaction do backend
-                    const url = this.currentUser ? `${API_BASE}?usuario=${encodeURIComponent(this.currentUser)}` : API_BASE;
+                    const url = this.currentUserEmail ? `${API_BASE}?usuario=${encodeURIComponent(this.currentUserEmail)}` : API_BASE;
                     const res = await fetch(url);
                     if (!res.ok) throw new Error('status ' + res.status);
                     const data = await res.json();
                     data.sort((a, b) => new Date(b.data) - new Date(a.data));
-
-                    // inicializa flags locais para cada post (_reacting)
                     this.posts = data
                         .filter(p => p.status !== 'EXCLUIDO')
-                        .map(p => ({ ...p, _reacting: false })); // cria campo local _reacting
+                        .map(p => ({ ...p, _reacting: false }));
                 } catch (err) {
                     this.posts = [];
                     this.error = 'Erro ao carregar posts';
@@ -89,11 +86,9 @@
                     mensagem: this.newMessage.trim(),
                     status: this.postAsAnon ? 'ANONIMO' : 'PUBLICO'
                 };
-
                 const { token, header } = readCsrf();
                 const headers = { 'Content-Type': 'application/json' };
                 if (token) headers[header] = token;
-
                 try {
                     const res = await fetch(API_BASE, {
                         method: 'POST',
@@ -115,6 +110,10 @@
             },
 
             async deletePost(postId) {
+                if (!this.isSecretary) {
+                    alert('Apenas secretários podem excluir posts.');
+                    return;
+                }
                 if (!confirm('O post não será mais exibido a outros usuarios')) return;
                 const { token, header } = readCsrf();
                 const headers = {};
@@ -125,6 +124,8 @@
                         await this.loadPosts();
                     } else if (res.status === 404) {
                         alert('Post não encontrado (já removido?).');
+                    } else if (res.status === 403) {
+                        alert('Você não tem permissão para excluir este post.');
                     } else {
                         alert('Falha ao ocultar post (status ' + res.status + ')');
                     }
@@ -133,46 +134,31 @@
                 }
             },
 
-            /**
-             * Faz a ação de reagir ao post.
-             * Recebe o objeto `post` (referência do array) e o emoji.
-             * Atualiza o post localmente conforme o response status (201/200/204).
-             */
             async addReaction(post, emoji) {
                 if (!emoji || !post) return;
-                // evita cliques múltiplos enquanto aguarda
                 if (post._reacting) return;
                 post._reacting = true;
-
-                const usuario = this.currentUser || 'anônimo';
+                const usuario = this.currentUserEmail || this.currentUser || 'anônimo';
                 const body = { usuario, emoji };
                 const { token, header } = readCsrf();
                 const headers = { 'Content-Type': 'application/json' };
                 if (token) headers[header] = token;
-
                 try {
                     const res = await fetch(`${API_BASE}/${post.id}/reaction`, {
                         method: 'POST',
                         headers,
                         body: JSON.stringify(body)
                     });
-
-                    // snapshot do prev (string ou null)
                     const prev = post.myReaction || null;
-
                     if (res.status === 201) {
-                        // criada: incrementa contador do emoji e marca myReaction
                         post.reactions = post.reactions || {};
                         post.reactions[emoji] = (post.reactions[emoji] || 0) + 1;
                         post.myReaction = emoji;
-
-                        // se havia prev diferente (improvável neste caso), decrementa
                         if (prev && prev !== emoji) {
                             post.reactions[prev] = Math.max(0, (post.reactions[prev] || 1) - 1);
                             if (post.reactions[prev] === 0) delete post.reactions[prev];
                         }
                     } else if (res.status === 200) {
-                        // atualizada: decrementa prev e incrementa novo
                         if (prev && prev !== emoji) {
                             post.reactions[prev] = Math.max(0, (post.reactions[prev] || 1) - 1);
                             if (post.reactions[prev] === 0) delete post.reactions[prev];
@@ -181,19 +167,16 @@
                         post.reactions[emoji] = (post.reactions[emoji] || 0) + 1;
                         post.myReaction = emoji;
                     } else if (res.status === 204) {
-                        // removida: decrementa prev e limpa myReaction
                         if (prev) {
                             post.reactions[prev] = Math.max(0, (post.reactions[prev] || 1) - 1);
                             if (post.reactions[prev] === 0) delete post.reactions[prev];
                         }
                         post.myReaction = null;
                     } else {
-                        // fallback: se der erro inesperado, recarrega para sincronizar
                         await this.loadPosts();
                     }
                 } catch (err) {
                     alert('Erro ao reagir: ' + err.message);
-                    // em caso de erro, recarrega para garantir consistência
                     await this.loadPosts();
                 } finally {
                     post._reacting = false;
@@ -206,6 +189,102 @@
             },
 
             timeAgo,
+
+            async toggleComments(post) {
+                if (!post) return;
+                post._commentsOpen = !post._commentsOpen;
+                if (post._commentsOpen && (!post.comments || post.comments.length === 0)) {
+                    await this.loadComments(post);
+                }
+            },
+
+            async loadComments(post) {
+                if (!post) return;
+                post._loadingComments = true;
+                try {
+                    const url = `${API_BASE}/${post.id}/comments`;
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error('status ' + res.status);
+                    const data = await res.json();
+                    post.comments = (data || [])
+                        .filter(c => (c.status || c.estado || null) !== 'EXCLUIDO')
+                        .map(c => ({
+                            ...c,
+                            createdAt: c.createdAt || c.created_at,
+                            usuarioNome: c.usuarioNome || c.usuario || c.nome || c.email,
+                            status: c.status || c.estado || null
+                        }));
+                    post._newComment = post._newComment || '';
+                } catch (err) {
+                    post.comments = [];
+                } finally {
+                    post._loadingComments = false;
+                }
+            },
+
+            async addComment(post) {
+                if (!post || !post._newComment || !post._newComment.trim()) return;
+                if (post._postingComment) return;
+                post._postingComment = true;
+                const usuario = this.currentUserEmail || this.currentUser || 'anônimo';
+                const usuarioNome = this.currentUser || this.currentUserEmail || 'anônimo';
+                const body = { usuario, mensagem: post._newComment.trim() };
+                const { token, header } = readCsrf();
+                const headers = { 'Content-Type': 'application/json' };
+                if (token) headers[header] = token;
+                try {
+                    const res = await fetch(`${API_BASE}/${post.id}/comments`, {
+                        method: 'POST',
+                        headers,
+                        body: JSON.stringify(body)
+                    });
+                    if (res.status === 201) {
+                        const json = await res.json();
+                        const createdId = json.id;
+                        const newComment = {
+                            id: createdId,
+                            postId: post.id,
+                            usuario: usuario,
+                            usuarioNome: usuarioNome,
+                            mensagem: post._newComment.trim(),
+                            createdAt: new Date().toISOString(),
+                            status: null
+                        };
+                        post.comments = post.comments || [];
+                        post.comments.push(newComment);
+                        post._newComment = '';
+                    } else {
+                        alert('Falha ao enviar comentário (status ' + res.status + ')');
+                    }
+                } catch (err) {
+                    alert('Erro ao comentar: ' + err.message);
+                } finally {
+                    post._postingComment = false;
+                }
+            },
+
+            async deleteComment(post, commentId) {
+                if (!confirm('Remover este comentário?')) return;
+                const { token, header } = readCsrf();
+                const headers = { 'Content-Type': 'application/json' };
+                if (token) headers[header] = token;
+                try {
+                    const res = await fetch(`${API_BASE}/${post.id}/comments/${commentId}/exclude`, {
+                        method: 'PATCH',
+                        headers
+                    });
+                    if (res.status === 204 || res.ok) {
+                        post.comments = (post.comments || []).filter(c => c.id !== commentId);
+                    }
+                    else if (res.status === 403) {
+                        alert('Sem permissão para remover este comentário.');
+                    } else {
+                        alert('Falha ao remover (status ' + res.status + ')');
+                    }
+                } catch (err) {
+                    alert('Erro ao remover comentário: ' + err.message);
+                }
+            }
         };
     };
 })();

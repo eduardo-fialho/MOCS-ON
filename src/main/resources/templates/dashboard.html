@@ -124,10 +124,53 @@
                                                     </button>
                                                 </template>
                                             </div>
+                                            <div class="mt-3">
+                                                <button class="text-sm text-gray-600" @click="toggleComments(post)">
+                                                    <span x-text="(post._commentsOpen ? 'Fechar' : 'Ver') + ' comentários'"></span>
+                                                </button>
+                                                <div x-show="post._commentsOpen" x-cloak class="mt-2 space-y-3">
+                                                    <div x-show="post._loadingComments" class="text-sm text-gray-500">Carregando comentários...</div>
+                                                    <template x-for="comment in (post.comments || [])" :key="comment.id">
+                                                        <div class="bg-gray-50 p-2 rounded">
+                                                            <div class="flex justify-between items-start">
+                                                                <div>
+                                                                    <p class="text-sm font-semibold" x-text="comment.usuarioNome"></p>
+                                                                    <template x-if="comment.status === 'EXCLUIDO'">
+                                                                        <p class="text-sm text-gray-400" x-text="comment.mensagem"></p>
+                                                                    </template>
+                                                                    <template x-if="comment.status !== 'EXCLUIDO'">
+                                                                        <p class="text-sm text-gray-700" x-text="comment.mensagem"></p>
+                                                                    </template>
+                                                                    <p class="text-xs text-gray-400" x-text="timeAgo(comment.createdAt)"></p>
+                                                                </div>
+                                                                <div>
+                                                                    <template x-if="(comment.usuario === currentUserEmail || comment.usuarioNome === currentUser) || isSecretary">
+                                                                        <button class="text-xs text-red-600" @click="deleteComment(post, comment.id)">Remover</button>
+                                                                    </template>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                    <div x-show="!post._loadingComments && (!post.comments || post.comments.length === 0)" class="text-sm text-gray-500">Seja o primeiro a comentar.</div>
+                                                    <div class="pt-2">
+                                                        <textarea x-model="post._newComment" rows="2" class="w-full border rounded p-2 text-sm" placeholder="Escreva um comentário..."></textarea>
+                                                        <div class="flex justify-end mt-1">
+                                                            <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded"
+                                                                @click="addComment(post)"
+                                                                :disabled="post._postingComment || !(post._newComment && post._newComment.trim())">
+                                                                <span x-text="post._postingComment ? 'Enviando...' : 'Comentar'"></span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <div class="flex flex-col items-end gap-2">
-                                            <button class="text-sm text-red-600" @click="deletePost(post.id)">Excluir</button>
+                                            <template x-if="isSecretary">
+                                                <button class="text-sm text-red-600" @click="deletePost(post.id)"> Excluir
+                                                </button>
+                                            </template>
                                         </div>
                                     </div>
                                 </div>

@@ -4,7 +4,6 @@ CREATE DATABASE IF NOT EXISTS mocson
 
 USE mocson;
 
--- Schema inicial do banco MOCS ON
 CREATE TABLE IF NOT EXISTS `usuarios` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(255) NOT NULL,
@@ -79,6 +78,20 @@ CREATE TABLE IF NOT EXISTS `post_reactions` (
   UNIQUE KEY `ux_post_user` (`post_id`, `usuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS post_comments (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  post_id BIGINT UNSIGNED NOT NULL,
+  usuario VARCHAR(255) NOT NULL,
+  usuario_nome VARCHAR(255) NULL,
+  mensagem TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status VARCHAR(20) NULL,
+  PRIMARY KEY (id),
+  KEY idx_post_comments_post_id (post_id),
+  CONSTRAINT fk_post_comment_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 CREATE TABLE IF NOT EXISTS `avisos` (
     `id` bigint unsigned NOT NULL AUTO_INCREMENT,
     `autor` varchar(200) NOT NULL,
@@ -87,3 +100,4 @@ CREATE TABLE IF NOT EXISTS `avisos` (
     `data` datetime NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
