@@ -109,6 +109,22 @@
                                             <p class="text-xs text-gray-500 mt-1" x-text="timeAgo(post.data)"></p>
 
                                             <div class="mt-3 flex items-center gap-2 text-sm">
+                                                <button
+                                                    :class="{
+                                                        'bg-blue-100 ring-2 ring-offset-1 ring-blue-300': post._hasCurtido
+                                                    }"
+                                                    class="px-3 py-1 rounded-full flex items-center"
+                                                    @click="toggleCurtida(post)"
+                                                    >
+                                                    <span x-text="post._hasCurtido ? 'Curtido' : 'Curtir'"></span>
+                                                </button>
+
+                                                <button class="text-sm text-gray-600 underline" @click="openCurtidasModal(post)">
+                                                    <span x-text="(post._curtidaCount !== undefined) ? post._curtidaCount + ' pessoas' : '0 pessoas'"></span>
+                                                </button>
+                                            </div>
+
+                                            <div class="mt-3 flex items-center gap-2 text-sm">
                                                 <template x-for="emoji in emojis" :key="emoji">
                                                     <button
                                                         :class="{
@@ -171,6 +187,27 @@
                                                 <button class="text-sm text-red-600" @click="deletePost(post.id)"> Excluir
                                                 </button>
                                             </template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div x-show="post._curtidasModalOpen" x-cloak class="fixed inset-0 flex items-center justify-center z-50">
+                                    <div class="absolute inset-0 bg-black opacity-50" @click="closeCurtidasModal(post)"></div>
+                                    <div class="bg-white rounded shadow-lg p-4 max-w-md w-full z-10">
+                                        <div class="flex justify-between items-center mb-3">
+                                            <h3 class="text-lg font-semibold">Curtido por</h3>
+                                            <button class="text-sm text-gray-600" @click="closeCurtidasModal(post)">Fechar</button>
+                                        </div>
+                                        <div class="max-h-64 overflow-auto">
+                                            <template x-if="post._loadingCurtidas">
+                                                <div class="text-sm text-gray-500">Carregando...</div>
+                                            </template>
+                                            <template x-for="u in (post._curtidasList || [])" :key="u.usuario">
+                                                <div class="py-2 border-b">
+                                                    <div class="font-medium" x-text="u.usuarioNome"></div>
+                                                    <div class="text-xs text-gray-500" x-text="u.usuario"></div>
+                                                </div>
+                                            </template>
+                                            <div x-show="!post._loadingCurtidas && (!post._curtidasList || post._curtidasList.length === 0)" class="text-sm text-gray-500">Ninguém curtiu ainda.</div>
                                         </div>
                                     </div>
                                 </div>

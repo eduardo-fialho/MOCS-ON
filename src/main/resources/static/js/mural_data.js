@@ -64,9 +64,42 @@
                     if (!res.ok) throw new Error('status ' + res.status);
                     const data = await res.json();
                     data.sort((a, b) => new Date(b.data) - new Date(a.data));
-                    this.posts = data
+                    this.posts = (data || [])
                         .filter(p => p.status !== 'EXCLUIDO')
-                        .map(p => ({ ...p, _reacting: false }));
+                        .map(p => ({
+                            ...p,
+                            _reacting: false,
+                            _commentsOpen: false,
+                            _loadingComments: false,
+                            _newComment: '',
+                            _postingComment: false,
+                            _curtidasModalOpen: false,
+                            _curtidasList: [],
+                            _loadingCurtidas: false,
+                            _curtindo: false,
+                            _curtidaCount: 0,
+                            _hasCurtido: false
+                        }));
+
+                    if (this.posts.length > 0) {
+                        await Promise.all(this.posts.map(async post => {
+                            try {
+                                const r = await fetch(`${API_BASE}/${post.id}/curtidas`);
+                                if (!r.ok) {
+                                    post._curtidaCount = 0;
+                                    post._hasCurtido = false;
+                                    return;
+                                }
+                                const likes = await r.json();
+                                post._curtidaCount = Array.isArray(likes) ? likes.length : 0;
+                                const me = this.currentUserEmail || this.currentUser || null;
+                                post._hasCurtido = me ? likes.some(u => (u.usuario || '').toLowerCase() === (me || '').toLowerCase()) : false;
+                            } catch (e) {
+                                post._curtidaCount = 0;
+                                post._hasCurtido = false;
+                            }
+                        }));
+                    }
                 } catch (err) {
                     this.posts = [];
                     this.error = 'Erro ao carregar posts';
@@ -74,6 +107,7 @@
                     this.loading = false;
                 }
             },
+
 
             async createPost() {
                 if (!this.newMessage || !this.newMessage.trim()) {
@@ -275,8 +309,7 @@
                     });
                     if (res.status === 204 || res.ok) {
                         post.comments = (post.comments || []).filter(c => c.id !== commentId);
-                    }
-                    else if (res.status === 403) {
+                    } else if (res.status === 403) {
                         alert('Sem permissão para remover este comentário.');
                     } else {
                         alert('Falha ao remover (status ' + res.status + ')');
@@ -284,7 +317,62 @@
                 } catch (err) {
                     alert('Erro ao remover comentário: ' + err.message);
                 }
-            }
+            },
+
+            async toggleCurtida(post) {
+                if (!post) return;
+                if (post._curtindo) return;
+                post._curtindo = true;
+                const usuario = this.currentUserEmail || this.currentUser || 'anônimo';
+                const usuarioNome = this.currentUser || this.currentUserEmail || null;
+                const body = { usuario, usuarioNome };
+                const { token, header } = readCsrf();
+                const headers = { 'Content-Type': 'application/json' };
+                if (token) headers[header] = token;
+                try {
+                    const res = await fetch(`${API_BASE}/${post.id}/curtida`, {
+                        method: 'POST',
+                        headers,
+                        body: JSON.stringify(body)
+                    });
+                    if (res.status === 201) {
+                        post._curtidaCount = (post._curtidaCount || 0) + 1;
+                        post._hasCurtido = true;
+                    } else if (res.status === 204) {
+                        post._curtidaCount = Math.max(0, (post._curtidaCount || 1) - 1);
+                        post._hasCurtido = false;
+                    } else {
+                        const updated = await this.loadPosts();
+                    }
+                } catch (err) {
+                    await this.loadPosts();
+                } finally {
+                    post._curtindo = false;
+                }
+            },
+
+            openCurtidasModal: async function (post) {
+                if (!post) return;
+                post._loadingCurtidas = true;
+                post._curtidasList = [];
+                post._curtidasModalOpen = true;
+                try {
+                    const res = await fetch(`${API_BASE}/${post.id}/curtidas`);
+                    if (!res.ok) throw new Error('status ' + res.status);
+                    const data = await res.json();
+                    post._curtidasList = (data || []).map(u => ({ usuario: u.usuario, usuarioNome: u.usuarioNome || u.usuario }));
+                } catch (err) {
+                    post._curtidasList = [];
+                } finally {
+                    post._loadingCurtidas = false;
+                }
+            },
+
+            closeCurtidasModal: function (post) {
+                if (!post) return;
+                post._curtidasModalOpen = false;
+            },
+
         };
     };
 })();

@@ -91,6 +91,17 @@ CREATE TABLE IF NOT EXISTS post_comments (
   CONSTRAINT fk_post_comment_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS post_curtidas (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  post_id BIGINT UNSIGNED NOT NULL,
+  usuario VARCHAR(255) NOT NULL,
+  usuario_nome VARCHAR(255) NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY ux_post_usuario (post_id, usuario),
+  KEY idx_curtidas_post_id (post_id),
+  CONSTRAINT fk_curtida_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `avisos` (
     `id` bigint unsigned NOT NULL AUTO_INCREMENT,
