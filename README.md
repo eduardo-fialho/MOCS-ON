@@ -1,5 +1,7 @@
 # MOCS-ON
 
+[FOR DEVELOPERS](https://github.com/eduardo-fialho/MOCS-ON/blob/dev/ForDevelopers.md)
+
 ## Visão Geral
 MOCS ON é uma plataforma digital integrada para gerir o Modelo de Comitês Simulados (MOCS). O objetivo é oferecer um ambiente único para secretariado, equipe de apoio, diretores, participantes e parceiros acompanharem atividades, documentos, comunicações e decisões do projeto.
 

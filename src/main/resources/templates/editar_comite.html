@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOCS ON - Editar comitê</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+
+<body class="bg-gray-100">
+    <div class="flex flex-col min-h-screen">
+        <header class="bg-white shadow-md z-10 sticky top-0" x-data="profileData()" x-init="loadUserInfo()">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <a href="#"><img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON"
+                            class="h-8"></a>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <span class="font-semibold text-gray-700 hidden sm:block">CSNU</span>
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center space-x-2">
+                            <img src="https://placehold.co/40x40/cccccc/ffffff?text=U" alt="Avatar"
+                                class="h-9 w-9 rounded-full border-2 border-mocs-blue">
+                            <span class="hidden md:block font-semibold text-gray-700"
+                                x-text="userName">Carregando...</span>
+                            <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+                        </button>
+                        <div x-show="open" @click.away="open = false"
+                            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20"
+                            style="display: none;">
+                            <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b">
+                                <i class="fas fa-user mr-2"></i> Meu perfil
+                            </a>
+                            <template x-if="isSecretario">
+                                <div>
+                                    <a href="/secretariado.html"
+                                        class="block px-4 py-2 text-sm text-mocs-blue font-semibold hover:bg-gray-100 border-b">
+                                        <i class="fas fa-user-tie mr-2"></i> Área do Secretariado
+                                    </a>
+                                </div>
+                            </template>
+
+                            <a href="/auth/logout"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow container mx-auto p-4 md:p-6">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">Ver comitês</h2>
+            <section>
+                <h3 th:text="${comite.nome}"></h3>
+                <form action="/comite/editar" method="post" class="bg-white p-6 rounded-xl shadow-lg max-w-lg mx-auto">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">Editar Comitê</h2>
+                    <input type="hidden" name="id" th:value="${comite.id}">
+                    <article class="mb-4">
+                        <label for="nomeComite" class="block text-gray-700 font-semibold mb-2">Nome do Comitê</label>
+                        <input type="text" id="nomeComite" name="nome" required th:value="${comite.nome}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
+                    </article>
+                    <article class="mb-4">
+                        <label for="nomeComite" class="block text-gray-700 font-semibold mb-2">Sigla</label>
+                        <input type="text" id="nomeComite" name="sigla" required th:value="${comite.sigla}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
+                    </article>
+                    <article class="mb-4">
+                        <label for="statusComite" class="block text-gray-700 font-semibold mb-2">Status</label>
+                        <select id="statusComite" name="status" required th:value="${comite.status}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
+                            <option th:each="s : ${T(com.mocs_on.domain.Comite.StatusComite).values()}"
+                                    th:value="${s}"
+                                    th:text="${s}">EM_ANDAMENTO</option>
+                        </select>
+                    </article>
+                    <article class="mb-4">
+                        <label for="nomeComite" class="block text-gray-700 font-semibold mb-2">Número de delegados</label>
+                        <input type="number" id="nomeComite" name="numeroDelegados" required th:value="${comite.numeroDelegados}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
+                    </article>
+                    <article class="mb-4">
+                        <label for="descricaoComite" class="block text-gray-700 font-semibold mb-2">Descrição</label>
+                        <textarea id="descricaoComite" name="descricao" required th:text="${comite.descricao}"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue"></textarea>
+                    </article>
+                    <button type="submit"
+                        class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">Editar
+                        Comitê
+                    </button>
+                </form>
+
+                
+                <a th:href="@{deletar-comite/{id}(id=${comite.id})}">
+                    <button type="submit"
+                        class="bg-mocs-orange text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">Deletar
+                        Comitê
+                    </button>
+                </a>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>
