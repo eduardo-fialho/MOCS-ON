@@ -428,9 +428,9 @@ public class UserAccountService {
                 + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
         jdbcTemplate.execute(secretariadoSql);
 
-        jdbcTemplate.execute("ALTER TABLE `secretariado_profiles` "
-                + "ADD COLUMN IF NOT EXISTS `turno_atendimento` VARCHAR(100) NULL");
-        jdbcTemplate.execute("ALTER TABLE `secretariado_profiles` "
-                + "ADD COLUMN IF NOT EXISTS `responsabilidades` VARCHAR(255) NULL");
+        //jdbcTemplate.execute("ALTER TABLE `secretariado_profiles` "
+        //        + "ADD COLUMN IF NOT EXISTS `turno_atendimento` VARCHAR(100) NULL");
+        //jdbcTemplate.execute("ALTER TABLE `secretariado_profiles` "
+        //        + "ADD COLUMN IF NOT EXISTS `responsabilidades` VARCHAR(255) NULL");
     }
 }

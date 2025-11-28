@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
+﻿<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -10,143 +10,188 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <link rel="stylesheet" th:href="@{/css/index.css}" href="/css/index.css">
+    <script defer th:src="@{/js/index.js}" src="/js/index.js"></script>
 </head>
 
-<body class="bg-white">
+<body>
 
-    <header class="bg-white shadow-md z-20 sticky top-0">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center">
-                <img src="https://placehold.co/120x40/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON" class="h-8">
+    <header class="landing-header">
+        <div class="landing-container header-content">
+            <div class="brand">
+                <img src="https://placehold.co/140x44/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON">
             </div>
-            <nav class="hidden md:flex items-center space-x-6">
-                <a href="#sobre" class="text-gray-600 hover:text-mocs-blue font-semibold">Sobre</a>
-                <a href="#datas" class="text-gray-600 hover:text-mocs-blue font-semibold">Datas</a>
-                <a href="#equipe" class="text-gray-600 hover:text-mocs-blue font-semibold">Equipe</a>
-                <a href="#patrocinadores" class="text-gray-600 hover:text-mocs-blue font-semibold">Patrocinadores</a>
+            <button class="nav-toggle" aria-label="Abrir navegação">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav class="primary-nav">
+                <a href="#sobre">Sobre</a>
+                <a href="#datas">Datas</a>
+                <a href="#equipe">Equipe</a>
+                <a href="#patrocinadores">Patrocinadores</a>
             </nav>
-            <a href="/login"
-                class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90 transition-all">
-                Login
-            </a>
+            <a href="/login" class="btn-primary">Login</a>
         </div>
     </header>
 
     <main>
-        <section id="sobre" class="bg-gray-50">
-            <div class="container mx-auto px-4 py-20 text-center">
-                <h1 class="text-4xl md:text-6xl font-extrabold text-mocs-blue mb-4">MOCS XI</h1>
-                <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8">Seja um diplomata na 11ª edição do
-                    Modelo de Comitês Simulados do CEFET-MG.</p>
-                <div class="space-x-4">
-                    <a href="/login"
-                        class="bg-mocs-orange text-white font-bold py-3 px-8 rounded-lg hover:bg-opacity-90 transition-all text-lg">Inscreva-se</a>
+        <section id="sobre" class="hero">
+            <div class="landing-container hero-grid">
+                <div class="hero-text">
+                    <span class="hero-kicker">11ª edição</span>
+                <h1 class="hero-title">Diplomacia em movimento</h1>
+                    <p>O MOCS XI reúne mentes criativas e lideranças estudantis em um ambiente que combina arte, tecnologia e política. Vem viver a experiência.</p>
+                    <div class="hero-cta">
+                    <a href="/preinscricao" class="btn-primary btn-lg">Participar agora</a>
+                        <a href="#highlights" class="btn-secondary btn-lg">Ver destaques</a>
+                    </div>
+                </div>
+                <div class="hero-card">
+                    <header>
+                        <p class="hero-label">Painel de impacto</p>
+                        <span class="hero-pill">Atualizado em tempo real</span>
+                    </header>
+                    <div class="metrics-grid">
+                        <article>
+                            <strong>+420</strong>
+                            <span>delegados confirmados</span>
+                            <p>36 países representados</p>
+                        </article>
+                        <article>
+                            <strong>12</strong>
+                            <span>comitês e fóruns</span>
+                            <p>Temas em 4 eixos</p>
+                        </article>
+                        <article>
+                            <strong>92%</strong>
+                            <span>taxa de satisfação</span>
+                            <p>edição anterior</p>
+                        </article>
+                    </div>
+                    <footer>
+                        <p class="hero-note">Inscrições abertas até 15/11</p>
+                        <a href="/login" class="btn-ghost">Reservar delegação</a>
+                    </footer>
                 </div>
             </div>
         </section>
 
-        <section id="datas" class="py-16">
-            <div class="container mx-auto px-4">
-                <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">Datas Importantes</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto">
-                    <div class="text-center">
-                        <div
-                            class="bg-mocs-blue text-white w-24 h-24 rounded-full mx-auto flex items-center justify-center text-3xl font-bold mb-3">
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
-                        <h3 class="font-bold text-xl text-gray-800">20/10</h3>
-                        <p class="text-gray-600">Abertura das Inscrições</p>
-                    </div>
-                    <div class="text-center">
-                        <div
-                            class="bg-mocs-blue text-white w-24 h-24 rounded-full mx-auto flex items-center justify-center text-3xl font-bold mb-3">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <h3 class="font-bold text-xl text-gray-800">15/11</h3>
-                        <p class="text-gray-600">Envio das delegações</p>
-                    </div>
-                    <div class="text-center">
-                        <div
-                            class="bg-mocs-orange text-white w-24 h-24 rounded-full mx-auto flex items-center justify-center text-3xl font-bold mb-3">
-                            <i class="fas fa-gavel"></i>
-                        </div>
-                        <h3 class="font-bold text-xl text-gray-800">28/11</h3>
-                        <p class="text-gray-600">Abertura do MOCS XI</p>
-                    </div>
-                    <div class="text-center">
-                        <div
-                            class="bg-mocs-orange text-white w-24 h-24 rounded-full mx-auto flex items-center justify-center text-3xl font-bold mb-3">
-                            <i class="fas fa-trophy"></i>
-                        </div>
-                        <h3 class="font-bold text-xl text-gray-800">30/11</h3>
-                        <p class="text-gray-600">Encerramento do MOCS XI</p>
-                    </div>
+        <section id="highlights" class="landing-section muted">
+            <div class="landing-container">
+                <h2>Por que participar?</h2>
+                <div class="grid-cards">
+                    <article class="feature-card">
+                        <i class="fas fa-comments"></i>
+                        <h3>Debates memoráveis</h3>
+                        <p>Temas atuais, condução profissional e mentoria dedicada para cada delegado.</p>
+                    </article>
+                    <article class="feature-card">
+                        <i class="fas fa-users"></i>
+                        <h3>Networking real</h3>
+                        <p>Conecte-se com universidades parceiras, simulações e convidados especiais.</p>
+                    </article>
+                    <article class="feature-card">
+                        <i class="fas fa-lightbulb"></i>
+                        <h3>Conteúdo exclusivo</h3>
+                        <p>Workshops, material didático e uma plataforma feita sob medida para o evento.</p>
+                    </article>
+                    <article class="feature-card">
+                        <i class="fas fa-headset"></i>
+                        <h3>Suporte humanizado</h3>
+                        <p>Equipe disponível para orientar delegações antes e durante o MOCS.</p>
+                    </article>
                 </div>
             </div>
         </section>
 
-        <section id="equipe" class="bg-gray-50 py-16">
-            <div class="container mx-auto px-4">
-                <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">Nossa Equipe</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
-                        <img src="https://placehold.co/150x150/cccccc/ffffff?text=Foto" alt="Foto da Equipe"
-                            class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-mocs-blue">
-                        <h3 class="font-bold text-lg text-gray-800">Ana Sofia Miranda</h3>
-                        <p class="text-mocs-orange font-semibold">Secretária Geral Administrativa</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
-                        <img src="https://placehold.co/150x150/cccccc/ffffff?text=Foto" alt="Foto da Equipe"
-                            class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-mocs-blue">
-                        <h3 class="font-bold text-lg text-gray-800">Bernardo Gatti</h3>
-                        <p class="text-mocs-orange font-semibold">Secretário de Logística</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
-                        <img src="https://placehold.co/150x150/cccccc/ffffff?text=Foto" alt="Foto da Equipe"
-                            class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-mocs-blue">
-                        <h3 class="font-bold text-lg text-gray-800">Yohan Davi Vernier</h3>
-                        <p class="text-mocs-orange font-semibold">Secretário de Logística</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md text-center">
-                        <img src="https://placehold.co/150x150/cccccc/ffffff?text=Foto" alt="Foto da Equipe"
-                            class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-mocs-blue">
-                        <h3 class="font-bold text-lg text-gray-800">Anne Caroline</h3>
-                        <p class="text-mocs-orange font-semibold">Secretária de Projetos</p>
-                    </div>
+        <section id="datas" class="landing-section timeline">
+            <div class="landing-container">
+                <h2>Cronograma</h2>
+                <div class="timeline-grid">
+                    <article>
+                        <span>20/10</span>
+                        <h3>Inscrições abertas</h3>
+                        <p>Reserve sua delegação e garanta vagas nos comitês mais disputados.</p>
+                    </article>
+                    <article>
+                        <span>15/11</span>
+                        <h3>Envio das delegações</h3>
+                        <p>Envie dados e documentos. Nossa equipe confirma tudo na hora.</p>
+                    </article>
+                    <article>
+                        <span>28/11</span>
+                        <h3>Início do evento</h3>
+                        <p>Cerimônia, sessões e painéis artísticos para abrir o MOCS XI.</p>
+                    </article>
+                    <article>
+                        <span>30/11</span>
+                        <h3>Encerramento</h3>
+                        <p>Premiação, networking final e anúncio das próximas iniciativas.</p>
+                    </article>
                 </div>
             </div>
         </section>
 
-        <section id="patrocinadores" class="py-16">
-            <div class="container mx-auto px-4">
-                <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">Patrocinadores</h2>
-                <div class="flex justify-center items-center flex-wrap gap-8">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fd/Logo_CEFET-MG.png" alt="CEFET-MG"
-                        class="h-16">
-                    <img src="https://d11jve6usk2wa9.cloudfront.net/platform/200019/assets/logo.png" alt="IBMEC"
-                        class="h-16">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdwlsg48SjE9-vHAzpjP3nGv3MOGz8q0j-uA&s"
-                        alt="Dom Helder" class="h-16">
+        <section id="equipe" class="landing-section muted">
+            <div class="landing-container">
+                <h2>Nossa equipe</h2>
+                <div class="team-grid">
+                    <article class="team-card">
+                        <img src="https://placehold.co/150x150/cccccc/ffffff?text=Foto" alt="Ana Sofia Miranda">
+                        <h3>Ana Sofia Miranda</h3>
+                        <p>Secretária Geral Administrativa</p>
+                    </article>
+                    <article class="team-card">
+                        <img src="https://placehold.co/150x150/cccccc/ffffff?text=Foto" alt="Bernardo Gatti">
+                        <h3>Bernardo Gatti</h3>
+                        <p>Secretário de Logística</p>
+                    </article>
+                    <article class="team-card">
+                        <img src="https://placehold.co/150x150/cccccc/ffffff?text=Foto" alt="Yohan Davi Vernier">
+                        <h3>Yohan Davi Vernier</h3>
+                        <p>Secretário de Logística</p>
+                    </article>
+                    <article class="team-card">
+                        <img src="https://placehold.co/150x150/cccccc/ffffff?text=Foto" alt="Anne Caroline">
+                        <h3>Anne Caroline</h3>
+                        <p>Secretária de Projetos</p>
+                    </article>
                 </div>
-                <h2 class="text-3xl font-bold text-center text-gray-800 mt-12 mb-4">Simulações Parceiras</h2>
-                <div class="flex justify-center items-center flex-wrap gap-8">
-                    <img src="https://academiamagis.com/assets/images/logo_preta_correta_mobile_sidebar-ODgNsWSG.png"
-                        alt="Academia Magis" class="h-16">
-                    <img src="https://media.licdn.com/dms/image/v2/C4E0BAQET-ShehEDPHw/company-logo_200_200/company-logo_200_200/0/1630605393150?e=2147483647&v=beta&t=m1-c7gkAY7kUUMPonQ9SnqRQSUZZ1xk4gpD-CBsP7IE"
-                        alt="TEMAS" class="h-16">
+            </div>
+        </section>
+
+        <section id="patrocinadores" class="landing-section">
+            <div class="landing-container">
+                <h2>Parceiros e patrocinadores</h2>
+                <div class="partners-grid">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fd/Logo_CEFET-MG.png" alt="CEFET-MG">
+                    <img src="https://d11jve6usk2wa9.cloudfront.net/platform/200019/assets/logo.png" alt="IBMEC">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdwlsg48SjE9-vHAzpjP3nGv3MOGz8q0j-uA&s" alt="Dom Helder">
+                    <img src="https://academiamagis.com/assets/images/logo_preta_correta_mobile_sidebar-ODgNsWSG.png" alt="Academia Magis">
+                    <img src="https://media.licdn.com/dms/image/v2/C4E0BAQET-ShehEDPHw/company-logo_200_200/company-logo_200_200/0/1630605393150?e=2147483647&v=beta&t=m1-c7gkAY7kUUMPonQ9SnqRQSUZZ1xk4gpD-CBsP7IE" alt="TEMAS">
                 </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="landing-container cta-card">
+                <div>
+                    <p class="hero-kicker">Nova plataforma</p>
+                    <h2>Experimente o MOCS ON 2.0</h2>
+                    <p>Dashboard inteligente, galeria interativa e canais diretos com o secretariado.</p>
+                </div>
+                <a href="/login" class="btn-primary btn-lg">Entrar agora</a>
             </div>
         </section>
     </main>
 
-    <footer class="bg-mocs-blue text-white">
-        <div class="container mx-auto px-4 py-8 text-center">
+    <footer class="landing-footer">
+        <div class="landing-container">
             <p>&copy; 2024 MOCS CEFET-MG. Todos os direitos reservados.</p>
-            <div class="flex justify-center space-x-6 mt-4">
-                <a href="#" class="hover:text-mocs-orange"><i class="fab fa-instagram fa-2x"></i></a>
-                <a href="#" class="hover:text-mocs-orange"><i class="fab fa-twitter fa-2x"></i></a>
-                <a href="#" class="hover:text-mocs-orange"><i class="fas fa-envelope fa-2x"></i></a>
+            <div class="social-links">
+                <a href="https://www.instagram.com/mocscefet/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
+                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
             </div>
         </div>
     </footer>
@@ -154,3 +199,4 @@
 </body>
 
 </html>
+

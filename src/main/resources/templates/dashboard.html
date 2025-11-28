@@ -221,33 +221,129 @@
                 </div>
 
                 <div class="lg:col-span-1 flex flex-col gap-6" x-data="announcementsData()">
+                    <div x-data="calendarComponent()" x-init="init()" class="bg-white p-6 rounded-xl shadow-lg">
 
-                    <div class="bg-white p-6 rounded-xl shadow-lg">
-                        <h2 class="text-xl font-bold text-mocs-blue mb-4">Agenda do Dia</h2>
-                        <ul class="space-y-3">
-                            <li class="flex items-center gap-4">
-                                <i class="fas fa-check-circle text-green-500"></i>
-                                <div>
-                                    <p class="font-semibold text-gray-500 line-through">09:00 - 12:00</p>
-                                    <p class="text-sm text-gray-500 line-through">Sessão de Debate 1</p>
+                    <h2 class="text-xl font-bold text-mocs-blue mb-4 text-center">Agenda do Dia</h2>
+
+                    <div class="flex justify-center border-b mb-4">
+                        <button
+                        @click="aba = 'calendario'"
+                        :class="aba === 'calendario' ? 'text-mocs-blue font-semibold border-b-2 border-mocs-blue' : 'text-gray-500'"
+                        class="px-4 py-2 mx-2 transition">
+                        Calendário
+                        </button>
+
+                        <button
+                        @click="aba = 'hoje'"
+                        :class="aba === 'hoje' ? 'text-mocs-blue font-semibold border-b-2 border-mocs-blue' : 'text-gray-500'"
+                        class="px-4 py-2 mx-2 transition">
+                        Hoje
+                        </button>
+                    </div>
+
+                    <div x-show="aba === 'calendario'" x-transition class="p-2">
+                        <div class="p-4 border rounded-xl bg-white">
+
+                        <div class="flex justify-between items-center mb-4">
+                            <button @click="prevMonth()" class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300">‹</button>
+                            <h3 class="text-lg font-semibold text-gray-800"><span x-text="monthName + ' ' + year"></span></h3>
+                            <button @click="nextMonth()" class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300">›</button>
+                        </div>
+
+                        <div class="grid grid-cols-7 text-center text-sm font-semibold text-gray-600 mb-2">
+                            <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+                        </div>
+
+                        <div class="relative">
+                            <div class="grid grid-cols-7 gap-1 text-center text-sm">
+
+                            <template x-for="n in blanks" :key="'b'+n">
+                                <div class="p-2"></div>
+                            </template>
+
+                            <template x-for="day in days" :key="day.date">
+                                <div
+                                class="p-2 rounded-lg cursor-pointer relative transition group"
+                                :class="day.isToday ? 'bg-mocs-orange text-white font-semibold' : (day.events && day.events.length ? 'bg-mocs-blue/10 border border-mocs-blue' : 'bg-gray-100 text-gray-700')"
+                                @click="openModal(day)"
+                                @mouseenter="showTooltip($event, day)"
+                                @mouseleave="hideTooltip()"
+                                >
+                                <div class="text-sm" x-text="day.number"></div>
                                 </div>
+                            </template>
+
+                            </div>
+
+                            <div
+                            x-show="tooltipVisible"
+                            x-html="tooltipHtml"
+                            x-transition.opacity
+                            class="absolute z-50 w-64 p-2 rounded-lg shadow-lg border bg-white text-sm"
+                            :style="`left: ${tooltipX}px; top: ${tooltipY}px;`"
+                            style="display:none">
+                            </div>
+
+                        </div>
+                        </div>
+                    </div>
+
+                    <div x-show="aba === 'hoje'" x-transition>
+                        <ul class="space-y-3 mt-2">
+                        <template x-for="ev in hojeEventos" :key="ev.titulo + ev.horario">
+                            <li class="flex items-center gap-4 p-3 border rounded-lg">
+                            <div class="w-10 text-center">
+                                <i class="fas fa-calendar-day text-mocs-blue"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-semibold" x-text="ev.titulo"></p>
+                                <p class="text-sm text-gray-500" x-text="ev.horario + ' • ' + ev.local"></p>
+                            </div>
                             </li>
-                            <li class="flex items-center gap-4">
-                                <i class="fas fa-spinner fa-spin text-mocs-orange"></i>
-                                <div>
-                                    <p class="font-semibold">14:00 - 17:00</p>
-                                    <p class="text-sm text-gray-600">Sessão de Debate 2</p>
-                                </div>
-                            </li>
-                            <li class="flex items-center gap-4">
-                                <i class="far fa-circle text-gray-400"></i>
-                                <div>
-                                    <p class="font-semibold text-gray-400">17:00 - 17:30</p>
-                                    <p class="text-sm text-gray-400">Encerramento e Votações</p>
-                                </div>
-                            </li>
+                        </template>
+
+                        <div x-show="hojeEventos.length === 0" class="text-center text-gray-500 p-4">
+                            Nenhum evento para hoje.
+                        </div>
                         </ul>
                     </div>
+
+                    <div
+                        x-show="modalVisible"
+                        x-transition.opacity
+                        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                        style="display:none"
+                        @keydown.escape.window="closeModal()"
+                        @click.self="closeModal()"
+                    >
+                        <div class="bg-white rounded-xl p-6 w-96 shadow-lg relative">
+                        <button @click="closeModal()" class="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl">&times;</button>
+
+                        <h2 class="text-xl font-bold mb-2" x-text="modalDateFormatted"></h2>
+
+                        <div class="space-y-3 mt-3">
+                            <template x-for="ev in modalEvents" :key="ev.titulo + ev.horario">
+                            <div class="p-3 border rounded-lg">
+                                <p class="font-semibold" x-text="ev.titulo"></p>
+                                <p class="text-sm text-gray-500" x-text="ev.horario + ' • ' + (ev.local || '')"></p>
+                                <p class="text-sm text-gray-700 mt-2" x-text="ev.descricao || ''"></p>
+                            </div>
+                            </template>
+
+                            <div x-show="modalEvents.length === 0" class="text-gray-500">
+                            Nenhum evento neste dia.
+                            </div>
+                        </div>
+
+                        <div class="mt-6 flex justify-end">
+                            <button @click="closeModal()" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Fechar</button>
+                        </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
 
                     <div class="bg-white p-6 rounded-xl shadow-lg">
                         <h2 class="text-xl font-bold text-mocs-blue mb-4">Avisos da Organização</h2>
@@ -304,13 +400,28 @@
                     </div>
                 </div>
             </div>
+
+            <section class="mt-8" id="criar-comite-section">
+                <article class="bg-white p-6 rounded-xl shadow-lg">
+                    <form action="/comite/criar" method="get">
+                        <button type="submit" class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
+                            Criar Novo Comitê
+                        </button>
+                        <a th:href="@{/comite/listar}" class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90" style="margin-left: 10px; padding: 10px;">
+                                Listar Comitês
+                        </a>
+                    </form>
+                </article>
+            </section>
         </main>
     </div>
 
+    
     <script th:src="@{/js/dashboard_config.js}"></script>
     <script th:src="@{/js/profile_data.js}"></script>
     <script th:src="@{/js/announcements_data.js}"></script>
     <script th:src="@{/js/mural_data.js}"></script>
+    <script th:src="@{/js/agenda.js}"></script>
 </body>
 
 </html>
