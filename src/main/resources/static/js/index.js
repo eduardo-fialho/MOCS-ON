@@ -1,0 +1,35 @@
+﻿document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.querySelector('.nav-toggle');
+    const nav = document.querySelector('.primary-nav');
+
+    if (toggle && nav) {
+        toggle.addEventListener('click', () => {
+            const expanded = toggle.getAttribute('aria-expanded') === 'true';
+            toggle.setAttribute('aria-expanded', (!expanded).toString());
+            nav.classList.toggle('is-open');
+        });
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', (event) => {
+            const targetId = link.getAttribute('href');
+            if (!targetId || targetId === '#' || targetId.length === 0) {
+                return;
+            }
+            const target = document.querySelector(targetId);
+            if (!target) {
+                return;
+            }
+            event.preventDefault();
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+            if (nav && nav.classList.contains('is-open')) {
+                nav.classList.remove('is-open');
+                toggle?.setAttribute('aria-expanded', 'false');
+            }
+        });
+    });
+});
+
