@@ -11,7 +11,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/documentos.css}">
 </head>
@@ -19,29 +18,48 @@
 <body class="bg-gray-100">
     <div class="flex flex-col min-h-screen">
 
-        <header class="bg-white shadow-md z-10 sticky top-0">
+        <header class="bg-white shadow-md z-10 sticky top-0" x-data="() => profileData()" x-init="loadUserInfo()">
             <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-                <div class="flex items-center space-x-4">
-                    <a href="#"><img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON"
-                            class="h-8"></a>
-                    <h1 class="text-xl font-bold text-mocs-blue hidden md:block">Documentos do Comitê</h1>
+                
+                <div class="mt-4 md:mt-0">
+                    <a th:href="@{/secretariado.html}"
+                    class="text-gray-600 hover:text-mocs-blue font-semibold py-2 px-4 rounded-lg hover:bg-gray-100 inline-flex items-center">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar
+                    </a>
                 </div>
+                
+                <div class="flex items-center space-x-4">
+                    <a th:href="@{/}">
+                        <img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON"
+                            class="h-8">
+                    </a>
+                    <h1 class="text-xl font-bold text-mocs-blue hidden md:block">Lista de Documento</h1>
+                </div>
+    
                 <div class="flex items-center space-x-6">
-                    <span class="font-semibold text-gray-700 hidden sm:block">CSNU</span>
-                    <div class="relative">
-                        <button id="profile-dropdown-button" class="flex items-center space-x-2">
+                    <span class="font-semibold text-gray-700 hidden sm:block" x-text="userCargo">VISITANTE</span>
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center space-x-2">
                             <img src="https://placehold.co/40x40/cccccc/ffffff?text=U" alt="Avatar"
                                 class="h-9 w-9 rounded-full border-2 border-mocs-blue">
-                            <span id="profile-name"
-                                class="hidden md:block font-semibold text-gray-700">Carregando...</span>
+                            <span class="hidden md:block font-semibold text-gray-700"
+                                x-text="userName">Carregando...</span>
                             <i class="fas fa-chevron-down text-xs text-gray-500"></i>
                         </button>
-                        <div id="profile-dropdown-menu"
+                        <div x-show="open" @click.away="open = false"
                             class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20"
                             style="display: none;">
                             <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b">
                                 <i class="fas fa-user mr-2"></i> Meu perfil
                             </a>
+                            <template x-if="isSecretario">
+                                <div>
+                                    <a href="/secretariado.html"
+                                        class="block px-4 py-2 text-sm text-mocs-blue font-semibold hover:bg-gray-100 border-b">
+                                        <i class="fas fa-user-tie mr-2"></i> Área do Secretariado
+                                    </a>
+                                </div>
+                            </template>
                             <a href="/auth/logout"
                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
                         </div>
@@ -59,25 +77,6 @@
                         <div class="flex flex-col sm:flex-row gap-4 flex-1">
                             <input type="text" id="search-input" placeholder="Buscar por título, autor, tipo..."
                                 class="w-full sm:flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
-
-                            <select id="type-select"
-                                class="w-full sm:w-auto p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
-                                <option value="">Todos os Tipos</option>
-                                <option value="Proposta de Resolução">Proposta de Resolução (PR)</option>
-                                <option value="Documento de Trabalho">Documento de Trabalho (DT)</option>
-                                <option value="Emenda">Emenda</option>
-                                <option value="Nota">Nota</option>
-                            </select>
-
-                            <select id="status-select"
-                                class="w-full sm:w-auto p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
-                                <option value="">Todos os Status</option>
-                                <option value="Enviado">Enviado</option>
-                                <option value="Em Votação">Em Votação</option>
-                                <option value="Aprovado">Aprovado</option>
-                                <option value="Reprovado">Reprovado</option>
-                                <option value="Corrigir">Corrigir</option>
-                            </select>
                         </div>
 
                         <a th:href="@{/submissao_documentos.html}"
@@ -105,6 +104,9 @@
     </div>
 
     <script th:src="@{/js/documentos.js}"></script>
+    <script th:src="@{/js/dashboard_config.js}"></script>
+    <script th:src="@{/js/profile_data.js}"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </body>
 
 </html>

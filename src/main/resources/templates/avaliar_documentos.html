@@ -1,101 +1,140 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MOCS ON - Avaliar Documento</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/documentos.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
 <body class="bg-gray-100">
     <div class="flex flex-col min-h-screen">
-        <header class="bg-white shadow-md z-10 sticky top-0">
+        <header class="bg-white shadow-md z-10 sticky top-0" x-data="() => profileData()" x-init="loadUserInfo()">
             <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                
+                <div class="mt-4 md:mt-0">
+                    <a th:href="@{/documentos.html}"
+                    class="text-gray-600 hover:text-mocs-blue font-semibold py-2 px-4 rounded-lg hover:bg-gray-100 inline-flex items-center">
+                        <i class="fas fa-arrow-left mr-2"></i> Voltar à Lista
+                    </a>
+                </div>
+                
                 <div class="flex items-center space-x-4">
-                    <a href="index.html"><img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON"
-                            class="h-8"></a>
+                    <a th:href="@{/}">
+                        <img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON"
+                            class="h-8">
+                    </a>
                     <h1 class="text-xl font-bold text-mocs-blue hidden md:block">Avaliação de Documento</h1>
                 </div>
-                <a href="index.html" class="text-gray-600 hover:text-mocs-blue font-semibold py-2 px-4 rounded-lg hover:bg-gray-100"><i class="fas fa-arrow-left mr-2"></i>Voltar à Lista</a>
+
+                <div class="flex items-center space-x-6">
+                    <span class="font-semibold text-gray-700 hidden sm:block" x-text="userCargo">VISITANTE</span>
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center space-x-2">
+                            <img src="https://placehold.co/40x40/cccccc/ffffff?text=U" alt="Avatar"
+                                class="h-9 w-9 rounded-full border-2 border-mocs-blue">
+                            <span class="hidden md:block font-semibold text-gray-700"
+                                x-text="userName">Carregando...</span>
+                            <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+                        </button>
+                        <div x-show="open" @click.away="open = false"
+                            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20"
+                            style="display: none;">
+                            <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b">
+                                <i class="fas fa-user mr-2"></i> Meu perfil
+                            </a>
+                            <template x-if="isSecretario">
+                                <div>
+                                    <a href="/secretariado.html"
+                                        class="block px-4 py-2 text-sm text-mocs-blue font-semibold hover:bg-gray-100 border-b">
+                                        <i class="fas fa-user-tie mr-2"></i> Área do Secretariado
+                                    </a>
+                                </div>
+                            </template>
+                            <a href="/auth/logout"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </header>
 
         <main class="flex-grow container mx-auto p-4 md:p-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
                 <div class="lg:col-span-2 flex flex-col gap-6">
                     <div class="bg-white p-6 rounded-xl shadow-lg flex-1">
-                        <h2 class="text-2xl font-bold text-mocs-blue mb-4">Visualização: <span id="doc-title-view">Carregando...</span></h2>
+                        <h2 class="text-2xl font-bold text-mocs-blue mb-4">
+                            Visualização:
+                            <span th:text="${doc != null ? doc.nome : 'Carregando...'}"></span>
+                        </h2>
 
-                        <div class="border-2 border-dashed border-gray-300 h-[600px] flex items-center justify-center bg-gray-50 text-gray-500">
-                            <p id="doc-content-placeholder">
-                                <i class="fas fa-file-pdf mr-2"></i> Conteúdo do Documento (Simulação de visualizador embutido)
+                        <div class="border-2 border-dashed border-gray-300 h-[600px] flex flex-col bg-gray-50">
+
+                            <iframe th:if="${doc != null}"
+                                    th:src="@{/documentos/{id}/visualizar(id=${doc.id})}"
+                                    width="100%"
+                                    height="100%"
+                                    class="border rounded-lg">
+                            </iframe>
+
+                            <p th:if="${doc == null}" class="text-center mt-6 text-gray-500">
+                                <i class="fas fa-file mr-2"></i>
+                                Selecione um documento para visualizar.
                             </p>
                         </div>
+
                     </div>
                 </div>
 
                 <div class="lg:col-span-1 flex flex-col gap-6">
                     <div class="bg-white p-6 rounded-xl shadow-lg sticky top-20">
                         <h2 class="text-xl font-bold text-mocs-orange mb-4">Formulário de Avaliação</h2>
-                        
+
                         <form id="evaluation-form" class="space-y-4">
+                            <input type="hidden" id="doc-id" th:value="${doc.id}">
 
                             <div>
-                                <label for="status-select-eval" class="block text-sm font-semibold text-gray-700 mb-1">Status da Avaliação <span class="text-red-500">*</span></label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Status *</label>
                                 <select id="status-select-eval" required
-                                    class="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-orange">
-                                    <option value="" disabled selected>Selecione um status</option>
-                                    <option value="Aprovado">Aprovado</option>
-                                    <option value="Corrigir">Corrigir (Requer Revisão)</option>
-                                    <option value="Reprovado">Reprovado (Rejeitado)</option>
+                                    class="w-full p-2 border rounded-lg focus:ring-mocs-orange">
+                                    <option value="" disabled selected>Selecione</option>
+                                    <option value="Apreciado">Apreciado (Aprovado)</option>
+                                    <option value="Corrigir">Corrigir (Precisa de Revisão)</option>
                                 </select>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1">Status Oficial <span class="text-red-500">*</span></label>
-                                <div class="flex items-center space-x-4 p-2 border rounded-lg bg-gray-50">
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" name="isOfficial" value="true" class="form-radio text-mocs-blue">
-                                        <span class="ml-2 text-gray-700 font-medium">Oficial</span>
-                                    </label>
-                                    <label class="inline-flex items-center">
-                                        <input type="radio" name="isOfficial" value="false" class="form-radio text-mocs-blue" checked>
-                                        <span class="ml-2 text-gray-700 font-medium">Não Oficial</span>
-                                    </label>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <label for="reviewer-comments" class="block text-sm font-semibold text-gray-700 mb-1">Comentários do Avaliador <span class="text-red-500">*</span></label>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Comentários *</label>
                                 <textarea id="reviewer-comments" rows="6" required
-                                    class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue"
-                                    placeholder="Insira o feedback detalhado para o delegado..."></textarea>
+                                    class="w-full p-3 border rounded-lg"
+                                    placeholder="Insira o feedback..."></textarea>
                             </div>
 
                             <button type="submit"
-                                class="w-full bg-mocs-blue text-white font-semibold py-3 rounded-lg hover:bg-opacity-90 transition duration-150">
+                                class="w-full bg-mocs-blue text-white font-semibold py-3 rounded-lg">
                                 <i class="fas fa-save mr-2"></i> Salvar Avaliação
                             </button>
                         </form>
-                        <div id="message-area" class="mt-4 text-sm font-medium p-3 rounded-lg text-center" style="display: none;"></div>
 
+                        <div id="message-area"
+                             class="mt-4 text-sm font-medium p-3 rounded-lg text-center"
+                             style="display:none"></div>
                     </div>
                 </div>
+
             </div>
         </main>
     </div>
 
     <script th:src="@{/js/avaliacao.js}"></script>
+    <script th:src="@{/js/dashboard_config.js}"></script>
+    <script th:src="@{/js/profile_data.js}"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </body>
-
 </html>

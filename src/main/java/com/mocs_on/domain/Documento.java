@@ -1,5 +1,7 @@
 package com.mocs_on.domain;
 
+import java.time.LocalDateTime;
+
 public class Documento {
 
     private Long id;
@@ -8,6 +10,16 @@ public class Documento {
     private Boolean ativo;
     private StatusDocumento status;
     private byte[] arquivo;
+    private LocalDateTime data;
+    private String avaliacao;
+
+    public LocalDateTime getData() {
+        return data;
+    }
+
+    public void setData(LocalDateTime data) {
+        this.data = data;
+    }
 
     public Long getId() {
         return id;
@@ -57,4 +69,11 @@ public class Documento {
         this.arquivo = arquivo;
     }
 
+    public String getAvaliacao() {
+        return avaliacao;
+    }
+
+    public void setAvaliacao(String avaliacao) {
+        this.avaliacao = avaliacao;
+    }
 }

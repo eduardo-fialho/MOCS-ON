@@ -97,8 +97,9 @@ CREATE TABLE IF NOT EXISTS `documentos` (
     `arquivo` LONGBLOB NOT NULL,
     `status` VARCHAR(50) NOT NULL DEFAULT 'EM ENVIO',
     `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
-    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `data` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `avaliacao` VARCHAR(1000) NOT NULL,
+
     PRIMARY KEY (`id`),
     KEY `idx_documentos_status` (`status`),
     KEY `idx_documentos_ativo` (`ativo`)

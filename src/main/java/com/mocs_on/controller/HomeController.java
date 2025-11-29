@@ -1,19 +1,29 @@
 package com.mocs_on.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.mocs_on.domain.Documento;
 import com.mocs_on.security.SecaoUsuario;
+import com.mocs_on.service.AvisoDAO;
+import com.mocs_on.service.DocumentoDAO;
 
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 @CrossOrigin(origins = "*")
 public class HomeController {
+
+    @Autowired
+    private DocumentoDAO documentoDAO;
+    @Autowired
+    private AvisoDAO avisoDAO;
 
     @GetMapping("/")
     public String index() {
@@ -59,6 +69,8 @@ public class HomeController {
         if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
             return "redirect:/login";
         }
+        model.addAttribute("numAvisos", avisoDAO.quantidadeAvisos());
+        model.addAttribute("numDocumentos", documentoDAO.quantidadeDocumentos());
         populateUserAttributes(model);
         return "secretariado";
     }
@@ -73,11 +85,15 @@ public class HomeController {
     }
 
     @GetMapping("/avaliar_documentos.html")
-    public String avaliar(HttpSession session, Model model) {
+    public String avaliar(@RequestParam(required = false) Long docId, HttpSession session, Model model) {
         if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
             return "redirect:/login";
         }
         populateUserAttributes(model);
+        if (docId != null) {
+            Documento doc = documentoDAO.recuperarPorId(docId);
+            model.addAttribute("doc", doc);
+        }
         return "avaliar_documentos";
     }
 
