@@ -90,7 +90,6 @@ CREATE TABLE IF NOT EXISTS `avisos` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-<<<<<<< HEAD
 CREATE TABLE IF NOT EXISTS `documentos` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `nome` VARCHAR(255) NOT NULL,
@@ -104,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `documentos` (
     PRIMARY KEY (`id`),
     KEY `idx_documentos_status` (`status`),
     KEY `idx_documentos_ativo` (`ativo`)
-=======
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `comites` (
     `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -115,6 +114,7 @@ CREATE TABLE IF NOT EXISTS `comites` (
     `status` VARCHAR(50) NOT NULL DEFAULT 'EM_ANDAMENTO',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS agenda_diaria (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     titulo VARCHAR(255),
@@ -122,5 +122,4 @@ CREATE TABLE IF NOT EXISTS agenda_diaria (
     data_evento DATE,
     hora_evento TIME,
     visivel BOOLEAN DEFAULT TRUE
->>>>>>> main
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

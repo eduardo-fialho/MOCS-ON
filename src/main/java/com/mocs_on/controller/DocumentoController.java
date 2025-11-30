@@ -1,6 +1,7 @@
 package com.mocs_on.controller;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +50,7 @@ public class DocumentoController {
         }
 
         if (file.getSize() > 10 * 1024 * 1024) {
-            return ResponseEntity.status(HttpStatus.CONTENT_TOO_LARGE).body("Arquivo maior que 10MB");
+            return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body("Arquivo maior que 10MB");
         }
 
         String nomeArquivoReal = file.getOriginalFilename();
@@ -71,6 +72,7 @@ public class DocumentoController {
         doc.setAutor(autor);
         doc.setStatus(StatusDocumento.RECEBIDO);
         doc.setAtivo(true);
+        doc.setData(LocalDateTime.now());
 
         try {
             doc.setArquivo(file.getBytes());
