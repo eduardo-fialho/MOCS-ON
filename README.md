@@ -1,7 +1,5 @@
 # MOCS-ON
 
-[FOR DEVELOPERS](https://github.com/eduardo-fialho/MOCS-ON/blob/dev/ForDevelopers.md)
-
 ## Visão Geral
 MOCS ON é uma plataforma digital integrada para gerir o Modelo de Comitês Simulados (MOCS). O objetivo é oferecer um ambiente único para secretariado, equipe de apoio, diretores, participantes e parceiros acompanharem atividades, documentos, comunicações e decisões do projeto.
 
@@ -149,7 +147,7 @@ Planejamento da construção do projeto resumido em 3 sprints.
 | Ana Sofia de Miranda | CSU15 | Publicação das agendas de cada comitê. |
 | Hike Penedo Mendes | CSU16 | Agenda diária consolidada para logística do evento. |
 | Eduardo Lopes Fialho | CSU18 | Publicação de guias e materiais de estudo centralizados. |
-| Samuel Soares dos Santos | CSU12 | Workflow completo do comitê de imprensa. |
+| Samuel Soares dos Santos | CSU12 | Submeter e Aprovar um post da Imprensa |
 | Arthur Henrique Neves | CSU09 | Registro avançado de listas de presença. |
 | Túlio Araújo Grossi | CSU17 | Gestão de delegações por comitê. |
 
