@@ -1,6 +1,5 @@
 package com.mocs_on.security;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -10,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.mocs_on.domain.Comite;
 
-public class SecaoUsuario implements UserDetails, Serializable { 
+public class SecaoUsuario implements UserDetails { 
 
     private static final long serialVersionUID = 1L; 
 
