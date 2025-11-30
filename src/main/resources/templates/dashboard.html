@@ -110,19 +110,17 @@
 
                                             <div class="mt-3 flex items-center gap-2 text-sm">
                                                 <button
-                                                    :class="{
-                                                        'bg-blue-100 ring-2 ring-offset-1 ring-blue-300': post._hasCurtido
-                                                    }"
                                                     class="px-3 py-1 rounded-full flex items-center"
                                                     @click="toggleCurtida(post)"
-                                                    >
-                                                    <span x-text="post._hasCurtido ? 'Curtido' : 'Curtir'"></span>
+                                                >
+                                                    <span>Curtir</span>
                                                 </button>
 
                                                 <button class="text-sm text-gray-600 underline" @click="openCurtidasModal(post)">
                                                     <span x-text="(post._curtidaCount !== undefined) ? post._curtidaCount + ' pessoas' : '0 pessoas'"></span>
                                                 </button>
                                             </div>
+
 
                                             <div class="mt-3 flex items-center gap-2 text-sm">
                                                 <template x-for="emoji in emojis" :key="emoji">
