@@ -68,6 +68,10 @@ public class Usuario {
         return tipo;
     }
 
+    public String getTipoString() {
+        return tipo.name();
+    }
+
     public void setComites(List<Comite> comites) {
         this.comites = comites;
     }
