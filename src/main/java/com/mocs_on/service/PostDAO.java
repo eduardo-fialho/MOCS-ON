@@ -80,7 +80,7 @@ public List<Post> recuperarPorComite(Long comiteId) {
     }
 
     public Long inserirPost(Post post) {
-        String sql = "INSERT INTO posts (autor, mensagem, data, status) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO posts (autor, mensagem, data, status, comite_id) VALUES (?, ?, ?, ?, ?)";
         Timestamp ts = Timestamp.valueOf(post.getData());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -90,6 +90,7 @@ public List<Post> recuperarPorComite(Long comiteId) {
             ps.setString(2, post.getMensagem());
             ps.setTimestamp(3, ts);
             ps.setString(4, post.getStatus() == null ? Post.TipoPost.PUBLICO.name() : post.getStatus().name());
+            ps.setLong(5, post.getComiteId());
             return ps;
         }, keyHolder);
 
@@ -177,7 +178,18 @@ public List<Post> recuperarPorComite(Long comiteId) {
         return jdbcTemplate.update(sqlPost, postId);
     }
 
-    public static Post get(Connection conn, long id) throws Exception, SQLException {
+    public Post set(ResultSet rs) throws SQLException {
+        Post vo = new Post();
+        vo.setId(rs.getLong("id"));
+        vo.setAutor(rs.getString("nome"));
+        vo.setMensagem(rs.getString("mensagem"));
+        vo.setData(rs.getTimestamp("data").toLocalDateTime());
+        vo.setStatus(Post.TipoPost.valueOf(rs.getString("status")));
+        
+        return vo;
+    }
+
+    public Post get(Connection conn, long id) throws Exception, SQLException {
         PreparedStatement ps = null;
         ResultSet rs = null;
 

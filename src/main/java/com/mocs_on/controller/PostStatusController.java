@@ -1,24 +1,14 @@
 package com.mocs_on.controller;
 
-import java.net.URI;
-import java.time.LocalDateTime;
-import java.util.List;
-
 import java.sql.Connection;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.mocs_on.domain.Reaction;
 import com.mocs_on.domain.Post;
-import com.mocs_on.service.PostDAO;
-
-import org.springframework.ui.Model;
-
 import com.mocs_on.service.HDataSource;
+import com.mocs_on.service.PostDAO;
 
 @RequestMapping("/postStatus")
 public class PostStatusController {
@@ -42,13 +32,13 @@ public class PostStatusController {
             throw new Exception("Sql Exception: " + e.getMessage());
         }
 
-        return "dashboard";
+        return "redirect:/dashboard";
     }
 
     @RequestMapping("/negar/{id}")
     public String negarPost(@PathVariable("id") Long idPost) throws Exception {
         try (Connection conn = ds.getConnection()) {
-			PostDAO PostDao = new PostDAO();
+            PostDAO PostDao = new PostDAO();
             
             Post post = PostDao.get(conn, idPost);
 
@@ -61,6 +51,6 @@ public class PostStatusController {
             throw new Exception("Sql Exception: " + e.getMessage());
         }
 
-        return "dashboard";
+    return "/comite/listar";
     }
 }

@@ -81,7 +81,8 @@
                 const body = {
                     autor: this.postAsAnon ? (this.currentUser || '') : (this.currentUser || 'Delegado'),
                     mensagem: this.newMessage.trim(),
-                    status: this.postAsAnon ? 'ANONIMO' : 'PUBLICO'
+                    status: this.postAsAnon ? 'ANONIMO' : 'PUBLICO',
+                    comiteId: 1
                 };
 
                 const { token, header } = readCsrf();
