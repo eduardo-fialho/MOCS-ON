@@ -1,13 +1,6 @@
 package com.mocs_on.auth;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Properties;
-
+import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +10,12 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
-import jakarta.mail.MessagingException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Properties;
 
 @Service
 public class EmailService {
@@ -33,22 +31,12 @@ public class EmailService {
     private String defaultFrom;
 
     public DeliveryStatus send(String to, String subject, String body) {
-        if (to == null) return send((List<String>) null, subject, body, false);
-        return send(List.of(to), subject, body, false);
-    }
-
-    public DeliveryStatus send(String to, String subject, String body, boolean html) {
-        if (to == null) return send((List<String>) null, subject, body, html);
-        return send(List.of(to), subject, body, html);
-    }
-
-    public DeliveryStatus send(List<String> toList, String subject, String body, boolean html) {
         JavaMailSender sender = this.mailSender;
         SmtpSettings settings = loadSettings();
 
         if (sender == null) {
             if (settings == null || !settings.isValid()) {
-                log.info("mail fallback -> to: {} | subject: {} | body:\n{}", toList, subject, body);
+                log.info("RESET_LINK mail fallback -> to: {} | subject: {} | body:\n{}", to, subject, body);
                 log.info("Dica: configure SMTP_* como variáveis de ambiente ou edite config/smtp_config.properties.");
                 return DeliveryStatus.FALLBACK;
             }
@@ -63,11 +51,7 @@ public class EmailService {
         try {
             var message = sender.createMimeMessage();
             var helper = new org.springframework.mail.javamail.MimeMessageHelper(message, "UTF-8");
-
-            if (toList != null && !toList.isEmpty()) {
-                helper.setTo(toList.toArray(new String[0]));
-            }
-
+            helper.setTo(to);
             if (fromEmail != null && !fromEmail.isBlank()) {
                 if (fromName != null && !fromName.isBlank()) {
                     helper.setFrom(fromEmail, fromName);
@@ -75,18 +59,17 @@ public class EmailService {
                     helper.setFrom(fromEmail);
                 }
             }
-
-            helper.setSubject(subject == null ? "" : subject);
-            helper.setText(body == null ? "" : body, html);
+            helper.setSubject(subject);
+            helper.setText(body, false);
             sender.send(message);
             return DeliveryStatus.SENT;
         } catch (MailException | MessagingException ex) {
             log.warn("Falha ao enviar e-mail. Caindo para o fallback. erro={}", ex.getMessage());
-            log.info("mail fallback -> to: {} | subject: {} | body:\n{}", toList, subject, body);
+            log.info("RESET_LINK mail fallback -> to: {} | subject: {} | body:\n{}", to, subject, body);
             return DeliveryStatus.FALLBACK;
         } catch (Exception ex) {
             log.warn("Falha inesperada ao montar e-mail. Caindo para o fallback. erro={}", ex.getMessage());
-            log.info("mail fallback -> to: {} | subject: {} | body:\n{}", toList, subject, body);
+            log.info("RESET_LINK mail fallback -> to: {} | subject: {} | body:\n{}", to, subject, body);
             return DeliveryStatus.FALLBACK;
         }
     }
