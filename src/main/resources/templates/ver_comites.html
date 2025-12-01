@@ -70,6 +70,7 @@
                             <th class="py-3 px-6 text-left">Status</th>
                             <th class="py-3 px-6 text-left">Número de Delegados</th>
                             <th class="py-3 px-6 text-left">Descrição</th>
+                            <th class="py-3 px-6 text-left">Dashboard</th>
                             <th class="py-3 px-6 text-left">Editar</th>
                         </tr>
                     </thead>
@@ -80,6 +81,12 @@
                             <td class="py-4 px-6" th:text="${comite.status}">Status</td>
                             <td class="py-4 px-6" th:text="${comite.numeroDelegados}">0</td>
                             <td class="py-4 px-6" th:text="${comite.descricao}">0</td>
+                            <td class="py-4 px-6">
+                                <!--(comiteId=${comite.id})-->
+                                <a th:href="@{/dashboard}"><button class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
+                                    Ver dashboard
+                                </button></a>
+                            </td>
                             <td class="py-4 px-6">  
                                 <a th:href="@{editar/{id}(id=${comite.id})}"><button class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
                                     Editar

@@ -26,6 +26,7 @@
     window.muralData = function () {
         return {
             posts: [],
+            postsPendentes: [],
             loading: false,
             posting: false,
             newMessage: '',
@@ -61,6 +62,8 @@
                     data.sort((a, b) => new Date(b.data) - new Date(a.data));
 
                     this.posts = data.filter(p => p.status !== 'EXCLUIDO');
+
+                    this.postsPendentes = data.filter(p => p.status === 'PENDENTE');
                 } catch (err) {
                     this.posts = [];
                     this.error = 'Erro ao carregar posts';

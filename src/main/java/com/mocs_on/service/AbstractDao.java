@@ -4,13 +4,15 @@ import java.sql.DriverManager;
 import java.sql.ResultSet; 
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.springframework.beans.factory.annotation.Value;
 public class AbstractDao {
-
+    @Value("${spring.datasource.url")
+    static String url;
+    @Value("${spring.datasource.username")
+    static String user;
+    @Value("${spring.datasource.password")
+    static String pwd;
     public static Connection getConnection() throws SQLException{    
-        String url="jdbc:mysql://localhost:3306/MOCSON?createDatabaseIfNotExist=true&characterEncoding=UTF-8";
-        String pwd="";
-        String user="root";
-        //altere conforme os dados do usuario
         Connection conn=DriverManager.getConnection(url, user, pwd);
         conn.setAutoCommit(false);
         return conn;

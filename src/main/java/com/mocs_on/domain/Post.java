@@ -11,7 +11,7 @@ public class Post {
     private String autor;
     private TipoPost status;
     private LocalDateTime dataPublicacao;
-    
+    private Long comiteId;
     public static final String DISPLAY_ANON = "Spotted by: CSNU";
     private Map<String, Integer> reactions = new HashMap<>();
     
@@ -19,6 +19,7 @@ public class Post {
         PUBLICO,
         ANONIMO,
         EXCLUIDO,
+        PENDENTE,
     }
     
     public Post() {
@@ -92,5 +93,11 @@ public class Post {
 
     public void removeReaction(String emoji) {
         reactions.computeIfPresent(emoji, (k,v) -> (v <= 1) ? null : v - 1);
+    }
+    public Long getComiteId() {
+        return comiteId;
+    }
+    public void setComiteId(Long comiteId) {
+        this.comiteId = comiteId;
     }
 }

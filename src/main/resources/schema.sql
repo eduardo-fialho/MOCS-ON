@@ -59,6 +59,16 @@ CREATE TABLE IF NOT EXISTS `secretariado_profiles` (
   CONSTRAINT `fk_secretariado_user` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `comites` (
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+    `nome` varchar(200) NOT NULL,
+    `sigla` varchar(200) NOT NULL,
+    `num_delegados` BIGINT NOT NULL,
+    `descricao` VARCHAR(500) NOT NULL,
+    `status` VARCHAR(50) NOT NULL DEFAULT 'EM_ANDAMENTO',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Ajuste feito por Arthur Henrique: mantemos o mesmo contrato criado pelo Samuel no PostDAO,
 -- garantindo que toda nova tabela já tenha a coluna `status` com padrão 'PUBLICO'.
 CREATE TABLE IF NOT EXISTS `posts` (
@@ -67,6 +77,8 @@ CREATE TABLE IF NOT EXISTS `posts` (
   `mensagem` TEXT NOT NULL,
   `data` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `status` VARCHAR(20) NOT NULL DEFAULT 'PUBLICO',
+  `comite_id` BIGINT UNSIGNED NOT NULL,
+  FOREIGN KEY (`comite_id`) REFERENCES `comites`(`id`) ON DELETE CASCADE,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -90,16 +102,6 @@ CREATE TABLE IF NOT EXISTS `avisos` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-
-CREATE TABLE IF NOT EXISTS `comites` (
-    `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-    `nome` varchar(200) NOT NULL,
-    `sigla` varchar(200) NOT NULL,
-    `num_delegados` BIGINT NOT NULL,
-    `descricao` VARCHAR(500) NOT NULL,
-    `status` VARCHAR(50) NOT NULL DEFAULT 'EM_ANDAMENTO',
-    PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS agenda_diaria (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     titulo VARCHAR(255),
@@ -108,3 +110,7 @@ CREATE TABLE IF NOT EXISTS agenda_diaria (
     hora_evento TIME,
     visivel BOOLEAN DEFAULT TRUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS DashboardData(
+  message VARCHAR(2000), file MEDIUMBLOB, posts JSON, date DATE
+)
