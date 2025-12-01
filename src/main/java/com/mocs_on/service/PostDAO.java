@@ -52,6 +52,7 @@ public List<Post> recuperarPorComite(Long comiteId) {
             post.setId(resultado.getLong("id"));
             post.setAutor(resultado.getString("autor"));
             post.setMensagem(resultado.getString("mensagem"));
+            post.setComiteId(resultado.getLong("comite_id"));
 
             String statusStr = resultado.getString("status");
             if (statusStr != null) {
@@ -181,7 +182,7 @@ public List<Post> recuperarPorComite(Long comiteId) {
     public Post set(ResultSet rs) throws SQLException {
         Post vo = new Post();
         vo.setId(rs.getLong("id"));
-        vo.setAutor(rs.getString("nome"));
+        vo.setAutor(rs.getString("autor"));
         vo.setMensagem(rs.getString("mensagem"));
         vo.setData(rs.getTimestamp("data").toLocalDateTime());
         vo.setStatus(Post.TipoPost.valueOf(rs.getString("status")));
@@ -224,7 +225,7 @@ public List<Post> recuperarPorComite(Long comiteId) {
             ps.setString(2, vo.getMensagem());
             ps.setString(3, vo.getStatus().name());
             ps.setTimestamp(4, Timestamp.valueOf(vo.getData()));
-            ps.setLong(6, vo.getId());
+            ps.setLong(5, vo.getId());
             int count = ps.executeUpdate();
             if (count == 0) {
                 throw new Exception("Object not found [" + vo.getId() + "] .");

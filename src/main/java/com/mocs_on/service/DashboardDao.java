@@ -16,6 +16,12 @@ public class DashboardDao extends AbstractDao {
         String sql = "SELECT message FROM DashboardData ORDER BY date DESC LIMIT 1";
         Statement statement = conn.createStatement();
         ResultSet rs = statement.executeQuery(sql);
-        return rs.getString(1);
+
+        if (rs.next()) {
+            String message = rs.getString("mensagem");
+            return message;
+        } else {
+            return null; // or a default value
+        }
     }
 }

@@ -61,7 +61,8 @@
                     const data = await res.json();
                     data.sort((a, b) => new Date(b.data) - new Date(a.data));
 
-                    this.posts = data.filter(p => p.status !== 'EXCLUIDO');
+                    this.posts = data.filter(p => p.status !== 'EXCLUIDO' && p.status !== 'PENDENTE');
+                    //&& p.comiteId === ALGUMA COISA COMITE
 
                     this.postsPendentes = data.filter(p => p.status === 'PENDENTE');
                 } catch (err) {
@@ -81,7 +82,7 @@
                 const body = {
                     autor: this.postAsAnon ? (this.currentUser || '') : (this.currentUser || 'Delegado'),
                     mensagem: this.newMessage.trim(),
-                    status: this.postAsAnon ? 'ANONIMO' : 'PUBLICO',
+                    status: this.postAsAnon ? 'ANONIMO' : 'PENDENTE',
                     comiteId: 1
                 };
 
