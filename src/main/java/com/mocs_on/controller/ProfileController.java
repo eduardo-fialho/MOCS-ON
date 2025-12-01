@@ -1,4 +1,4 @@
-﻿package com.mocs_on.controller;
+package com.mocs_on.controller;
 
 import com.mocs_on.auth.UserAccountService;
 import com.mocs_on.domain.Post;

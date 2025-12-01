@@ -1,11 +1,11 @@
-Ôªø<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MOCS ON - Dashboard do Delegado</title>
 
-    <!-- Tailwind CSS (CDN - apenas para testes; use build local em produ√ß√£o) -->
+    <!-- Tailwind CSS (CDN - apenas para testes; use build local em produÁ„o) -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Alpine.js v3 (corrigido) -->
@@ -187,7 +187,7 @@
 
 <body class="bg-gray-100 dashboard-bg">
     <div class="flex flex-col min-h-screen">
-        <!-- Cabe√ßalho -->
+        <!-- CabeÁalho -->
         <header class="z-10 sticky top-0" x-data="headerController()" x-init="loadUserInfo()" @click.away="menuOpen = false">
             <div class="container mx-auto px-4 py-3">
                 <div class="liquid-glass liquid-glass--header w-full transition-all duration-500" :class="menuOpen ? 'pb-4' : ''">
@@ -209,7 +209,7 @@
                                     </a>
                                     <template x-if="isSecretario">
                                         <a href="/secretariado.html" class="menu-chip w-full justify-center">
-                                            <i class="fas fa-user-tie"></i> √Årea do Secretariado
+                                            <i class="fas fa-user-tie"></i> ¡rea do Secretariado
                                         </a>
                                     </template>
                                 </div>
@@ -222,9 +222,9 @@
 
         <main class="flex-grow container mx-auto p-4 md:p-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- √Årea principal da Galeria Mocs -->
+                <!-- ¡rea principal da Galeria Mocs -->
                 <section class="lg:col-span-8 flex flex-col gap-6" x-data="galeriaPreview()" x-init="init()">
-                    <!-- Busca + filtros + a√ß√µes r√°pidas -->
+                    <!-- Busca + filtros + aÁıes r·pidas -->
                     <div class="liquid-glass overflow-hidden p-6">
                         <div class="flex flex-col gap-4 lg:flex-row lg:items-end">
                             <div class="flex-1">
@@ -236,7 +236,7 @@
                                            @keydown.enter.prevent
                                            type="text"
                                            class="liquid-glass-input w-full pl-10 pr-4 py-2.5 rounded-lg focus:ring-2 focus:ring-mocs-blue focus:border-mocs-blue text-gray-700"
-                                           placeholder="Busque pessoas, pa√≠ses ou temas da confer√™ncia">
+                                           placeholder="Busque pessoas, paÌses ou temas da conferÍncia">
                                 </div>
                             </div>
                             <div class="flex flex-wrap gap-2">
@@ -265,13 +265,13 @@
                                         </div>
                                         <p class="text-xs text-gray-500" x-text="user.email"></p>
                                         <p class="text-xs text-gray-400" x-show="user.lastPostSnippet">
-                                            √öltimo post ¬∑ <span x-text="formatTime(user.lastPostDate)"></span> ‚Äî <span x-text="user.lastPostSnippet"></span>
+                                            ⁄ltimo post ∑ <span x-text="formatTime(user.lastPostDate)"></span> ó <span x-text="user.lastPostSnippet"></span>
                                         </p>
                                     </div>
                                 </template>
                             </div>
                             <div class="space-y-2" x-show="!searchLoading && !searchResults.length && fallbackPosts.length">
-                                <p class="text-xs uppercase tracking-[0.3em] text-gray-400">Talvez voc√™ esteja procurando por</p>
+                                <p class="text-xs uppercase tracking-[0.3em] text-gray-400">Talvez vocÍ esteja procurando por</p>
                                 <template x-for="post in fallbackPosts" :key="`fallback-${post.id}`">
                                     <div class="p-3 rounded-lg bg-gray-50 border border-dashed border-gray-200">
                                         <p class="text-sm font-semibold text-gray-700" x-text="post.author"></p>
@@ -291,10 +291,10 @@
                         <div class="flex items-center justify-between flex-wrap gap-3">
                             <div>
                                 <h2 class="text-xl font-bold text-mocs-blue">Galeria visual</h2>
-                                <p class="text-gray-500 text-sm">√öltimas postagens (mais recentes primeiro).</p>
+                                <p class="text-gray-500 text-sm">⁄ltimas postagens (mais recentes primeiro).</p>
                             </div>
                             <button class="text-sm font-semibold text-mocs-blue hover:text-mocs-orange flex items-center gap-2">
-                                <i class="fas fa-sliders-h"></i> Filtrar m√≠dias
+                                <i class="fas fa-sliders-h"></i> Filtrar mÌdias
                             </button>
                         </div>
                         <div class="text-sm text-red-500 mt-4" x-show="feedError" x-text="feedError"></div>
@@ -303,7 +303,7 @@
                             <span>Carregando galeria...</span>
                         </div>
                         <div class="text-sm text-gray-400 mt-4" x-show="!feedLoading && !filteredMedia.length && !feedError">
-                            Nenhuma m√≠dia dispon√≠vel para este filtro ainda.
+                            Nenhuma mÌdia disponÌvel para este filtro ainda.
                         </div>
                         <div id="dashboardGalleryGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4" x-show="!feedLoading && filteredMedia.length">
                             <template x-for="mediaItem in filteredMedia" :key="mediaItem.id">
@@ -367,12 +367,17 @@
                                                 <i class="fas fa-heart" :class="(selectedMedia && selectedMedia.liked) ? 'text-white' : 'text-red-500'"></i>
                                                 <span x-text="selectedMedia && selectedMedia.likes ? selectedMedia.likes : 0"></span>
                                             </button>
-                                            <span class="text-xs text-gray-200">Curtidas</span>
+                                                                                        <button type="button" x-show="canModerate" x-cloak
+                                                    class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition"
+                                                    @click="deleteMedia()">
+                                                <i class="fas fa-trash"></i>
+                                                Remover
+                                            </button><span class="text-xs text-gray-200">Curtidas</span>
                                         </div>
                                         <div class="flex-1 apple-glass p-4 text-white rounded-3xl comment-wrapper">
                                             <div class="comment-scroll custom-scrollbar space-y-3 bg-transparent w-full">
                                                 <div class="text-center text-white/80 text-sm" x-show="commentLoading">
-                                                    <i class="fas fa-spinner fa-spin mr-2"></i> Carregando coment√°rios...
+                                                    <i class="fas fa-spinner fa-spin mr-2"></i> Carregando coment·rios...
                                                 </div>
                                                 <div class="text-center text-white/80 text-sm" x-show="!commentLoading && !comments.length">
                                                     Seja o primeiro a comentar.
@@ -393,7 +398,7 @@
                                             <textarea x-model="commentText"
                                                       class="w-full border border-gray-300 rounded-2xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-mocs-blue"
                                                       rows="2"
-                                                      placeholder="Escreva um coment√°rio..."></textarea>
+                                                      placeholder="Escreva um coment·rio..."></textarea>
                                             <div class="flex justify-end items-center gap-2">
                                                 <button type="button"
                                                         class="px-4 py-2 rounded-full bg-mocs-blue text-white text-sm font-semibold hover:bg-opacity-90 transition"
@@ -408,22 +413,22 @@
                         </div>
                     </div>
                 </section>
-                                <!-- Um ter√ßo direito: mural, agenda e avisos -->
+                                <!-- Um terÁo direito: mural, agenda e avisos -->
                 <section class="lg:col-span-4 flex flex-col gap-6">
-                    <!-- IN√çCIO: MURAL -->
+                    <!-- INÕCIO: MURAL -->
                     <div x-data="muralData()" x-init="init()" class="bg-white p-6 rounded-xl shadow-lg">
-                        <h2 class="text-2xl font-bold text-mocs-blue mb-4">Mural do Comit√™ - CSNU</h2>
+                        <h2 class="text-2xl font-bold text-mocs-blue mb-4">Mural do ComitÍ - CSNU</h2>
 
-                        <!-- Formul√°rio de Postagem -->
+                        <!-- Formul·rio de Postagem -->
                         <div class="mb-6">
                             <textarea x-model="newMessage"
                                       class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue"
                                       rows="3"
-                                      placeholder="Escreva um post no mural, envie um spotted an√¥nimo..."></textarea>
+                                      placeholder="Escreva um post no mural, envie um spotted anÙnimo..."></textarea>
 
                             <div class="flex justify-end items-center mt-2 space-x-4">
                                 <label class="text-sm text-gray-600 mr-4 flex items-center">
-                                    <input type="checkbox" x-model="postAsAnon" class="mr-2 rounded">Postar como an√¥nimo (Spotted)
+                                    <input type="checkbox" x-model="postAsAnon" class="mr-2 rounded">Postar como anÙnimo (Spotted)
                                 </label>
 
                                 <button @click.prevent="createPost()"
@@ -458,12 +463,12 @@
                                             <p class="text-gray-700" x-text="post.mensagem"></p>
                                             <p class="text-xs text-gray-500 mt-1" x-text="timeAgo(post.data)"></p>
 
-                                            <!-- Rea√ß√µes r√°pidas -->
+                                            <!-- ReaÁıes r·pidas -->
                                             <div class="mt-3 flex items-center gap-2 text-sm">
-                                                <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, 'üëè')">üëè <span class="ml-1" x-text="reactionCount(post,'üëè')"></span></button>
-                                                <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '‚ù§Ô∏è')">‚ù§Ô∏è <span class="ml-1" x-text="reactionCount(post,'‚ù§Ô∏è')"></span></button>
-                                                <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, 'üòÇ')">üòÇ <span class="ml-1" x-text="reactionCount(post,'üòÇ')"></span></button>
-                                                <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, 'üò±')">üò± <span class="ml-1" x-text="reactionCount(post,'üò±')"></span></button>
+                                                <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '??')">?? <span class="ml-1" x-text="reactionCount(post,'??')"></span></button>
+                                                <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '??')">?? <span class="ml-1" x-text="reactionCount(post,'??')"></span></button>
+                                                <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '??')">?? <span class="ml-1" x-text="reactionCount(post,'??')"></span></button>
+                                                <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '??')">?? <span class="ml-1" x-text="reactionCount(post,'??')"></span></button>
                                             </div>
                                         </div>
 
@@ -474,15 +479,15 @@
                                 </div>
                             </template>
 
-                            <!-- Caso n√£o haja posts -->
+                            <!-- Caso n„o haja posts -->
                             <div x-show="!loading && posts.length === 0" class="text-center text-gray-500 py-6" style="display:none">
-                                Nenhum post dispon√≠vel.
+                                Nenhum post disponÌvel.
                             </div>
                         </div>
                     </div>
                     <!-- FIM: MURAL -->
 
-                    <!-- Agenda (din√¢mica) -->
+                    <!-- Agenda (din‚mica) -->
                     <div x-data="calendarComponent()" x-init="init()" class="bg-white p-6 rounded-xl shadow-lg">
                         <h2 class="text-xl font-bold text-mocs-blue mb-4 text-center">Agenda do Dia</h2>
 
@@ -491,7 +496,7 @@
                                 @click="aba = 'calendario'"
                                 :class="aba === 'calendario' ? 'text-mocs-blue font-semibold border-b-2 border-mocs-blue' : 'text-gray-500'"
                                 class="px-4 py-2 mx-2 transition">
-                                Calend√°rio
+                                Calend·rio
                             </button>
 
                             <button
@@ -512,7 +517,7 @@
                                 </div>
 
                                 <div class="grid grid-cols-7 text-center text-sm font-semibold text-gray-600 mb-2">
-                                    <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>S√°b</div>
+                                    <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>S·b</div>
                                 </div>
 
                                 <div class="relative">
@@ -558,7 +563,7 @@
                                         </div>
                                         <div class="flex-1">
                                             <p class="font-semibold" x-text="ev.titulo"></p>
-                                            <p class="text-sm text-gray-500" x-text="ev.horario + ' ¬∑ ' + (ev.local || '')"></p>
+                                            <p class="text-sm text-gray-500" x-text="ev.horario + ' ∑ ' + (ev.local || '')"></p>
                                         </div>
                                     </li>
                                 </template>
@@ -586,7 +591,7 @@
                                     <template x-for="ev in modalEvents" :key="ev.titulo + ev.horario">
                                         <div class="p-3 border rounded-lg">
                                             <p class="font-semibold" x-text="ev.titulo"></p>
-                                            <p class="text-sm text-gray-500" x-text="ev.horario + ' ¬∑ ' + (ev.local || '')"></p>
+                                            <p class="text-sm text-gray-500" x-text="ev.horario + ' ∑ ' + (ev.local || '')"></p>
                                             <p class="text-sm text-gray-700 mt-2" x-text="ev.descricao || ''"></p>
                                         </div>
                                     </template>
@@ -607,13 +612,13 @@
                     <!-- Avisos + Modal -->
                     <div x-data="announcementsData()" class="space-y-6">
                         <div class="bg-white p-6 rounded-xl shadow-lg">
-                            <h2 class="text-xl font-bold text-mocs-blue mb-4">Avisos da Organiza√ß√£o</h2>
+                            <h2 class="text-xl font-bold text-mocs-blue mb-4">Avisos da OrganizaÁ„o</h2>
                             <div class="space-y-3" x-init="loadAvisos()">
                                 <div x-show="isLoading" class="text-center py-4 text-gray-500">
                                     <i class="fas fa-spinner fa-spin mr-2"></i> Carregando avisos...
                                 </div>
                                 <div x-show="!isLoading && !avisos.length" class="text-center py-4 text-gray-500">
-                                    Nenhum aviso dispon√≠vel.
+                                    Nenhum aviso disponÌvel.
                                 </div>
 
                                 <template x-for="aviso in paginatedAvisos" :key="aviso.titulo + aviso.data">
@@ -624,14 +629,14 @@
                                 </template>
                             </div>
 
-                            <!-- Pagina√ß√£o -->
+                            <!-- PaginaÁ„o -->
                             <div x-show="totalPages > 1" class="flex justify-between items-center mt-4 pt-3 border-t">
                                 <button @click="prevPage()" :disabled="currentPage === 1" class="bg-mocs-orange text-white text-sm font-semibold py-1 px-3 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed">
                                     Anterior
                                 </button>
-                                <span class="text-sm text-gray-600">P√°gina <span x-text="currentPage"></span> de <span x-text="totalPages"></span></span>
+                                <span class="text-sm text-gray-600">P·gina <span x-text="currentPage"></span> de <span x-text="totalPages"></span></span>
                                 <button @click="nextPage()" :disabled="currentPage >= totalPages" class="bg-mocs-orange text-white text-sm font-semibold py-1 px-3 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed">
-                                    Pr√≥xima
+                                    PrÛxima
                                 </button>
                             </div>
                         </div>
@@ -660,9 +665,9 @@
 
     </div>
 
-    <!-- Script L√≥gica Alpine -->
+    <!-- Script LÛgica Alpine -->
     <script>
-        // NOVO: Fun√ß√£o para carregar o nome e o cargo do usu√°rio logado
+        // NOVO: FunÁ„o para carregar o nome e o cargo do usu·rio logado
         function profileData() {
             return {
                 userName: 'Carregando...', // Estado inicial
@@ -686,7 +691,7 @@
                         this.isSecretario = data && data.isSecretario ? data.isSecretario : false;
                         await this.loadAvatar(resolvedName);
                     } catch (error) {
-                        console.error('Falha ao buscar info do usu√°rio:', error);
+                        console.error('Falha ao buscar info do usu·rio:', error);
                         this.userName = 'Delegado (Offline)';
                         this.userAvatar = this.defaultAvatar;
                     }
@@ -707,7 +712,7 @@
                         }
                         this.userAvatar = url;
                     } catch (err) {
-                        console.warn('Falha ao carregar avatar do usu√°rio', err);
+                        console.warn('Falha ao carregar avatar do usu·rio', err);
                         this.userAvatar = this.defaultAvatar;
                     }
                 }
@@ -726,8 +731,8 @@
 
         function galeriaPreview() {
             return {
-                filters: ['Meu comit√™', 'Secretariado', 'Global'],
-                activeFilter: 'Meu comit√™',
+                filters: ['Meu comitÍ', 'Secretariado', 'Global'],
+                activeFilter: 'Meu comitÍ',
                 searchQuery: '',
                 searchResults: [],
                 searchLoading: false,
@@ -739,6 +744,8 @@
                 feedLoading: true,
                 feedError: null,
                 currentUser: null,
+                currentUserRole: '',
+                canModerate: false,
                 defaultAvatar: DEFAULT_AVATAR_URL,
                 modalOpen: false,
                 selectedMedia: null,
@@ -772,10 +779,15 @@
                         const res = await fetch(USER_ENDPOINT);
                         if (!res.ok) throw new Error('status ' + res.status);
                         const data = await res.json();
-                        this.currentUser = data && data.nome ? data.nome : 'Delegado';
+                        const role = data && data.tipo ? String(data.tipo).toUpperCase() : '';
+                        const isSecretFlag = data && data.isSecretario === true;
+                        this.currentUserRole = role;
+                        this.canModerate = role.includes('SECRET') || isSecretFlag;
                     } catch (err) {
-                        console.error('Erro ao buscar usu√°rio para a galeria:', err);
+                        console.error('Erro ao buscar usu·rio para a galeria:', err);
                         this.currentUser = 'Delegado';
+                        this.currentUserRole = '';
+                        this.canModerate = false;
                     }
                 },
                 async loadFeed() {
@@ -797,7 +809,7 @@
                         console.error('Erro ao carregar galeria:', error);
                         this.posts = [];
                         this.media = [];
-                        this.feedError = 'N√£o foi poss√≠vel carregar a galeria agora.';
+                        this.feedError = 'N„o foi possÌvel carregar a galeria agora.';
                     } finally {
                         this.feedLoading = false;
                     }
@@ -813,11 +825,11 @@
                     }
                     const filename = parts[1];
                     const caption = parts.slice(2).join('|').trim();
-                    const segment = /secret/i.test(author) ? 'Secretariado' : 'Meu comit√™';
+                    const segment = /secret/i.test(author) ? 'Secretariado' : 'Meu comitÍ';
                     const tag = raw.status === 'ANONIMO' ? '#Spotted' : `#${segment.replace(' ', '')}`;
                     const initials = author.split(/\s+/).slice(0, 2).map(part => part.charAt(0)).join('').toUpperCase() || 'DL';
                     const reactions = raw.reactions || {};
-                    const likes = reactions['‚ù§Ô∏è'] || reactions['\u2764\uFE0F'] || reactions['‚ù§'] || 0;
+                    const likes = reactions['??'] || reactions['\u2764\uFE0F'] || reactions['?'] || 0;
                     return {
                         id: raw.id || index,
                         author,
@@ -829,7 +841,7 @@
                         rawMessage: caption || author,
                         url: `/profile/gallery/media/${filename}`,
                         caption: caption || author,
-                        meta: `${author} ¬∑ ${this.formatRelativeTime(raw.data)}`,
+                        meta: `${author} ∑ ${this.formatRelativeTime(raw.data)}`,
                         label: segment,
                         likes,
                         avatar: DEFAULT_AVATAR_URL
@@ -844,13 +856,13 @@
                     const date = new Date(value);
                     if (Number.isNaN(date.getTime())) return 'agora mesmo';
                     const diffSeconds = Math.max(1, Math.floor((Date.now() - date.getTime()) / 1000));
-                    if (diffSeconds < 60) return `h√° ${diffSeconds}s`;
+                    if (diffSeconds < 60) return `h· ${diffSeconds}s`;
                     const minutes = Math.floor(diffSeconds / 60);
-                    if (minutes < 60) return `h√° ${minutes} min`;
+                    if (minutes < 60) return `h· ${minutes} min`;
                     const hours = Math.floor(minutes / 60);
-                    if (hours < 24) return `h√° ${hours} h`;
+                    if (hours < 24) return `h· ${hours} h`;
                     const days = Math.floor(hours / 24);
-                    if (days < 7) return `h√° ${days} d`;
+                    if (days < 7) return `h· ${days} d`;
                     return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
                 },
                 handleSearchInput() {
@@ -887,7 +899,7 @@
                         }
                     } catch (error) {
                         console.error('Erro na busca:', error);
-                        this.searchError = 'N√£o foi poss√≠vel buscar agora.';
+                        this.searchError = 'N„o foi possÌvel buscar agora.';
                         this.fallbackPosts = [];
                     } finally {
                         this.searchLoading = false;
@@ -923,7 +935,36 @@
                         this.selectedMedia.likes = (this.selectedMedia.likes || 0) + delta;
                     }
                 },
-                openModal(media) {
+                                async deleteMedia() {
+                    if (!this.selectedMedia || !this.selectedMedia.id) return;
+                    if (!this.canModerate) return;
+                    const confirmed = await (window.showGlassConfirm
+                        ? window.showGlassConfirm("Remover esta foto da galeria?", "Remover foto")
+                        : confirm("Remover esta foto da galeria?"));
+                    if (!confirmed) return;
+                    const { token, header } = (typeof readCsrf === "function") ? readCsrf() : { token: null, header: "X-CSRF-TOKEN" };
+                    const headers = {};
+                    if (token) headers[header] = token;
+                    try {
+                        const res = await fetch(`${POST_API_BASE}/${this.selectedMedia.id}/exclude`, {
+                            method: "PATCH",
+                            headers,
+                            credentials: "same-origin"
+                        });
+                        if (res.ok || res.status === 204) {
+                            this.media = this.media.filter(item => item.id !== this.selectedMedia.id);
+                            this.posts = this.posts.filter(item => item.id !== this.selectedMedia.id);
+                            this.closeModal();
+                        } else {
+                            const text = await res.text();
+                            alert('N„o foi possÌvel remover esta foto (status ' + res.status + '). ' + text);
+                        }
+                    } catch (err) {
+                        console.error("Erro ao excluir foto da galeria:", err);
+                        alert("Erro ao excluir foto: " + err.message);
+                    }
+                },
+openModal(media) {
                     this.selectedMedia = { ...media, liked: media.liked || false };
                     this.modalPortrait = !!media.isPortrait;
                     this.commentText = '';
@@ -950,8 +991,8 @@
                             tempo: this.formatRelativeTime(item.createdAt || item.data || item.created_at)
                         }));
                     } catch (err) {
-                        console.error('Erro ao buscar coment√°rios:', err);
-                        this.commentError = 'N√£o foi poss√≠vel carregar os coment√°rios.';
+                        console.error('Erro ao buscar coment·rios:', err);
+                        this.commentError = 'N„o foi possÌvel carregar os coment·rios.';
                         this.comments = [];
                     } finally {
                         this.commentLoading = false;
@@ -959,7 +1000,7 @@
                 },
                 async submitComment() {
                     if (!this.selectedMedia || !this.commentText.trim()) {
-                        this.commentError = 'Escreva um coment√°rio primeiro.';
+                        this.commentError = 'Escreva um coment·rio primeiro.';
                         return;
                     }
                     this.commentError = null;
@@ -977,13 +1018,13 @@
                         await this.loadComments(this.selectedMedia.id);
                     } catch (err) {
                         console.error('Erro ao comentar:', err);
-                        this.commentError = 'Falha ao salvar seu coment√°rio.';
+                        this.commentError = 'Falha ao salvar seu coment·rio.';
                     }
                 },
         async toggleLike() {
             if (!this.selectedMedia || this.likeLoading) return;
             if (!this.selectedMedia.id) {
-                alert('N√£o foi poss√≠vel identificar o post para curtir.');
+                alert('N„o foi possÌvel identificar o post para curtir.');
                 return;
             }
             this.likeLoading = true;
@@ -993,7 +1034,7 @@
             if (token) headers[header] = token;
             const body = JSON.stringify({
                 usuario: this.currentUser || 'Delegado',
-                emoji: '‚ù§Ô∏è'
+                emoji: '??'
             });
             const url = `${POST_API_BASE}/${this.selectedMedia.id}/reaction`;
             try {
@@ -1005,13 +1046,13 @@
                 });
 
                 if (liked) {
-                    // Remover like: s√≥ ajusta contagem se servidor remover
+                    // Remover like: sÛ ajusta contagem se servidor remover
                     if (res.ok) {
                         this.decrementLikes(this.selectedMedia.id, 1);
                         this.selectedMedia.liked = false;
                     } else {
-                        console.error('Erro ao remover rea√ß√£o:', res.status, await res.text());
-                        alert('N√£o foi poss√≠vel remover sua rea√ß√£o. Status: ' + res.status);
+                        console.error('Erro ao remover reaÁ„o:', res.status, await res.text());
+                        alert('N„o foi possÌvel remover sua reaÁ„o. Status: ' + res.status);
                     }
                 } else {
                     // Adicionar like
@@ -1020,11 +1061,11 @@
                         this.selectedMedia.liked = true;
                         this.spawnHeart();
                     } else if (res.status === 409) {
-                        // J√° existe rea√ß√£o: n√£o incrementa, apenas marca como liked
+                        // J· existe reaÁ„o: n„o incrementa, apenas marca como liked
                         this.selectedMedia.liked = true;
                     } else {
                         console.error('Erro ao reagir:', res.status, await res.text());
-                        alert('N√£o foi poss√≠vel registrar sua rea√ß√£o. Status: ' + res.status);
+                        alert('N„o foi possÌvel registrar sua reaÁ„o. Status: ' + res.status);
                     }
                 }
             } catch (err) {
@@ -1085,16 +1126,16 @@
                         const postDate = new Date(dateString);
                         const now = new Date();
                         const diffInSeconds = Math.floor((now - postDate) / 1000);
-                        if (diffInSeconds < 60) return `${diffInSeconds} segundos atr√°s`;
+                        if (diffInSeconds < 60) return `${diffInSeconds} segundos atr·s`;
                         const diffInMinutes = Math.floor(diffInSeconds / 60);
-                        if (diffInMinutes < 60) return `${diffInMinutes} minutos atr√°s`;
+                        if (diffInMinutes < 60) return `${diffInMinutes} minutos atr·s`;
                         const diffInHours = Math.floor(diffInMinutes / 60);
-                        if (diffInHours < 24) return `${diffInHours} horas atr√°s`;
+                        if (diffInHours < 24) return `${diffInHours} horas atr·s`;
                         const diffInDays = Math.floor(diffInHours / 24);
-                        if (diffInDays < 7) return `${diffInDays} dias atr√°s`;
+                        if (diffInDays < 7) return `${diffInDays} dias atr·s`;
                         return postDate.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' });
                     } catch {
-                        return 'Data inv√°lida';
+                        return 'Data inv·lida';
                     }
                 },
                 async loadAvisos() {
@@ -1134,15 +1175,15 @@
           const d = new Date(dateString);
           const now = new Date();
           const s = Math.floor((now - d) / 1000);
-          if (s < 60) return `${s} segundos atr√°s`;
+          if (s < 60) return `${s} segundos atr·s`;
           const m = Math.floor(s / 60);
-          if (m < 60) return `${m} minutos atr√°s`;
+          if (m < 60) return `${m} minutos atr·s`;
           const h = Math.floor(m / 60);
-          if (h < 24) return `${h} horas atr√°s`;
+          if (h < 24) return `${h} horas atr·s`;
           const days = Math.floor(h / 24);
-          if (days < 7) return `${days} dias atr√°s`;
+          if (days < 7) return `${days} dias atr·s`;
           return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
-        } catch (e) { return 'data inv√°lida'; }
+        } catch (e) { return 'data inv·lida'; }
       }
 
       window.muralData = function() {
@@ -1173,7 +1214,7 @@
               const data = await res.json();
               this.currentUser = data.nome || null;
             } catch (err) {
-              console.error('Erro ao buscar usu√°rio:', err);
+              console.error('Erro ao buscar usu·rio:', err);
               this.currentUser = null;
             }
           },
@@ -1246,7 +1287,7 @@
 
           
           async deletePost(postId) {
-            if (!confirm('O post n√£o ser√° mais exibido a outros usuarios')) return;
+            if (!confirm('O post n„o ser· mais exibido a outros usuarios')) return;
             const { token, header } = readCsrf();
             const headers = {};
             if (token) headers[header] = token;
@@ -1255,7 +1296,7 @@
               if (res.ok || res.status === 204) {
                 await this.loadPosts();
               } else if (res.status === 404) {
-                alert('Post n√£o encontrado (j√° removido?).');
+                alert('Post n„o encontrado (j· removido?).');
               } else {
                 alert('Falha ao ocultar post (status ' + res.status + ')');
               }
@@ -1267,7 +1308,7 @@
 
           async addReaction(postId, emoji) {
             if (!emoji) return;
-            const usuario = this.currentUser || 'an√¥nimo';
+            const usuario = this.currentUser || 'anÙnimo';
             const body = { usuario, emoji };
             const { token, header } = readCsrf();
             const headers = { 'Content-Type': 'application/json' };
@@ -1282,19 +1323,19 @@
               if (res.status === 201) {
                 await this.loadPosts();
               } else if (res.status === 409) {
-                alert('Voc√™ j√° reagiu com este emoji neste post.');
+                alert('VocÍ j· reagiu com este emoji neste post.');
               } else {
                 throw new Error('status ' + res.status);
               }
             } catch (err) {
-              console.error('Erro ao adicionar rea√ß√£o:', err);
+              console.error('Erro ao adicionar reaÁ„o:', err);
               alert('Erro ao reagir: ' + err.message);
             }
           },
 
           async removeReaction(postId, emoji) {
             if (!emoji) return;
-            const usuario = this.currentUser || 'an√¥nimo';
+            const usuario = this.currentUser || 'anÙnimo';
             const body = { usuario, emoji };
             const { token, header } = readCsrf();
             const headers = { 'Content-Type': 'application/json' };
@@ -1309,13 +1350,13 @@
               if (res.status === 204 || res.ok) {
                 await this.loadPosts();
               } else if (res.status === 404) {
-                alert('Rea√ß√£o n√£o encontrada.');
+                alert('ReaÁ„o n„o encontrada.');
               } else {
                 throw new Error('status ' + res.status);
               }
             } catch (err) {
-              console.error('Erro ao remover rea√ß√£o:', err);
-              alert('Erro ao remover rea√ß√£o: ' + err.message);
+              console.error('Erro ao remover reaÁ„o:', err);
+              alert('Erro ao remover reaÁ„o: ' + err.message);
             }
           },
 
@@ -1333,3 +1374,11 @@
     <script th:src="@{/js/agenda.js}"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
