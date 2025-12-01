@@ -20,12 +20,13 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        
         http.csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/ouvidoria/admin/**").hasAnyRole("SECRETARIADO", "DIRETOR", "SECRETARIO")
+                .anyRequest().permitAll())
+            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
             .formLogin(AbstractHttpConfigurer::disable)
             .logout(AbstractHttpConfigurer::disable);
-
         return http.build();
     }
 }

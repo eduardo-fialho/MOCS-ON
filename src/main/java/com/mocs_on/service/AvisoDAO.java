@@ -42,4 +42,9 @@ public class AvisoDAO {
         );
     }
 
+    public int quantidadeAvisos() {
+        String sql = "SELECT COUNT(*) FROM avisos";
+        return jdbcTemplate.queryForObject(sql, Integer.class);
+    }
+
 }

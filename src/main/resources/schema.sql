@@ -4,7 +4,6 @@ CREATE DATABASE IF NOT EXISTS mocson
 
 USE mocson;
 
--- Schema inicial do banco MOCS ON
 CREATE TABLE IF NOT EXISTS `usuarios` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `nome` VARCHAR(255) NOT NULL,
@@ -90,7 +89,32 @@ CREATE TABLE IF NOT EXISTS `post_reactions` (
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_post_reaction_post` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
-  UNIQUE KEY `ux_post_user_emoji` (`post_id`, `usuario`, `emoji`)
+  UNIQUE KEY `ux_post_user` (`post_id`, `usuario`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS post_comments (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  post_id BIGINT UNSIGNED NOT NULL,
+  usuario VARCHAR(255) NOT NULL,
+  usuario_nome VARCHAR(255) NULL,
+  mensagem TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status VARCHAR(20) NULL,
+  PRIMARY KEY (id),
+  KEY idx_post_comments_post_id (post_id),
+  CONSTRAINT fk_post_comment_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS post_curtidas (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  post_id BIGINT UNSIGNED NOT NULL,
+  usuario VARCHAR(255) NOT NULL,
+  usuario_nome VARCHAR(255) NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY ux_post_usuario (post_id, usuario),
+  KEY idx_curtidas_post_id (post_id),
+  CONSTRAINT fk_curtida_post FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `avisos` (
@@ -101,6 +125,23 @@ CREATE TABLE IF NOT EXISTS `avisos` (
     `data` datetime NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `documentos` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `nome` VARCHAR(255) NOT NULL,
+    `autor` VARCHAR(255) NOT NULL,
+    `arquivo` LONGBLOB NOT NULL,
+    `status` VARCHAR(50) NOT NULL DEFAULT 'EM ENVIO',
+    `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+    `data` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `avaliacao` VARCHAR(1000) NOT NULL,
+
+    PRIMARY KEY (`id`),
+    KEY `idx_documentos_status` (`status`),
+    KEY `idx_documentos_ativo` (`ativo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 
 CREATE TABLE IF NOT EXISTS agenda_diaria (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
