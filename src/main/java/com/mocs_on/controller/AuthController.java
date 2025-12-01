@@ -67,7 +67,7 @@ public class AuthController {
         session.setAttribute(SESSION_USER_ROLE, user.type());
         session.setAttribute(SESSION_USER_ID, user.id());
         registerSecurityContext(session, normalizedEmail);
-        return "redirect:/dashboard.html";
+        return "redirect:/comite/listar";
     }
 
     @RequestMapping(value = "/logout", method = {RequestMethod.GET, RequestMethod.POST})

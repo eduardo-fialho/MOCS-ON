@@ -11,6 +11,7 @@ public class Post {
     private String autor;
     private TipoPost status;
     private LocalDateTime dataPublicacao;
+    private Long comiteId;
 
     private String myReaction;
 
@@ -21,6 +22,7 @@ public class Post {
         PUBLICO,
         ANONIMO,
         EXCLUIDO,
+        PENDENTE,
     }
 
     public Post() {
@@ -102,5 +104,11 @@ public class Post {
 
     public void setMyReaction(String myReaction) {
         this.myReaction = myReaction;
+    }
+    public Long getComiteId() {
+        return comiteId;
+    }
+    public void setComiteId(Long comiteId) {
+        this.comiteId = comiteId;
     }
 }
