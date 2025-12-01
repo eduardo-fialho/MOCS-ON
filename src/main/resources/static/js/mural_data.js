@@ -26,6 +26,7 @@
     window.muralData = function () {
         return {
             posts: [],
+            postsPendentes: [],
             loading: false,
             posting: false,
             newMessage: '',
@@ -81,6 +82,10 @@
                             _hasCurtido: false
                         }));
 
+                    this.posts = data.filter(p => p.status !== 'EXCLUIDO' && p.status !== 'PENDENTE');
+                    //&& p.comiteId === ALGUMA COISA COMITE
+
+                    this.postsPendentes = data.filter(p => p.status === 'PENDENTE');
                     if (this.posts.length > 0) {
                         await Promise.all(this.posts.map(async post => {
                             try {
@@ -118,7 +123,8 @@
                 const body = {
                     autor: this.postAsAnon ? (this.currentUser || '') : (this.currentUser || 'Delegado'),
                     mensagem: this.newMessage.trim(),
-                    status: this.postAsAnon ? 'ANONIMO' : 'PUBLICO'
+                    status: this.postAsAnon ? 'ANONIMO' : 'PENDENTE',
+                    comiteId: 1
                 };
                 const { token, header } = readCsrf();
                 const headers = { 'Content-Type': 'application/json' };

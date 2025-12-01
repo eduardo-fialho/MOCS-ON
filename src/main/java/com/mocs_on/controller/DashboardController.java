@@ -11,15 +11,16 @@ import com.mocs_on.service.DashboardDao;
 @RequestMapping("/dashboard")
 public class DashboardController {
     
-    @RequestMapping("/")
+    @RequestMapping("")
     public String mostraDashboard(Model model){
         try(Connection conn=AbstractDao.getConnection()){
             String message=DashboardDao.getMessage(conn);
             model.addAttribute("message", message);
 
         }catch(Exception e){
-
+            e.printStackTrace();
         }
+        
         return "/dashboard";
     }
 }
