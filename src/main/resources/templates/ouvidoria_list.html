@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Relatos de Ouvidoria</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+<div class="container">
+    <h1>Relatos de Ouvidoria</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Data</th>
+                <th>Categoria</th>
+                <th>Identificação</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr th:each="r : ${relatos}">
+            <td th:text="${r.id}"></td>
+            <td th:text="${r.createdAt}"></td>
+            <td th:text="${r.categoriaRelato}"></td>
+            <td th:text="${r.identificacao}"></td>
+            <td><a th:href="@{'/ouvidoria/admin/' + ${r.id}}">Ver</a></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
