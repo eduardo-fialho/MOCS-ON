@@ -77,7 +77,7 @@
                                     (Spotted)
                                 </label>
 
-                                <button @click.prevent="createPost()"
+                                <button @click.prevent="createPost(); location.reload()"
                                     :class="{ 'opacity-60 cursor-not-allowed': posting }" :disabled="posting"
                                     class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
                                     <span x-show="!posting">Postar</span>
@@ -90,12 +90,11 @@
                         <div class="text-sm text-gray-500 mb-3" x-show="loading" style="display:none"><i
                                 class="fas fa-spinner fa-spin mr-2"></i> Carregando feed...</div>
 
-                        <div class="space-y-5">
+                        <div class="space-y-5"> 
                             <template x-for="post in posts" :key="post.id">
                                 <div class="border-t pt-4">
                                     <div class="flex items-start space-x-4">
-                                        <div
-                                            class="h-10 w-10 rounded-full flex items-center justify-center bg-gray-200 text-gray-700">
+                                        <div class="h-10 w-10 rounded-full flex items-center justify-center bg-gray-200 text-gray-700">
                                             <template x-if="post.status === 'ANONIMO'">
                                                 <i class="fas fa-user-secret"></i>
                                             </template>
@@ -110,34 +109,112 @@
                                             <p class="text-xs text-gray-500 mt-1" x-text="timeAgo(post.data)"></p>
 
                                             <div class="mt-3 flex items-center gap-2 text-sm">
-                                                <button class="px-2 py-1 bg-gray-100 rounded-full"
-                                                    @click="addReaction(post.id, '👍')">👍 <span class="ml-1"
-                                                        x-text="reactionCount(post,'👍')"></span></button>
-                                                <button class="px-2 py-1 bg-gray-100 rounded-full"
-                                                    @click="addReaction(post.id, '❤️')">❤️ <span class="ml-1"
-                                                        x-text="reactionCount(post,'❤️')"></span></button>
-                                                <button class="px-2 py-1 bg-gray-100 rounded-full"
-                                                    @click="addReaction(post.id, '😂')">😂 <span class="ml-1"
-                                                        x-text="reactionCount(post,'😂')"></span></button>
-                                                <button class="px-2 py-1 bg-gray-100 rounded-full"
-                                                    @click="addReaction(post.id, '😮')">😮 <span class="ml-1"
-                                                        x-text="reactionCount(post,'😮')"></span></button>
+                                                <button
+                                                    class="px-3 py-1 rounded-full flex items-center"
+                                                    @click="toggleCurtida(post)"
+                                                >
+                                                    <span>Curtir</span>
+                                                </button>
+
+                                                <button class="text-sm text-gray-600 underline" @click="openCurtidasModal(post)">
+                                                    <span x-text="(post._curtidaCount !== undefined) ? post._curtidaCount + ' pessoas' : '0 pessoas'"></span>
+                                                </button>
+                                            </div>
+
+
+                                            <div class="mt-3 flex items-center gap-2 text-sm">
+                                                <template x-for="emoji in emojis" :key="emoji">
+                                                    <button
+                                                        :class="{
+                                                            'ring-2 ring-offset-1 ring-blue-300': post.myReaction === emoji,
+                                                            'opacity-50 cursor-not-allowed': post._reacting
+                                                        }"
+                                                        class="px-2 py-1 bg-gray-100 rounded-full flex items-center"
+                                                        :disabled="post._reacting"
+                                                        @click="addReaction(post, emoji)"
+                                                    >
+                                                        <span x-text="emoji"></span>
+                                                        <span class="ml-1" x-text="reactionCount(post, emoji)"></span>
+                                                    </button>
+                                                </template>
+                                            </div>
+                                            <div class="mt-3">
+                                                <button class="text-sm text-gray-600" @click="toggleComments(post)">
+                                                    <span x-text="(post._commentsOpen ? 'Fechar' : 'Ver') + ' comentários'"></span>
+                                                </button>
+                                                <div x-show="post._commentsOpen" x-cloak class="mt-2 space-y-3">
+                                                    <div x-show="post._loadingComments" class="text-sm text-gray-500">Carregando comentários...</div>
+                                                    <template x-for="comment in (post.comments || [])" :key="comment.id">
+                                                        <div class="bg-gray-50 p-2 rounded">
+                                                            <div class="flex justify-between items-start">
+                                                                <div>
+                                                                    <p class="text-sm font-semibold" x-text="comment.usuarioNome"></p>
+                                                                    <template x-if="comment.status === 'EXCLUIDO'">
+                                                                        <p class="text-sm text-gray-400" x-text="comment.mensagem"></p>
+                                                                    </template>
+                                                                    <template x-if="comment.status !== 'EXCLUIDO'">
+                                                                        <p class="text-sm text-gray-700" x-text="comment.mensagem"></p>
+                                                                    </template>
+                                                                    <p class="text-xs text-gray-400" x-text="timeAgo(comment.createdAt)"></p>
+                                                                </div>
+                                                                <div>
+                                                                    <template x-if="(comment.usuario === currentUserEmail || comment.usuarioNome === currentUser) || isSecretary">
+                                                                        <button class="text-xs text-red-600" @click="deleteComment(post, comment.id)">Remover</button>
+                                                                    </template>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                    <div x-show="!post._loadingComments && (!post.comments || post.comments.length === 0)" class="text-sm text-gray-500">Seja o primeiro a comentar.</div>
+                                                    <div class="pt-2">
+                                                        <textarea x-model="post._newComment" rows="2" class="w-full border rounded p-2 text-sm" placeholder="Escreva um comentário..."></textarea>
+                                                        <div class="flex justify-end mt-1">
+                                                            <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded"
+                                                                @click="addComment(post)"
+                                                                :disabled="post._postingComment || !(post._newComment && post._newComment.trim())">
+                                                                <span x-text="post._postingComment ? 'Enviando...' : 'Comentar'"></span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 
                                         <div class="flex flex-col items-end gap-2">
-                                            <button class="text-sm text-red-600"
-                                                @click="deletePost(post.id)">Excluir</button>
+                                            <template x-if="isSecretary">
+                                                <button class="text-sm text-red-600" @click="deletePost(post.id)"> Excluir
+                                                </button>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div x-show="post._curtidasModalOpen" x-cloak class="fixed inset-0 flex items-center justify-center z-50">
+                                    <div class="absolute inset-0 bg-black opacity-50" @click="closeCurtidasModal(post)"></div>
+                                    <div class="bg-white rounded shadow-lg p-4 max-w-md w-full z-10">
+                                        <div class="flex justify-between items-center mb-3">
+                                            <h3 class="text-lg font-semibold">Curtido por</h3>
+                                            <button class="text-sm text-gray-600" @click="closeCurtidasModal(post)">Fechar</button>
+                                        </div>
+                                        <div class="max-h-64 overflow-auto">
+                                            <template x-if="post._loadingCurtidas">
+                                                <div class="text-sm text-gray-500">Carregando...</div>
+                                            </template>
+                                            <template x-for="u in (post._curtidasList || [])" :key="u.usuario">
+                                                <div class="py-2 border-b">
+                                                    <div class="font-medium" x-text="u.usuarioNome"></div>
+                                                    <div class="text-xs text-gray-500" x-text="u.usuario"></div>
+                                                </div>
+                                            </template>
+                                            <div x-show="!post._loadingCurtidas && (!post._curtidasList || post._curtidasList.length === 0)" class="text-sm text-gray-500">Ninguém curtiu ainda.</div>
                                         </div>
                                     </div>
                                 </div>
                             </template>
 
-                            <div x-show="!loading && posts.length === 0" class="text-center text-gray-500 py-6"
-                                style="display:none">
+                            <div x-show="!loading && posts.length === 0" class="text-center text-gray-500 py-6" style="display:none">
                                 Nenhum post disponível.
                             </div>
-                        </div>
+                        </div>  
                     </div>
                 </div>
 
@@ -261,10 +338,49 @@
                         </div>
                         </div>
                     </div>
-
+                    
+                    <section id='posts_pendentes' >
+                        <h2 class="text-xl font-bold text-mocs-blue mb-4 text-center">Posts pendentes</h2>
+                        
+                        <article>
+                            <p>Posts aguardando aprovação:</p>
+                        </article>
+                    </section>
                 </div>
+                <div>
+                    <div x-data="muralData()" x-init="init()" class="bg-white p-6 rounded-xl shadow-lg">
+                        <!--x-if="isAutorizado" (dentro do muralData())-->
+                    <template x-for="post in postsPendentes" :key="post.id">
+                                <div class="border-t pt-4">
+                                    <div class="flex items-start space-x-4">
+                                        <div
+                                            class="h-10 w-10 rounded-full flex items-center justify-center bg-gray-200 text-gray-700">
+                                            <template x-if="post.status === 'ANONIMO'">
+                                                <i class="fas fa-user-secret"></i>
+                                            </template>
+                                            <template x-if="post.status !== 'ANONIMO'">
+                                                <i class="fas fa-user"></i>
+                                            </template>
+                                        </div>
 
-
+                                        <div class="flex-1">
+                                            <p class="font-bold text-gray-800" x-text="post.autor"></p>
+                                            <p class="text-gray-700" x-text="post.mensagem"></p>
+                                            <p class="text-xs text-gray-500 mt-1" x-text="timeAgo(post.data)"></p>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <a :href="`postStatus/aceitar/${post.id}`"
+                                           class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
+                                            Aceitar Post
+                                        </a>
+                                        <a :href="`postStatus/negar/${post.id}`"
+                                           class="bg-mocs-orange text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
+                                            Negar Post
+                                        </a>
+                                </div>
+                            </template>
+                        </div>
 
                     <div class="bg-white p-6 rounded-xl shadow-lg">
                         <h2 class="text-xl font-bold text-mocs-blue mb-4">Avisos da Organização</h2>
@@ -321,9 +437,21 @@
                     </div>
                 </div>
             </div>
+
+            <section class="mt-8" id="criar-comite-section">
+                <article class="bg-white p-6 rounded-xl shadow-lg">
+                    <form action="/comite/criar" method="get">
+                        <button type="submit" class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
+                            Criar Novo Comitê
+                        </button>
+                        <a th:href="@{/comite/listar}" class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90" style="margin-left: 10px; padding: 10px;">
+                                Listar Comitês
+                        </a>
+                    </form>
+                </article>
+            </section>
         </main>
     </div>
-
     
     <script th:src="@{/js/dashboard_config.js}"></script>
     <script th:src="@{/js/profile_data.js}"></script>

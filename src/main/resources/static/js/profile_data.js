@@ -1,6 +1,7 @@
 function profileData() {
     return {
         userName: 'Carregando...',
+        userCargo: 'CSNU',
         isSecretario: false,
 
         async loadUserInfo() {
@@ -14,7 +15,7 @@ function profileData() {
 
                 const data = await response.json();
 
-                this.userName = data.nome || 'Delegado';
+                this.userName = data.nome || 'Delegado'; 
                 this.isSecretario = data.isSecretario || false;
             } catch (error) {
                 console.error('Falha ao buscar info do usuário:', error);
