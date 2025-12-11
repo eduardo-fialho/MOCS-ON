@@ -1,4 +1,4 @@
-﻿
+
 package com.mocs_on.domain;
 import java.time.LocalDateTime;
 import java.util.Collections;

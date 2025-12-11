@@ -35,23 +35,35 @@
             transform: translateY(-2px);
             box-shadow: 0 20px 35px rgba(197,48,48,0.3);
         }
-        .modal-overlay {
+        .glass-confirm-backdrop {
             background: rgba(0,0,0,0.35);
             backdrop-filter: blur(6px);
             opacity: 0;
             pointer-events: none;
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 60;
             transition: opacity 0.25s ease;
         }
-        .modal-overlay.active {
+        .glass-confirm-backdrop.active {
             opacity: 1;
             pointer-events: auto;
         }
-        .modal-card {
+        .glass-confirm-card {
+            background: rgba(255,255,255,0.82);
+            border: 1px solid rgba(255,255,255,0.6);
+            border-radius: 24px;
+            box-shadow: 0 18px 48px rgba(0,0,0,0.25);
+            backdrop-filter: blur(18px);
             transform: translateY(20px) scale(0.97);
             opacity: 0;
             transition: transform 0.35s ease, opacity 0.35s ease;
         }
-        .modal-overlay.active .modal-card {
+        .glass-confirm-backdrop.active .glass-confirm-card {
             transform: translateY(0) scale(1);
             opacity: 1;
         }
@@ -89,7 +101,18 @@
             0% { transform: translateY(0) scale(1); opacity: 1; }
             100% { transform: translateY(-60px) scale(1.6); opacity: 0; }
         }
-    </style>
+    /* High-contrast text for glass modal */
+.glass-confirm-card,
+.glass-confirm-card h3,
+.glass-confirm-card p,
+.glass-confirm-card .text-slate-500,
+.glass-confirm-card .text-slate-700 {
+    color: #e2e8ff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+}
+.glass-confirm-card .text-slate-500 {
+    color: #cbd5ff !important;
+}</style>
 </head>
 <body class="min-h-screen" th:attr="data-user-name=${user.name()},data-user-type=${user.type()}" data-user-name="" data-user-type="">
 <header class="bg-white/90 shadow">
@@ -205,51 +228,71 @@
         </div>
     </section>
 
-    <!-- Modal para visualizar foto da galeria -->
-    <div id="galleryModal" class="modal-overlay fixed inset-0 flex items-center justify-center px-4 z-40 hidden">
-        <div class="glass-card modal-card rounded-2xl shadow-2xl max-w-5xl w-full p-4 md:p-6 space-y-4">
-            <div class="flex justify-between items-start gap-3">
-                <div>
-                    <p id="galleryModalMeta" class="text-xs uppercase tracking-[0.35em] text-gray-400"></p>
-                    <h2 id="galleryModalCaption" class="text-xl font-semibold text-gray-800"></h2>
-                </div>
-                <button id="galleryModalClose" class="text-gray-500 hover:text-gray-700">
-                    <i class="fa-solid fa-times text-xl"></i>
-                </button>
+    <!-- Modal de galeria (estilo dashboard) -->
+<div id="galleryModal" class="fixed inset-0 z-40 px-4 hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" id="galleryModalOverlay"></div>
+    <div class="relative w-full h-full flex items-center justify-center">
+        <button type="button" class="absolute top-6 right-6 text-white/80 hover:text-white text-2xl z-50" id="galleryModalClose">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="flex items-center gap-4">
+            <div class="flex items-center justify-center overflow-hidden">
+                <img id="galleryModalImg"
+                     alt="Galeria"
+                     class="object-contain rounded-2xl max-h-[85vh] max-w-[70vw] bg-black">
             </div>
-            <div class="rounded-2xl overflow-hidden bg-black flex items-center justify-center">
-                <img id="galleryModalImg" src="" alt="Foto da galeria"
-                     class="max-h-[80vh] max-w-full w-auto object-contain bg-black">
-            </div>
-            <div class="flex flex-col gap-3">
-                <div class="flex items-center gap-4">
-                    <button id="galleryLikeBtn" class="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-pink-5
-                    0 text-pink-600 font-semibold hover:bg-pink-100 transition">
-                        <i class="fa-regular fa-heart"></i>
-                        <span>Curtir</span>
-                    </button>
-                    <span id="galleryLikeCount" class="text-sm text-gray-600">0 curtidas</span>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="md:col-span-2 space-y-2">
-                        <p class="text-sm font-semibold text-gray-700">Comentários</p>
-                        <div id="galleryComments" class="space-y-2 max-h-48 overflow-y-auto pr-1">
-                            <p class="text-xs text-gray-400">Carregando Comentários...</p>
-                        </div>
-                        <form id="galleryCommentForm" class="flex gap-2">
-                            <input type="text" id="galleryCommentInput" class="flex-1 border border-gray-300 rounded-
-                            full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-mocs-blue" placeholder="Escreva um comentário...">
-                            <button type="submit" class="px-3 py-2 rounded-full bg-mocs-blue text-white text-sm font-
-                            semibold hover:bg-opacity-90 transition">Enviar</button>
-                        </form>
+            <div class="w-[22rem] lg:w-[24rem] apple-glass p-5 flex flex-col gap-4 max-h-[85vh] overflow-y-auto text-white">
+                <div class="flex items-center gap-3">
+                    <div class="h-12 w-12 rounded-full bg-white/20 text-white flex items-center justify-center font-bold text-lg">
+                        <span id="galleryInitials">MO</span>
+                    </div>
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.35em] text-white/70" id="galleryLabel"></p>
+                        <p class="text-lg font-semibold text-white" id="galleryAuthor">Delegado</p>
+                        <p class="text-xs text-white/70" id="galleryMeta"></p>
                     </div>
                 </div>
+                <p class="text-sm text-white/85" id="galleryCaption"></p>
+
+                <div class="flex items-center gap-3">
+                    <button type="button"
+                            id="galleryLikeBtn"
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-full border transition text-sm border-mocs-blue text-white hover:bg-mocs-blue hover:border-mocs-blue">
+                        <i class="fas fa-heart text-red-400"></i>
+                        <span id="galleryLikeCount">0</span>
+                    </button>
+                    <span class="text-xs text-gray-200">Curtidas</span>
+                    <button type="button"
+                            id="galleryDeleteBtn"
+                            class="hidden ml-auto inline-flex items-center gap-2 px-3 py-2 rounded-full bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition">
+                        <i class="fas fa-trash"></i> Apagar
+                    </button>
+                </div>
+
+                <div class="flex-1 apple-glass p-4 text-white rounded-3xl comment-wrapper">
+                    <div id="galleryComments" class="comment-scroll custom-scrollbar space-y-3 bg-transparent w-full">
+                        <div class="text-center text-white/80 text-sm">Carregando comentarios...</div>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <form id="galleryCommentForm" class="space-y-2">
+                        <textarea id="galleryCommentInput"
+                                  class="w-full border border-gray-300 rounded-2xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-mocs-blue text-gray-800"
+                                  rows="2"
+                                  placeholder="Escreva um comentario..."></textarea>
+                        <div class="flex justify-end items-center gap-2">
+                            <button type="submit"
+                                    class="px-4 py-2 rounded-full bg-mocs-blue text-white text-sm font-semibold hover:bg-opacity-90 transition">
+                                Publicar
+                            </button>
+                        </div>
+                    </form>
+                    <div id="galleryCommentError" class="text-xs text-red-200"></div>
+                </div>
             </div>
-            <div id="heartShower" class="pointer-events-none fixed inset-0 z-50 hidden"></div>
         </div>
     </div>
-
-</main>
+</div></main>
 
 <div class="max-w-5xl mx-auto px-4 pb-12 flex justify-center">
     <a href="/auth/logout" id="logoutButton" data-logout-url="/auth/logout" class="liquid-danger inline-flex items-center gap-3">
@@ -259,25 +302,16 @@
 </div>
 
 <!-- Modal de confirmacao -->
-<div id="logoutModal" class="modal-overlay fixed inset-0 flex items-center justify-center px-4 z-50 hidden">
-    <div class="glass-card modal-card rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4">
-        <div class="flex items-center gap-3">
-            <div class="h-12 w-12 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-2xl">
-                <i class="fa-solid fa-heart"></i>
+    <div id="logoutModal" class="glass-confirm-backdrop hidden">
+        <div class="glass-confirm-card max-w-md w-full p-6 space-y-4">
+            <div class="relative z-10 space-y-3 text-slate-900">
+            <p class="text-xs uppercase tracking-[0.28em] text-slate-500">Logout</p>
+            <h3 class="text-lg font-semibold">Tem certeza?</h3>
+            <p class="text-sm text-slate-700">Vamos sentir sua falta! Deseja realmente sair do portal?</p>
+            <div class="flex flex-col sm:flex-row gap-2 pt-2">
+                <button id="cancelLogout" class="flex-1 px-4 py-2 rounded-full border border-white/60 text-slate-700 font-semibold hover:bg-white/40 transition">Continuar aqui</button>
+                <a id="confirmLogout" href="/auth/logout" class="flex-1 px-4 py-2 rounded-full bg-red-500 text-white font-semibold text-center hover:bg-red-600 transition">Sim, quero sair</a>
             </div>
-            <div>
-                <h2 class="text-xl font-semibold text-gray-800">Tem certeza?</h2>
-                <p class="text-sm text-gray-500">Vamos sentir sua falta! Deseja realmente sair do portal?</p>
-            </div>
-        </div>
-        <div class="flex flex-col sm:flex-row gap-3 pt-2">
-            <button id="cancelLogout" class="flex-1 rounded-full border border-gray-300 px-4 py-2 text-gray-600 font-semibold hover:bg-gray-100 transition">
-                Continuar aqui
-            </button>
-            <a id="confirmLogout" href="/auth/logout" class="flex-1 liquid-danger text-center justify-center inline-flex items-center gap-2">
-                <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                Sim, quero sair
-            </a>
         </div>
     </div>
 </div>
@@ -552,11 +586,19 @@
         fetch(`${window.location.origin}/post/gallery`)
             .then(res => res.ok ? res.json() : [])
             .then(data => {
-                const mine = (data || []).filter(post => (post.autor || '').trim().toLowerCase() === author.trim().toLowerCase());
+                const mine = (data || []).filter(post => {
+                    const isDeleted = ((post.status || post.state || '').toUpperCase() === 'EXCLUIDO');
+                    if (isDeleted) return false;
+                    const rawAuthor = (post.autorRaw || post.autor || '').trim().toLowerCase();
+                    return rawAuthor === (author || '').trim().toLowerCase();
+                });
                 grid.innerHTML = '';
                 if (!mine.length) {
-                    grid.innerHTML = '<p class="col-span-full text-sm text-gray-400 text-center">Você ainda não publicou nada na galeria.</p>';
+                    grid.innerHTML = '<p class="col-span-full text-sm text-gray-400 text-center">Voc? ainda n?o publicou nada na galeria.</p>';
                     return;
+                }
+                    return;
+                }
                 }
                 mine.forEach(post => {
                     const parts = (post.mensagem || '').split('|');
@@ -592,39 +634,332 @@
     });
 </script>
 <script>
+    // Controles de camera (galeria - captura)
+    function setupCameraControls(options) {
+        const startBtn = document.getElementById(options.startBtnId);
+        const captureBtn = document.getElementById(options.captureBtnId);
+        const closeBtn = document.getElementById(options.closeBtnId);
+        const video = document.getElementById(options.videoId);
+        const canvas = document.getElementById(options.canvasId);
+        const hiddenInput = document.getElementById(options.hiddenInputId);
+        const form = document.getElementById(options.formId);
+        if (!startBtn || !captureBtn || !closeBtn || !video || !canvas || !hiddenInput || !form) return;
+        let mediaStream = null;
+
+        async function startCamera() {
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                video.srcObject = mediaStream;
+                video.classList.remove('hidden');
+                captureBtn.disabled = false;
+                closeBtn.disabled = false;
+            } catch (err) {
+                alert('Nao foi possivel acessar a camera.');
+            }
+        }
+        function stopCamera() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(t => t.stop());
+                mediaStream = null;
+            }
+            video.classList.add('hidden');
+            captureBtn.disabled = true;
+            closeBtn.disabled = true;
+        }
+        function capturePhoto() {
+            if (!mediaStream) { alert('Abra a camera primeiro.'); return; }
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            hiddenInput.value = canvas.toDataURL('image/png');
+            if (typeof options.beforeSubmit === 'function') options.beforeSubmit();
+            form.submit();
+            stopCamera();
+        }
+        startBtn.addEventListener('click', startCamera);
+        captureBtn.addEventListener('click', capturePhoto);
+        closeBtn.addEventListener('click', stopCamera);
+        window.addEventListener('beforeunload', stopCamera);
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
-        const logoutBtn = document.getElementById('logoutButton');
+        setupCameraControls({
+            startBtnId: 'galleryStartcameraBtn',
+            captureBtnId: 'galleryCaptureBtn',
+            closeBtnId: 'galleryClosecameraBtn',
+            videoId: 'gallerycameraPreview',
+            canvasId: 'gallerycameraCanvas',
+            hiddenInputId: 'galleryCapturedImageInput',
+            formId: 'galleryCaptureForm',
+            beforeSubmit: () => {
+                document.getElementById('galleryCaptureCaptionInput').value = document.getElementById('galleryCaptureCaption').value;
+                document.getElementById('galleryCaptureAnonInput').value = document.getElementById('galleryCaptureAnon').checked;
+            }
+        });
+
+        const grid = document.getElementById('userGalleryGrid');
+        const author = document.body.getAttribute('data-user-name');
+        const userType = (document.body.getAttribute('data-user-type') || '').toUpperCase();
+        const canModerate = userType === 'SECRETARIADO';
+        const modal = document.getElementById('galleryModal');
+        const modalImg = document.getElementById('galleryModalImg');
+        const modalCaption = document.getElementById('galleryCaption');
+        const modalMeta = document.getElementById('galleryMeta');
+        const labelEl = document.getElementById('galleryLabel');
+        const authorEl = document.getElementById('galleryAuthor');
+        const initialsEl = document.getElementById('galleryInitials');
+        const modalClose = document.getElementById('galleryModalClose');
+        const likeBtn = document.getElementById('galleryLikeBtn');
+        const likeCount = document.getElementById('galleryLikeCount');
+        const commentsBox = document.getElementById('galleryComments');
+        const commentForm = document.getElementById('galleryCommentForm');
+        const commentInput = document.getElementById('galleryCommentInput');
+        const commentError = document.getElementById('galleryCommentError');
+        const deleteBtn = document.getElementById('galleryDeleteBtn');
+        let currentPostId = null;
+        let currentReactions = {};
+
+        const closeGalleryModal = () => {
+            if (!modal) return;
+            modal.classList.add('hidden');
+        };
+
+        const openGalleryModal = (src, caption, date, postId, reactions, metaExtra = {}) => {
+            if (!modal || !modalImg || !modalCaption || !modalMeta) return;
+            modalImg.src = src;
+            modalCaption.textContent = caption || '';
+            modalMeta.textContent = date ? new Date(date).toLocaleString('pt-BR') : '';
+            labelEl.textContent = metaExtra.label || '';
+            authorEl.textContent = metaExtra.author || 'Delegado';
+            initialsEl.textContent = metaExtra.initials || 'MO';
+            modal.classList.remove('hidden');
+            currentPostId = postId || null;
+            currentReactions = reactions || {};
+            const likes = currentReactions['❤'] || 0;
+            if (likeCount) likeCount.textContent = `${likes}`;
+            if (deleteBtn) deleteBtn.classList.toggle('hidden', !canModerate);
+            if (commentsBox) {
+                commentsBox.innerHTML = '<div class="text-center text-white/80 text-sm">Carregando comentarios...</div>';
+                loadComments(postId);
+            }
+        };
+
+        if (modalClose) modalClose.addEventListener('click', closeGalleryModal);
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal || e.target === document.getElementById('galleryModalOverlay')) closeGalleryModal();
+            });
+        }
+        document.addEventListener('keyup', (e) => { if (e.key === 'Escape') closeGalleryModal(); });
+
+        async function loadComments(postId) {
+            if (!postId || !commentsBox) return;
+            try {
+                const res = await fetch(`/post/${postId}/comments`);
+                if (!res.ok) throw new Error('Erro ao carregar comentarios');
+                const list = await res.json();
+                commentsBox.innerHTML = '';
+                if (!list.length) {
+                    commentsBox.innerHTML = '<div class="text-center text-white/80 text-sm">Sem comentarios ainda.</div>';
+                    return;
+                }
+                list.forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = 'rounded-xl bg-white/90 shadow px-3 py-2 border border-white/60';
+                    div.innerHTML = `<div class="flex justify-between text-xs text-gray-700"><span class="font-semibold text-gray-900">${c.autor}</span><span class="text-gray-500">${c.tempo}</span></div><p class="text-sm text-gray-900">${c.mensagem}</p>`;
+                    commentsBox.appendChild(div);
+                });
+            } catch (err) {
+                commentsBox.innerHTML = '<div class="text-center text-red-300 text-xs">Erro ao carregar comentarios.</div>';
+            }
+        }
+
+        if (likeBtn) {
+            likeBtn.addEventListener('click', async () => {
+                if (!currentPostId) return;
+                try {
+                    await fetch(`/post/${currentPostId}/reaction`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ usuario: author || 'Usuario', emoji: '❤' })
+                    });
+                    currentReactions['❤'] = (currentReactions['❤'] || 0) + 1;
+                    if (likeCount) likeCount.textContent = `${currentReactions['❤']}`;
+                } catch (err) {
+                    alert('Nao foi possivel registrar sua reacao.');
+                }
+            });
+        }
+
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', async () => {
+                if (!currentPostId || !canModerate) return;
+                if (!confirm('Apagar esta foto?')) return;
+                try {
+                    await fetch(`/profile/gallery/${currentPostId}/delete`, { method: 'POST' });
+                    const card = document.querySelector(`[data-post-id="${currentPostId}"]`);
+                    if (card) card.remove();
+                    closeGalleryModal();
+                } catch (err) {
+                    alert('Nao foi possivel apagar a foto.');
+                }
+            });
+        }
+
+        if (commentForm) {
+            commentForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!currentPostId) return;
+                const message = (commentInput.value || '').trim();
+                if (!message) return;
+                try {
+                    const res = await fetch(`/post/${currentPostId}/comments`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ autor: author || 'Usuario', mensagem: message })
+                    });
+                    if (!res.ok) throw new Error('Erro ao enviar comentario');
+                    commentInput.value = '';
+                    loadComments(currentPostId);
+                } catch (err) {
+                    if (commentError) commentError.textContent = 'Falha ao enviar comentario.';
+                }
+            });
+        }
+
+        // Bind dos cards da galeria
+        if (grid) {
+            grid.querySelectorAll('[data-post-id]').forEach(card => {
+                card.addEventListener('click', () => {
+                    const mediaSrc = card.dataset.mediaSrc;
+                    const caption = card.dataset.caption || '';
+                    const publishedAt = card.dataset.publishedAt || '';
+                    const postId = card.dataset.postId;
+                    const authorName = card.dataset.author || 'Delegado';
+                    const label = card.dataset.label || '';
+                    const initials = (authorName || 'MO').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+                    const reactions = { '❤': parseInt(card.dataset.likes || '0', 10) || 0 };
+                    openGalleryModal(mediaSrc, caption, publishedAt, postId, reactions, { author: authorName, label, initials });
+                });
+            });
+        }
+    });
+</script>
+<script>
+    // Confirma��o de logout (modal glass no perfil)
+    document.addEventListener('DOMContentLoaded', () => {
+        const trigger = document.getElementById('logoutButton');
         const modal = document.getElementById('logoutModal');
         const cancelBtn = document.getElementById('cancelLogout');
         const confirmBtn = document.getElementById('confirmLogout');
+        if (!trigger || !modal || !cancelBtn || !confirmBtn) return;
 
-        if (!logoutBtn || !modal || !cancelBtn || !confirmBtn) return;
-
-        const openModal = () => {
+        const open = () => {
             modal.classList.remove('hidden');
             requestAnimationFrame(() => modal.classList.add('active'));
         };
-        const closeModal = () => {
+        const close = () => {
             modal.classList.remove('active');
-            setTimeout(() => modal.classList.add('hidden'), 250);
+            setTimeout(() => modal.classList.add('hidden'), 180);
         };
 
-        logoutBtn.addEventListener('click', (e) => {
+        trigger.addEventListener('click', (e) => {
             e.preventDefault();
-            confirmBtn.href = logoutBtn.dataset.logoutUrl || '/auth/logout';
-            openModal();
+            open();
         });
-        cancelBtn.addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
+        cancelBtn.addEventListener('click', (e) => { e.preventDefault(); close(); });
+        confirmBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = confirmBtn.getAttribute('href') || '/auth/logout';
+            close();
+            setTimeout(() => { window.location.href = target; }, 150);
         });
-        document.addEventListener('keyup', (e) => {
-            if (e.key === 'Escape') closeModal();
-        });
+        modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+        document.addEventListener('keyup', (e) => { if (e.key === 'Escape') close(); });
     });
 </script>
+<style>
+/* Overrides for logout glass modal */
+.glass-confirm-backdrop {
+    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08), transparent 35%),
+                radial-gradient(circle at 80% 10%, rgba(255,255,255,0.12), transparent 38%),
+                rgba(10,16,35,0.45);
+    backdrop-filter: blur(12px);
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 60;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+.glass-confirm-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+.glass-confirm-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, rgba(255,255,255,0.24), rgba(255,255,255,0.14));
+    border: 1px solid rgba(255,255,255,0.55);
+    border-radius: 28px;
+    box-shadow: 0 22px 55px rgba(8,15,35,0.28), inset 0 1px 0 rgba(255,255,255,0.5);
+    backdrop-filter: blur(22px);
+    color: #fff;\n    transform: translateY(20px) scale(0.97);
+    opacity: 0;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+}
+.glass-confirm-backdrop.active .glass-confirm-card {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+.glass-confirm-card::before,
+.glass-confirm-card::after {
+    content: "";
+    position: absolute;
+    inset: -30%;
+    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.55), transparent 45%),
+                radial-gradient(circle at 80% 10%, rgba(111,192,255,0.3), transparent 40%);
+    filter: blur(22px);
+    opacity: 0.75;
+    pointer-events: none;
+}
+.glass-confirm-card::after {
+    inset: -25%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.0) 55%);
+    filter: blur(14px);
+    opacity: 0.6;
+}
+/* High-contrast text for glass modal */
+.glass-confirm-card,
+.glass-confirm-card h3,
+.glass-confirm-card p,
+.glass-confirm-card .text-slate-500,
+.glass-confirm-card .text-slate-700 {
+    color: #e2e8ff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+}
+.glass-confirm-card .text-slate-500 {
+    color: #cbd5ff !important;
+}</style>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

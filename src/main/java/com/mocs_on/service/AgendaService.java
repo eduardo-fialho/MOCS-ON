@@ -1,4 +1,4 @@
-﻿package com.mocs_on.service;
+package com.mocs_on.service;
 
 import com.mocs_on.domain.AgendaDiaria;
 

@@ -1,4 +1,4 @@
-﻿package com.mocs_on.domain;
+package com.mocs_on.domain;
 
 public class AgendaDiaria {
     private Long id;
