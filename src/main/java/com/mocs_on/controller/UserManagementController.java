@@ -457,15 +457,15 @@ public class UserManagementController {
 
         boolean anyChange = false;
         if (!safe(previous.name()).equals(updated.name())) {
-            body.append("- Nome: ").append(safe(previous.name())).append(" â†’ ").append(safe(updated.name())).append("\n");
+            body.append("- Nome: ").append(safe(previous.name())).append(" → ").append(safe(updated.name())).append("\n");
             anyChange = true;
         }
         if (!previous.email().equalsIgnoreCase(updated.email())) {
-            body.append("- E-mail: ").append(previous.email()).append(" â†’ ").append(updated.email()).append("\n");
+            body.append("- E-mail: ").append(previous.email()).append(" → ").append(updated.email()).append("\n");
             anyChange = true;
         }
         if (!safe(previous.type()).equalsIgnoreCase(safe(updated.type()))) {
-            body.append("- Papel: ").append(safe(previous.type())).append(" â†’ ").append(safe(updated.type())).append("\n");
+            body.append("- Papel: ").append(safe(previous.type())).append(" → ").append(safe(updated.type())).append("\n");
             anyChange = true;
         }
         if (newPasswordPlain != null) {

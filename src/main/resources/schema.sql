@@ -13,17 +13,9 @@ CREATE TABLE IF NOT EXISTS `usuarios` (
   `tipo` VARCHAR(50) NOT NULL DEFAULT 'DELEGADO',
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `profile_photo` LONGBLOB NULL,
-  `profile_photo_content_type` VARCHAR(100) NULL,
   PRIMARY KEY (`id`),
   KEY `idx_usuarios_tipo` (`tipo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-ALTER TABLE `usuarios`
-  ADD COLUMN IF NOT EXISTS `profile_photo` LONGBLOB NULL;
-
-ALTER TABLE `usuarios`
-  ADD COLUMN IF NOT EXISTS `profile_photo_content_type` VARCHAR(100) NULL;
 
 CREATE TABLE IF NOT EXISTS `user_change_logs` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -67,17 +59,6 @@ CREATE TABLE IF NOT EXISTS `secretariado_profiles` (
   CONSTRAINT `fk_secretariado_user` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `user_profiles` (
-  `user_id` INT UNSIGNED NOT NULL,
-  `instituicao` VARCHAR(255) NULL,
-  `telefone` VARCHAR(100) NULL,
-  `comite_preferido` VARCHAR(255) NULL,
-  `observacoes` TEXT NULL,
-  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`user_id`),
-  CONSTRAINT `fk_user_profiles_user` FOREIGN KEY (`user_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 -- Ajuste feito por Arthur Henrique: mantemos o mesmo contrato criado pelo Samuel no PostDAO,
 -- garantindo que toda nova tabela já tenha a coluna `status` com padrão 'PUBLICO'.
 CREATE TABLE IF NOT EXISTS `posts` (
@@ -100,18 +81,6 @@ CREATE TABLE IF NOT EXISTS `post_reactions` (
   UNIQUE KEY `ux_post_user_emoji` (`post_id`, `usuario`, `emoji`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Ajuste solicitado pelo usuário: permitir comentários individuais nas fotos da galeria (#curadoria).
-CREATE TABLE IF NOT EXISTS `post_comments` (
-  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `post_id` BIGINT UNSIGNED NOT NULL,
-  `autor` VARCHAR(255) NOT NULL,
-  `mensagem` VARCHAR(500) NOT NULL,
-  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `idx_post_comments_post` (`post_id`),
-  CONSTRAINT `fk_post_comments_post` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 CREATE TABLE IF NOT EXISTS `avisos` (
     `id` bigint unsigned NOT NULL AUTO_INCREMENT,
     `autor` varchar(200) NOT NULL,
@@ -121,29 +90,17 @@ CREATE TABLE IF NOT EXISTS `avisos` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `pre_registrations` (
+CREATE TABLE IF NOT EXISTS `documentos` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `nome` VARCHAR(255) NOT NULL,
-    `email` VARCHAR(255) NOT NULL,
-    `instituicao` VARCHAR(255) NULL,
-    `telefone` VARCHAR(100) NULL,
-    `comite_preferido` VARCHAR(255) NULL,
-    `mensagem` TEXT NULL,
-    `status` VARCHAR(20) NOT NULL DEFAULT 'PENDENTE',
-    `secretariado_notified` TINYINT(1) NOT NULL DEFAULT 0,
-    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `processed_at` DATETIME NULL,
-    `processed_by` VARCHAR(255) NULL,
+    `autor` VARCHAR(255) NOT NULL,
+    `arquivo` LONGBLOB NOT NULL,
+    `status` VARCHAR(50) NOT NULL DEFAULT 'EM ENVIO',
+    `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+    `data` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `avaliacao` VARCHAR(1000) NOT NULL,
+
     PRIMARY KEY (`id`),
-    KEY `idx_pre_reg_status` (`status`)
+    KEY `idx_documentos_status` (`status`),
+    KEY `idx_documentos_ativo` (`ativo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS agenda_diaria (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    titulo VARCHAR(255),
-    descricao VARCHAR(255),
-    data_evento DATE,
-    hora_evento TIME,
-    visivel BOOLEAN DEFAULT TRUE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-

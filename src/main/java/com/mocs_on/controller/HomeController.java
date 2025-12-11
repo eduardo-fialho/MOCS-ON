@@ -1,34 +1,36 @@
 package com.mocs_on.controller;
 
-import com.mocs_on.auth.RememberMeService;
-import com.mocs_on.security.SecaoUsuario;
-import com.mocs_on.service.PreRegistrationService;
-import com.mocs_on.service.SecretariatDashboardService;
-import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.mocs_on.domain.Documento;
+import com.mocs_on.security.SecaoUsuario;
+import com.mocs_on.service.AvisoDAO;
+import com.mocs_on.service.DocumentoDAO;
+import com.mocs_on.service.PreRegistrationService;
+import com.mocs_on.service.SecretariatDashboardService;
+import com.mocs_on.service.SecretariatDashboardService.DashboardMetrics;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @CrossOrigin(origins = "*")
 public class HomeController {
 
-    private final RememberMeService rememberMeService;
-    private final PreRegistrationService preRegistrationService;
-    private final SecretariatDashboardService secretariatDashboardService;
-
-    public HomeController(RememberMeService rememberMeService,
-                          PreRegistrationService preRegistrationService,
-                          SecretariatDashboardService secretariatDashboardService) {
-        this.rememberMeService = rememberMeService;
-        this.preRegistrationService = preRegistrationService;
-        this.secretariatDashboardService = secretariatDashboardService;
-    }
+    @Autowired
+    private DocumentoDAO documentoDAO;
+    @Autowired
+    private AvisoDAO avisoDAO;
+    @Autowired
+    private PreRegistrationService preRegistrationService;
+    @Autowired
+    private SecretariatDashboardService secretariatDashboardService;
 
     @GetMapping("/")
     public String index() {
@@ -36,9 +38,8 @@ public class HomeController {
     }
 
     @GetMapping("/login")
-    public String login(Model model, HttpSession session, HttpServletRequest request, HttpServletResponse response) {
-        if (rememberMeService.tryRestoreSession(request, response) ||
-                (session != null && session.getAttribute(AuthController.SESSION_USER_ATTRIBUTE) != null)) {
+    public String login(Model model, HttpSession session) {
+        if (session != null && session.getAttribute(AuthController.SESSION_USER_ATTRIBUTE) != null) {
             return "redirect:/dashboard.html";
         }
         if (!model.containsAttribute("email")) {
@@ -53,8 +54,8 @@ public class HomeController {
     }
 
     @GetMapping("/dashboard.html")
-    public String dashboard(HttpServletRequest request, HttpServletResponse response, HttpSession session, Model model) {
-        if (!ensureAuthenticated(request, response, session)) {
+    public String dashboard(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
             return "redirect:/login";
         }
         populateUserAttributes(model);
@@ -62,8 +63,8 @@ public class HomeController {
     }
 
     @GetMapping("/mesa_diretora.html")
-    public String mesaDiretora(HttpServletRequest request, HttpServletResponse response, HttpSession session, Model model) {
-        if (!ensureAuthenticated(request, response, session)) {
+    public String mesaDiretora(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
             return "redirect:/login";
         }
         populateUserAttributes(model);
@@ -71,15 +72,49 @@ public class HomeController {
     }
 
     @GetMapping("/secretariado.html")
-    public String secretariado(HttpServletRequest request, HttpServletResponse response, HttpSession session, Model model) {
-        if (!ensureAuthenticated(request, response, session)) {
+    public String secretariado(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        // KPIs
+        DashboardMetrics metrics = secretariatDashboardService.collectMetrics();
+        model.addAttribute("dashboardMetrics", metrics);
+        model.addAttribute("numAvisos", avisoDAO.quantidadeAvisos());
+        model.addAttribute("numDocumentos", documentoDAO.quantidadeDocumentos());
+        model.addAttribute("pendingPreCount", preRegistrationService.countPending());
+        populateUserAttributes(model);
+        return "secretariado";
+    }
+
+    @GetMapping("/documentos.html")
+    public String documentos(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
             return "redirect:/login";
         }
         populateUserAttributes(model);
-        model.addAttribute("pendingPreCount", preRegistrationService.countPending());
-        model.addAttribute("pendingPreRegistrations", preRegistrationService.listPending());
-        model.addAttribute("dashboardMetrics", secretariatDashboardService.collectMetrics());
-        return "secretariado";
+        return "documentos";
+    }
+
+    @GetMapping("/avaliar_documentos.html")
+    public String avaliar(@RequestParam(required = false) Long docId, HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        populateUserAttributes(model);
+        if (docId != null) {
+            Documento doc = documentoDAO.recuperarPorId(docId);
+            model.addAttribute("doc", doc);
+        }
+        return "avaliar_documentos";
+    }
+
+    @GetMapping("/submissao_documentos.html")
+    public String submeterDocumento(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        populateUserAttributes(model);
+        return "submissao_documentos";
     }
 
     private boolean isAuthenticated(HttpSession session) {
@@ -89,14 +124,6 @@ public class HomeController {
     private boolean isAuthenticatedSecurity() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication != null && authentication.getPrincipal() instanceof SecaoUsuario;
-    }
-
-    /** Ajuste solicitado pelo usuário: reaproveitar cookie de sessão após F5 (#28). */
-    private boolean ensureAuthenticated(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-        if (isAuthenticated(session) || isAuthenticatedSecurity()) {
-            return true;
-        }
-        return rememberMeService.tryRestoreSession(request, response);
     }
 
     private void populateUserAttributes(Model model) {
