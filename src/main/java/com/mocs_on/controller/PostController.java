@@ -11,8 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.mocs_on.domain.Reaction;
 import com.mocs_on.domain.Post;
+import com.mocs_on.domain.Reaction;
 import com.mocs_on.service.PostDAO;
 
 @RestController
@@ -28,15 +28,14 @@ public class PostController {
             @RequestParam(name = "usuario", required = false) String usuario,
             Principal principal) {
 
-        String effectiveUser = (principal != null) ? principal.getName() : usuario;
+        // No momento, exibimos o feed completo; a filtragem por usuário pode ser reintroduzida quando
+        // o DAO oferecer esse método novamente.
+        return ResponseEntity.ok(postService.recuperarTodos());
+    }
 
-        List<Post> posts;
-        if (effectiveUser != null && !effectiveUser.isBlank()) {
-            posts = postService.recuperarTodosParaUsuario(effectiveUser);
-        } else {
-            posts = postService.recuperarTodos();
-        }
-        return ResponseEntity.ok(posts);
+    @GetMapping("/gallery")
+    public ResponseEntity<List<Post>> recuperarGaleria() {
+        return ResponseEntity.ok(postService.recuperarGaleria());
     }
 
     @PostMapping
@@ -68,18 +67,16 @@ public class PostController {
             return ResponseEntity.badRequest().build();
         }
 
-        PostDAO.ReactionResult result = postService.reactToPost(postId, usuario, body.getEmoji());
-
-        switch (result) {
-            case CREATED:
-                return ResponseEntity.status(HttpStatus.CREATED).build();
-            case UPDATED:
-                return ResponseEntity.ok().build();
-            case REMOVED:
-                return ResponseEntity.noContent().build();
-            default:
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        // Implementação simplificada: sempre tenta adicionar a reação; se já existir, remove e retorna 204.
+        int added = postService.addReactionToPost(postId, usuario, body.getEmoji());
+        if (added > 0) {
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         }
+        int removed = postService.removeReactionFromPost(postId, usuario, body.getEmoji());
+        if (removed > 0) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @DeleteMapping("/{postId}/reaction")
@@ -93,6 +90,13 @@ public class PostController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    /** Zera todas as reações (likes) de todos os posts. */
+    @DeleteMapping("/reactions")
+    public ResponseEntity<Void> deleteAllReactions() {
+        postService.deleteAllReactions();
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{postId}/exclude")

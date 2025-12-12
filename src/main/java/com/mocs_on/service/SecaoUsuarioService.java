@@ -33,7 +33,7 @@ public class SecaoUsuarioService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         Usuario usuario = loginDAO.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario nao encontrado com o email: " + email));
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com o e-mail: " + email));
 
         CargoEnum cargo = resolveCargo(usuario);
 
@@ -59,7 +59,7 @@ public class SecaoUsuarioService implements UserDetailsService {
             CargoEnum tipo = usuario.getTipo();
             return tipo != null ? tipo : CargoEnum.VISITANTE;
         } catch (IllegalArgumentException ex) {
-            LOGGER.warn("Tipo de cargo invalido '{}' para o usuario {}. Aplicando VISITANTE.",
+            LOGGER.warn("Tipo de cargo inválido '{}' para o usuário {}. Aplicando VISITANTE.",
                     usuario.getTipo(),
                     usuario.getEmail());
             return CargoEnum.VISITANTE;

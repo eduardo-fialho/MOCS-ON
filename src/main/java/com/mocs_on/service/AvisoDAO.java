@@ -44,7 +44,8 @@ public class AvisoDAO {
 
     public int quantidadeAvisos() {
         String sql = "SELECT COUNT(*) FROM avisos";
-        return jdbcTemplate.queryForObject(sql, Integer.class);
+        Integer total = jdbcTemplate.queryForObject(sql, Integer.class);
+        return total != null ? total : 0;
     }
 
 }

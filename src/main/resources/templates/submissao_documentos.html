@@ -1,65 +1,74 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-
+﻿<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOCS ON - Submissão de Documento</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" th:href="@{css/documentos.css}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enviar Documento</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/a2e0e9e4c1.js" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .text-mocs-blue { color: #205395; }
+    .bg-mocs-blue { background-color: #205395; }
+    .bg-mocs-orange { background-color: #f3a13b; }
+    .text-mocs-orange { color: #f3a13b; }
+  </style>
 </head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 text-slate-900">
+  <div class="max-w-4xl mx-auto px-4 md:px-8 py-10 space-y-6">
+    <header class="bg-white/95 backdrop-blur border border-slate-200 rounded-2xl px-6 py-4 shadow-lg flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <a th:href="@{/documentos.html}" class="inline-flex items-center text-mocs-blue hover:underline">
+          <i class="fas fa-arrow-left mr-2"></i> Voltar
+        </a>
+        <span class="hidden md:inline-flex text-slate-300">|</span>
+        <a th:href="@{/}" class="text-lg font-bold tracking-tight">MOCS ON</a>
+      </div>
+      <div class="text-center md:text-left">
+        <h1 class="text-2xl font-extrabold text-slate-900">Enviar Documento</h1>
+        <p class="text-sm text-slate-500">Preencha os dados e anexe o arquivo.</p>
+      </div>
+    </header>
 
-<body class="bg-gray-100">
-    <div class="flex flex-col min-h-screen">
-        <header class="bg-white shadow-md z-10 sticky top-0">
-            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-                <div class="flex items-center space-x-4">
-                    <a href="documentos.html"><img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON" class="h-8"></a>
-                    <h1 class="text-xl font-bold text-mocs-blue hidden md:block">Submissão de Documento</h1>
-                </div>
-                <a href="documentos.html" class="text-gray-600 hover:text-mocs-blue font-semibold py-2 px-4 rounded-lg hover:bg-gray-100">
-                    <i class="fas fa-arrow-left mr-2"></i> Voltar à Lista
-                </a>
+    <main>
+      <div class="bg-white/95 backdrop-blur border border-slate-200 rounded-2xl p-6 shadow-xl space-y-5">
+        <form id="upload-form" class="space-y-5" enctype="multipart/form-data">
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label for="doc-title" class="block text-sm font-semibold text-slate-700">Título *</label>
+              <input id="doc-title" name="title" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-mocs-orange focus:outline-none" placeholder="Ex.: Regulamento do Comitê">
             </div>
-        </header>
-
-        <main class="flex-grow container mx-auto p-4 md:p-6">
-            <div class="bg-white p-6 rounded-xl shadow-lg max-w-3xl mx-auto">
-                <h2 class="text-2xl font-bold text-mocs-blue mb-6">Formulário de Submissão</h2>
-
-                <form id="submission-form" class="space-y-4" enctype="multipart/form-data">
-                    <div>
-                        <label for="nome" class="block text-sm font-semibold text-gray-700 mb-1">Nome do Documento <span class="text-red-500">*</span></label>
-                        <input type="text" id="nome" name="nome" required
-                            class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue"
-                            placeholder="Digite o nome do documento">
-                    </div>
-
-                    <div>
-                        <label for="arquivo" class="block text-sm font-semibold text-gray-700 mb-1">Arquivo (PDF) <span class="text-red-500">*</span></label>
-                        <input type="file" id="arquivo" name="arquivo" accept="application/pdf" required
-                            class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
-                        <p class="text-xs text-gray-500 mt-1">Tamanho máximo: 10MB</p>
-                    </div>
-
-                    <button type="submit"
-                        class="w-full bg-mocs-blue text-white font-semibold py-3 rounded-lg hover:bg-opacity-90 transition duration-150 flex justify-center items-center">
-                        <i class="fas fa-upload mr-2"></i> Enviar Documento
-                    </button>
-                </form>
-
-                <div id="message-area" class="mt-4 text-sm font-medium p-3 rounded-lg text-center" style="display: none;"></div>
+            <div class="space-y-1">
+              <label for="doc-author" class="block text-sm font-semibold text-slate-700">Autor *</label>
+              <input id="doc-author" name="author" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-mocs-orange focus:outline-none" placeholder="Nome do responsável">
             </div>
-        </main>
-    </div>
+          </div>
 
-    <script th:src="@{/js/submissao_documentos.js}"></script>
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-slate-700">Arquivo *</label>
+            <div class="w-full rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 px-4 py-4 flex items-center gap-3 hover:border-mocs-orange/70 transition">
+              <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-mocs-orange/10 text-mocs-orange">
+                <i class="fas fa-file-upload"></i>
+              </div>
+              <input id="doc-file" type="file" name="file" required class="flex-1 text-sm text-slate-700 focus:outline-none">
+            </div>
+            <p class="text-xs text-slate-500">Tamanho máximo: 10 MB. Formato aceito: PDF.</p>
+          </div>
+
+          <div class="flex gap-3 items-center">
+            <button type="submit" class="inline-flex items-center bg-mocs-blue text-white font-semibold px-5 py-3 rounded-xl shadow hover:bg-blue-700 transition">
+              <i class="fas fa-cloud-upload-alt mr-2"></i> Enviar
+            </button>
+            <span id="upload-status" class="text-sm font-medium text-slate-600"></span>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script th:src="@{/js/submissao_documentos.js}"></script>
+  <script th:src="@{/js/dashboard_config.js}"></script>
+  <script th:src="@{/js/profile_data.js}"></script>
 </body>
-
 </html>

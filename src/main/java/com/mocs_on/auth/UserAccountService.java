@@ -3,6 +3,7 @@ package com.mocs_on.auth;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -123,17 +124,41 @@ public class UserAccountService {
 
     public List<UserRecord> findAllUsers() {
         String sql = String.format(
-                "SELECT id, `%s` AS name, `%s` AS email, `%s` AS password_hash, `%s` AS tipo, `%s` AS created_at, `%s` AS updated_at FROM `%s` ORDER BY `%s`",
+                "SELECT id, `%s` AS name, `%s` AS email, `%s` AS password_hash, `%s` AS tipo, `%s` AS created_at, `%s` AS updated_at FROM `%s` ORDER BY id",
                 usersNameColumn,
                 usersEmailColumn,
                 usersPasswordColumn,
                 usersTypeColumn,
                 usersCreatedAtColumn,
                 usersUpdatedAtColumn,
-                usersTable,
-                usersNameColumn
+                usersTable
         );
         return jdbcTemplate.query(sql, (rs, rowNum) -> mapUser(rs));
+    }
+
+    public List<String> findEmailsByRole(String role) {
+        if (!StringUtils.hasText(role)) {
+            return List.of();
+        }
+        String normalizedRole = role.trim().toUpperCase(Locale.ROOT);
+        String sql = String.format(
+                "SELECT `%s` FROM `%s` WHERE UPPER(`%s`) = ?",
+                usersEmailColumn,
+                usersTable,
+                usersTypeColumn
+        );
+        List<String> rows = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString(usersEmailColumn), normalizedRole);
+        List<String> emails = new ArrayList<>();
+        for (String email : rows) {
+            if (email == null) {
+                continue;
+            }
+            String trimmed = email.trim();
+            if (!trimmed.isEmpty()) {
+                emails.add(trimmed);
+            }
+        }
+        return emails;
     }
 
     public int updatePassword(String email, String passwordHash) {
@@ -245,6 +270,18 @@ public class UserAccountService {
         }
     }
 
+    public boolean deleteUser(long userId) {
+        Optional<UserRecord> existingOpt = findUserById(userId);
+        if (existingOpt.isEmpty()) {
+            return false;
+        }
+        deleteSecretariadoProfile(userId);
+        deleteUserProfileDetails(userId);
+        deleteProfilePhoto(userId);
+        String sql = String.format("DELETE FROM `%s` WHERE id = ?", usersTable);
+        return jdbcTemplate.update(sql, userId) > 0;
+    }
+
     private void validateEmailOrThrow(String normalizedEmail) {
         if (!isValidEmail(normalizedEmail)) {
             throw new IllegalArgumentException("Invalid email");
@@ -334,6 +371,11 @@ public class UserAccountService {
                                       String responsabilidades) {
     }
 
+    public record UserProfileDetails(String instituicao,
+                                     String telefone,
+                                     String comitePreferido,
+                                     String observacoes) {}
+
     public Optional<SecretariadoProfile> findSecretariadoProfile(long userId) {
         String sql = "SELECT funcao, departamento, matricula, telefone, turno_atendimento, responsabilidades " +
                 "FROM secretariado_profiles WHERE user_id = ?";
@@ -367,6 +409,53 @@ public class UserAccountService {
 
     public void deleteSecretariadoProfile(long userId) {
         jdbcTemplate.update("DELETE FROM secretariado_profiles WHERE user_id = ?", userId);
+    }
+
+    public Optional<UserProfileDetails> findUserProfileDetails(long userId) {
+        String sql = "SELECT instituicao, telefone, comite_preferido, observacoes FROM user_profiles WHERE user_id = ?";
+        List<UserProfileDetails> rows = jdbcTemplate.query(sql, (rs, rowNum) -> new UserProfileDetails(
+                rs.getString("instituicao"),
+                rs.getString("telefone"),
+                rs.getString("comite_preferido"),
+                rs.getString("observacoes")
+        ), userId);
+        return rows.stream().findFirst();
+    }
+
+    public void upsertUserProfileDetails(long userId, UserProfileDetails details) {
+        if (details == null || !hasProfileDetails(details)) {
+            jdbcTemplate.update("DELETE FROM user_profiles WHERE user_id = ?", userId);
+            return;
+        }
+        jdbcTemplate.update(
+                "INSERT INTO user_profiles (user_id, instituicao, telefone, comite_preferido, observacoes, updated_at) " +
+                        "VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP) " +
+                        "ON DUPLICATE KEY UPDATE instituicao = VALUES(instituicao), telefone = VALUES(telefone), " +
+                        "comite_preferido = VALUES(comite_preferido), observacoes = VALUES(observacoes), updated_at = CURRENT_TIMESTAMP",
+                userId,
+                normalizeDetailValue(details.instituicao()),
+                normalizeDetailValue(details.telefone()),
+                normalizeDetailValue(details.comitePreferido()),
+                normalizeDetailValue(details.observacoes())
+        );
+    }
+
+    public void deleteUserProfileDetails(long userId) {
+        jdbcTemplate.update("DELETE FROM user_profiles WHERE user_id = ?", userId);
+    }
+
+    private boolean hasProfileDetails(UserProfileDetails details) {
+        return StringUtils.hasText(details.instituicao())
+                || StringUtils.hasText(details.telefone())
+                || StringUtils.hasText(details.comitePreferido())
+                || StringUtils.hasText(details.observacoes());
+    }
+
+    private String normalizeDetailValue(String value) {
+        if (!StringUtils.hasText(value)) {
+            return null;
+        }
+        return value.trim();
     }
 
     public void ensureCoreTables() {
@@ -428,9 +517,76 @@ public class UserAccountService {
                 + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
         jdbcTemplate.execute(secretariadoSql);
 
-        //jdbcTemplate.execute("ALTER TABLE `secretariado_profiles` "
-        //        + "ADD COLUMN IF NOT EXISTS `turno_atendimento` VARCHAR(100) NULL");
-        //jdbcTemplate.execute("ALTER TABLE `secretariado_profiles` "
-        //        + "ADD COLUMN IF NOT EXISTS `responsabilidades` VARCHAR(255) NULL");
+        jdbcTemplate.execute("ALTER TABLE `secretariado_profiles` "
+                + "ADD COLUMN IF NOT EXISTS `turno_atendimento` VARCHAR(100) NULL");
+        jdbcTemplate.execute("ALTER TABLE `secretariado_profiles` "
+                + "ADD COLUMN IF NOT EXISTS `responsabilidades` VARCHAR(255) NULL");
+
+        String userProfileSql = "CREATE TABLE IF NOT EXISTS `user_profiles` ("
+                + " `user_id` INT UNSIGNED NOT NULL,"
+                + " `instituicao` VARCHAR(255) NULL,"
+                + " `telefone` VARCHAR(100) NULL,"
+                + " `comite_preferido` VARCHAR(255) NULL,"
+                + " `observacoes` TEXT NULL,"
+                + " `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,"
+                + " PRIMARY KEY (`user_id`),"
+                + " CONSTRAINT `fk_user_profiles_user` FOREIGN KEY (`user_id`) REFERENCES `" + usersTable + "` (`id`) ON DELETE CASCADE"
+                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+        jdbcTemplate.execute(userProfileSql);
+
+        jdbcTemplate.execute("ALTER TABLE `" + usersTable + "` "
+                + "ADD COLUMN IF NOT EXISTS `profile_photo` LONGBLOB NULL");
+        jdbcTemplate.execute("ALTER TABLE `" + usersTable + "` "
+                + "ADD COLUMN IF NOT EXISTS `profile_photo_content_type` VARCHAR(100) NULL");
     }
+
+    public void updateProfilePhoto(long userId, byte[] photo, String contentType) {
+        jdbcTemplate.update(
+                "UPDATE `" + usersTable + "` SET profile_photo = ?, profile_photo_content_type = ?, `" + usersUpdatedAtColumn + "` = CURRENT_TIMESTAMP WHERE id = ?",
+                photo,
+                contentType,
+                userId
+        );
+    }
+
+    public void deleteProfilePhoto(long userId) {
+        jdbcTemplate.update(
+                "UPDATE `" + usersTable + "` SET profile_photo = NULL, profile_photo_content_type = NULL, `" + usersUpdatedAtColumn + "` = CURRENT_TIMESTAMP WHERE id = ?",
+                userId
+        );
+    }
+
+    public Optional<UserPhoto> findProfilePhoto(long userId) {
+        String sql = String.format("SELECT profile_photo, profile_photo_content_type FROM `%s` WHERE id = ?", usersTable);
+        List<UserPhoto> rows = jdbcTemplate.query(sql, (rs, rowNum) -> {
+            byte[] data = rs.getBytes("profile_photo");
+            if (rs.wasNull() || data == null) {
+                return null;
+            }
+            return new UserPhoto(data, rs.getString("profile_photo_content_type"));
+        }, userId);
+        return rows.stream().filter(Objects::nonNull).findFirst();
+    }
+
+    public Optional<UserPhoto> findProfilePhotoByName(String name) {
+        if (!StringUtils.hasText(name)) {
+            return Optional.empty();
+        }
+        String sql = String.format(
+                "SELECT profile_photo, profile_photo_content_type FROM `%s` WHERE LOWER(`%s`) = LOWER(?) LIMIT 1",
+                usersTable,
+                usersNameColumn
+        );
+        List<UserPhoto> rows = jdbcTemplate.query(sql, (rs, rowNum) -> {
+            byte[] data = rs.getBytes("profile_photo");
+            if (rs.wasNull() || data == null) {
+                return null;
+            }
+            return new UserPhoto(data, rs.getString("profile_photo_content_type"));
+        }, name.trim());
+        return rows.stream().filter(Objects::nonNull).findFirst();
+    }
+
+    public record UserPhoto(byte[] data, String contentType) {}
 }
+

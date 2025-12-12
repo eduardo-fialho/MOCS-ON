@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>pré-inscrições MOCS ON</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background: linear-gradient(135deg, #0e1b3d, #0c1230) fixed;
+            color: #0f172a;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+<header class="bg-white/10 backdrop-blur border-b border-white/10">
+    <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+        <a href="/" class="text-white font-semibold tracking-wide">MOCS ON</a>
+    </div>
+</header>
+
+<main class="flex-1">
+    <div class="max-w-4xl mx-auto px-4 py-10">
+        <div class="bg-white rounded-3xl shadow-2xl p-8 space-y-6">
+            <div class="space-y-2 text-center">
+                <p class="text-sm font-semibold tracking-[0.4em] text-blue-500 uppercase">pré-inscrição</p>
+                <h1 class="text-3xl font-bold text-slate-900">Envie seus dados para o Secretariado</h1>
+                <p class="text-slate-600">Preencha o formulario abaixo. Nossa equipe recebe a solicitação, confirma as informações e cria sua conta oficial.</p>
+            </div>
+
+            <div th:if="${success}" class="px-4 py-3 rounded bg-green-50 border border-green-200 text-green-700" th:text="${success}"></div>
+            <div th:if="${error}" class="px-4 py-3 rounded bg-red-50 border border-red-200 text-red-700" th:text="${error}"></div>
+
+            <form th:action="@{/preinscricao}" th:object="${form}" method="post" class="space-y-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label class="text-sm font-semibold text-slate-700 space-y-1">
+                        <span>Nome completo</span>
+                        <input type="text" th:field="*{nome}" required
+                               class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </label>
+                    <label class="text-sm font-semibold text-slate-700 space-y-1">
+                        <span>E-mail</span>
+                        <input type="email" th:field="*{email}" required
+                               class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label class="text-sm font-semibold text-slate-700 space-y-1">
+                        <span>Instituição ou escola</span>
+                        <input type="text" th:field="*{instituicao}" required
+                               class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </label>
+                    <label class="text-sm font-semibold text-slate-700 space-y-1">
+                        <span>Telefone/WhatsApp</span>
+                        <input type="text" th:field="*{telefone}" required
+                               class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </label>
+                </div>
+
+                <label class="text-sm font-semibold text-slate-700 space-y-1 block">
+                    <span>Comitê ou área de interesse</span>
+                    <input type="text" th:field="*{comitePreferido}" required
+                           class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           placeholder="Ex.: CSNU, UNESCO, Comitê    de Imprensa...">
+                </label>
+
+                <label class="text-sm font-semibold text-slate-700 space-y-1 block">
+                    <span>Mensagem adicional</span>
+                    <textarea rows="4" th:field="*{mensagem}" required
+                              class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              placeholder="Conte-nos um pouco sobre você!"></textarea>
+                </label>
+
+                <div class="pt-4 flex flex-wrap gap-3 justify-end">
+                    <a href="/"
+                       class="px-4 py-2 rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Cancelar</a>
+                    <button type="submit"
+                            class="px-6 py-2 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition shadow-lg shadow-blue-600/30">
+                        Enviar pré-inscrição
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>
+

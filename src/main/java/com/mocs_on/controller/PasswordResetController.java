@@ -31,7 +31,7 @@ public class PasswordResetController {
                                HttpServletRequest request,
                                Model model) {
         service.requestReset(email, request.getRemoteAddr(), request.getHeader("User-Agent"));
-        model.addAttribute("message", "Se o e-mail estiver cadastrado, enviamos instrucoes para redefinicao.");
+        model.addAttribute("message", "Se o e-mail estiver cadastrado, enviamos instruções para redefinição.");
         return "forgot_password_result";
     }
 
@@ -54,7 +54,7 @@ public class PasswordResetController {
         }
 
         if (!password.equals(confirm)) {
-            model.addAttribute("error", "As senhas nao coincidem.");
+            model.addAttribute("error", "As senhas não coincidem.");
             model.addAttribute("token", token);
             return "reset_password_form";
         }
