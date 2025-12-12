@@ -1,5 +1,5 @@
-
 package com.mocs_on.domain;
+
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,24 +11,28 @@ public class Post {
     private String autor;
     private TipoPost status;
     private LocalDateTime dataPublicacao;
-    
+    private Long comiteId;
+
+    private String myReaction;
+
     public static final String DISPLAY_ANON = "Spotted by: CSNU";
     private Map<String, Integer> reactions = new HashMap<>();
-    
-    public enum TipoPost{
+
+    public enum TipoPost {
         PUBLICO,
         ANONIMO,
         EXCLUIDO,
+        PENDENTE,
     }
-    
+
     public Post() {
         this.mensagem = "";
         this.autor = "";
         this.status = TipoPost.PUBLICO;
         this.dataPublicacao = LocalDateTime.now();
     }
-    
-    public Post(String mensagem, String nome, TipoPost status, LocalDateTime data){
+
+    public Post(String mensagem, String nome, TipoPost status, LocalDateTime data) {
         this.mensagem = mensagem;
         this.autor = nome;
         this.status = status;
@@ -42,7 +46,7 @@ public class Post {
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     public String getMensagem() {
         return mensagem;
     }
@@ -52,9 +56,9 @@ public class Post {
     }
 
     public String getAutor() {
-    if (status == TipoPost.ANONIMO) {
-        return DISPLAY_ANON;
-    }
+        if (status == TipoPost.ANONIMO) {
+            return DISPLAY_ANON;
+        }
         return autor;
     }
 
@@ -82,13 +86,13 @@ public class Post {
     public void setData(LocalDateTime dataPublicacao) {
         this.dataPublicacao = dataPublicacao;
     }
-    
+
     public Map<String, Integer> getReactions() {
         return Collections.unmodifiableMap(reactions);
     }
 
     public void setReactions(Map<String, Integer> reactions) {
-        this.reactions = new HashMap<>(reactions);
+        this.reactions = new HashMap<>(reactions != null ? reactions : Collections.emptyMap());
     }
 
     public void addReaction(String emoji) {
@@ -96,7 +100,21 @@ public class Post {
     }
 
     public void removeReaction(String emoji) {
-        reactions.computeIfPresent(emoji, (k,v) -> (v <= 1) ? null : v - 1);
+        reactions.computeIfPresent(emoji, (k, v) -> (v <= 1) ? null : v - 1);
+    }
+
+    public String getMyReaction() {
+        return myReaction;
+    }
+
+    public void setMyReaction(String myReaction) {
+        this.myReaction = myReaction;
+    }
+    public Long getComiteId() {
+        return comiteId;
+    }
+    public void setComiteId(Long comiteId) {
+        this.comiteId = comiteId;
     }
 }
 
