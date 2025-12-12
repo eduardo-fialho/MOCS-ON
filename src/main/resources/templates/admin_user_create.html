@@ -28,7 +28,15 @@
             Ocorreu um erro.
         </div>
         <div class="bg-white shadow rounded-lg p-6 space-y-6">
+            <div th:if="${preRegistration}" class="rounded-2xl border border-blue-100 bg-blue-50/60 p-4 text-sm text-slate-700 space-y-1">
+                <p class="font-semibold text-blue-900">Dados vindos da pré-inscrição</p>
+                <p><span class="font-medium">Instituição:</span> <span th:text="${preRegistration.instituicao} ?: '-'">-</span></p>
+                <p><span class="font-medium">Telefone:</span> <span th:text="${preRegistration.telefone} ?: '-'">-</span></p>
+                <p><span class="font-medium">Comitê preferido:</span> <span th:text="${preRegistration.comitePreferido} ?: '-'">-</span></p>
+                <p><span class="font-medium">Mensagem:</span> <span th:text="${preRegistration.mensagem} ?: '-'">-</span></p>
+            </div>
             <form th:action="@{/admin/users/new}" th:object="${form}" method="post" id="userForm" class="space-y-6">
+                <input type="hidden" th:field="*{preRegistrationId}">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1" for="name">Nome completo</label>
@@ -40,6 +48,32 @@
                         <input type="email" id="email" th:field="*{email}" required
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
                     </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1" for="instituicao">Instituição / Escola</label>
+                        <input type="text" id="instituicao" th:field="*{instituicao}" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1" for="telefone">Telefone / WhatsApp</label>
+                        <input type="text" id="telefone" th:field="*{telefone}" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1" for="comitePreferido">Comitê ou área de interesse</label>
+                    <input type="text" id="comitePreferido" th:field="*{comitePreferido}" required
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1" for="observacoes">Observações / notas internas</label>
+                    <textarea id="observacoes" th:field="*{observacoes}" rows="3"
+                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue"
+                              placeholder="Anotações compartilhadas com o Secretariado"></textarea>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

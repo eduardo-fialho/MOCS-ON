@@ -46,7 +46,7 @@ public class AdminBootstrap implements CommandLineRunner {
         userAccountService.ensureCoreTables();
         String normalized = userAccountService.normalizeEmail(adminEmail);
         if (!userAccountService.isValidEmail(normalized)) {
-            log.warn("Bootstrap desativado: e-mail invalido configurado ({}).", adminEmail);
+            log.warn("Bootstrap desativado: e-mail inválido configurado ({}).", adminEmail);
             return;
         }
         if (userAccountService.userExists(normalized)) {

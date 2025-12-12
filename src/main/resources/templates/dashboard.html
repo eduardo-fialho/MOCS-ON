@@ -1,58 +1,219 @@
 ﻿<!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MOCS ON - Dashboard do Delegado</title>
 
+    <!-- Tailwind CSS (CDN - apenas para testes; use build local em produção) -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Alpine.js v3 (corrigido) -->
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
+    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .dashboard-bg {
+            background-color: #eef2ff;
+            background-image: url("/images/dashboard-wallpaper-aura3.jpg");
+            background-size: cover;
+            background-position: center top;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        .bg-mocs-blue { background-color: #205395; }
+        .text-mocs-blue { color: #205395; }
+        .bg-mocs-orange { background-color: #FF8C00; }
+        .text-mocs-orange { color: #FF8C00; }
+        .border-mocs-blue { border-color: #205395; }
+        .border-mocs-orange { border-color: #FF8C00; }
+
+        /* Scrollbar minimal e contida */
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, rgba(255,255,255,0.45), rgba(255,255,255,0.25));
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.35);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, rgba(255,255,255,0.65), rgba(255,255,255,0.4));
+        }
+        .comment-wrapper {
+            overflow: hidden;
+            border-radius: 1.5rem;
+        }
+        .comment-scroll {
+            max-height: 16rem;
+            overflow-y: auto;
+            padding: 10px 14px 10px 10px;
+            scrollbar-gutter: stable;
+        }
+        [x-cloak] { display: none !important; }
+        .animate-heart-burst { animation: heart-burst 1.1s ease-out forwards; }
+        @keyframes heart-burst {
+            0% { transform: scale(0.5) translateY(0); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: scale(1.4) translateY(-60px); opacity: 0; }
+        }
+        .liquid-glass {
+            position: relative;
+            background: linear-gradient(135deg, rgba(255,255,255,0.55), rgba(255,255,255,0.25));
+            border: 1px solid rgba(255,255,255,0.65);
+            border-radius: 1.25rem;
+            overflow: hidden;
+            backdrop-filter: blur(24px);
+            box-shadow: 0 30px 60px rgba(18,54,92,0.18);
+        }
+        .liquid-glass::before,
+        .liquid-glass::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+        .liquid-glass::before {
+            background: radial-gradient(circle at 15% 20%, rgba(255,255,255,0.8), transparent 45%),
+                        radial-gradient(circle at 85% 10%, rgba(255,255,255,0.4), transparent 50%),
+                        radial-gradient(circle at 40% 80%, rgba(255,255,255,0.35), transparent 45%);
+            opacity: 0.75;
+        }
+        .liquid-glass::after {
+            background: linear-gradient(120deg, rgba(255,255,255,0.25), transparent 60%);
+            mix-blend-mode: screen;
+            opacity: 0.4;
+        }
+        .liquid-glass > * {
+            position: relative;
+            z-index: 2;
+        }
+        /* Apple-like glass panel for modal */
+        .apple-glass {
+            position: relative;
+            background: linear-gradient(145deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08));
+            border: 1px solid rgba(255,255,255,0.35);
+            border-radius: 1.25rem;
+            backdrop-filter: blur(22px) saturate(140%);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.45);
+            overflow: hidden;
+        }
+        .apple-glass::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.25), transparent 45%),
+                        radial-gradient(circle at 80% 0%, rgba(255,255,255,0.15), transparent 40%);
+            pointer-events: none;
+        }
+        .apple-glass::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, rgba(255,255,255,0.12), transparent 60%);
+            mix-blend-mode: screen;
+            pointer-events: none;
+        }
+        .liquid-glass--header {
+            overflow: hidden;
+            border-radius: 2rem;
+            padding: 1.2rem 1.75rem 0.75rem;
+        }
+        .liquid-glass-input {
+            background: rgba(255,255,255,0.9);
+            border: 1px solid rgba(255,255,255,0.7);
+            box-shadow: inset 0 0 0 1px rgba(32,83,149,0.08), 0 8px 24px rgba(18,54,92,0.12);
+        }
+        .glass-menu {
+            background: rgba(255,255,255,0.95);
+            border: 1px solid rgba(255,255,255,0.7);
+            border-radius: 1rem;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 20px 40px rgba(18,54,92,0.18);
+        }
+        .menu-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.65rem 1.4rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.9);
+            color: #205395;
+            box-shadow: 0 8px 18px rgba(32,83,149,0.12);
+            border: 1px solid rgba(255,255,255,0.7);
+            transition: background 0.2s ease, transform 0.2s ease;
+            white-space: nowrap;
+        }
+        .menu-chip:hover {
+            background: rgba(255,255,255,1);
+            transform: translateY(-1px);
+        }
+    </style>
+
+    <script>
+        const APP_CONTEXT_PATH = (() => {
+            const path = window.location.pathname || '';
+            const base = path.replace(/\/[^/]*$/, '');
+            if (!base || base === '/' || base === path) {
+                return '';
+            }
+            return base;
+        })();
+        const API_BASE_URL = `${window.location.origin}${APP_CONTEXT_PATH}`;
+        const API_ENDPOINT = `${API_BASE_URL}/aviso`;
+        const USER_ENDPOINT = `${API_BASE_URL}/user`;
+        const POST_API_BASE = `${API_BASE_URL}/post`;
+        const USER_AVATAR_ENDPOINT = `${API_BASE_URL}/user/avatar`;
+        const DEFAULT_AVATAR_URL = `${API_BASE_URL}/images/avatar-default.svg`;
+        const ANON_AVATAR_URL = `${API_BASE_URL}/images/avatar-default.svg`;
+
+        // Helper global para CSRF
+        function readCsrf() {
+            const tokenMeta = document.querySelector('meta[name="_csrf"]');
+            const headerMeta = document.querySelector('meta[name="_csrf_header"]');
+            const token = tokenMeta ? tokenMeta.content : null;
+            const header = headerMeta ? headerMeta.content : 'X-CSRF-TOKEN';
+            return { token, header };
+        }
+    </script>
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-100 dashboard-bg">
     <div class="flex flex-col min-h-screen">
-        <header class="bg-white shadow-md z-10 sticky top-0" x-data="profileData()" x-init="loadUserInfo()">
-            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-                <div class="flex items-center space-x-4">
-                    <a href="#"><img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON"
-                            class="h-8"></a>
-                </div>
-                <div class="flex items-center space-x-6">
-                    <span class="font-semibold text-gray-700 hidden sm:block">CSNU</span>
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center space-x-2">
-                            <img src="https://placehold.co/40x40/cccccc/ffffff?text=U" alt="Avatar"
-                                class="h-9 w-9 rounded-full border-2 border-mocs-blue">
-                            <span class="hidden md:block font-semibold text-gray-700"
-                                x-text="userName">Carregando...</span>
-                            <i class="fas fa-chevron-down text-xs text-gray-500"></i>
-                        </button>
-                        <div x-show="open" @click.away="open = false"
-                            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20"
-                            style="display: none;">
-                            <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b">
-                                <i class="fas fa-user mr-2"></i> Meu perfil
-                            </a>
-                            <template x-if="isSecretario">
-                                <div>
-                                    <a href="/secretariado.html"
-                                        class="block px-4 py-2 text-sm text-mocs-blue font-semibold hover:bg-gray-100 border-b">
-                                        <i class="fas fa-user-tie mr-2"></i> Área do Secretariado
+        <!-- Cabeçalho -->
+        <header class="z-10 sticky top-0" x-data="headerController()" x-init="loadUserInfo()" @click.away="menuOpen = false">
+            <div class="container mx-auto px-4 py-3">
+                <div class="liquid-glass liquid-glass--header w-full transition-all duration-500" :class="menuOpen ? 'pb-4' : ''">
+                    <div class="flex flex-wrap items-center justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <a href="#"><img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON" class="h-8 rounded-xl shadow"></a>
+                            <span class="font-semibold text-mocs-blue tracking-widest uppercase text-xs sm:text-sm">CSNU</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-3">
+                            <button @click="toggleMenu" class="flex items-center gap-2 font-semibold text-white">
+                                <img :src="userAvatar" @error="$event.target.src = defaultAvatar" alt="Avatar" class="h-9 w-9 rounded-full border-2 border-mocs-blue object-cover">
+                                <span class="hidden md:block text-white" x-text="userName">Carregando...</span>
+                                <i class="fas fa-chevron-down text-xs text-white transition-transform duration-300" :class="menuOpen ? 'rotate-180' : ''"></i>
+                            </button>
+                            <div class="overflow-hidden transition-all duration-500 ease-out w-full flex justify-center" :class="menuOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'">
+                                <div class="flex flex-col items-center gap-3 text-sm font-semibold w-64">
+                                    <a href="/profile" class="menu-chip w-full justify-center">
+                                        <i class="fas fa-user"></i> Meu perfil
                                     </a>
+                                    <template x-if="isSecretario">
+                                        <a href="/secretariado.html" class="menu-chip w-full justify-center">
+                                            <i class="fas fa-user-tie"></i> Área do Secretariado
+                                        </a>
+                                    </template>
                                 </div>
-                            </template>
-
-                            <a href="/auth/logout"
-                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -60,47 +221,236 @@
         </header>
 
         <main class="flex-grow container mx-auto p-4 md:p-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Área principal da Galeria Mocs -->
+                <section class="lg:col-span-8 flex flex-col gap-6" x-data="galeriaPreview()" x-init="init()">
+                    <!-- Busca + filtros + ações rápidas -->
+                    <div class="liquid-glass overflow-hidden p-6">
+                        <div class="flex flex-col gap-4 lg:flex-row lg:items-end">
+                            <div class="flex-1">
+                                <p class="text-xs font-semibold text-gray-400 tracking-widest uppercase">Pesquisar perfis ou hashtags</p>
+                                <div class="relative mt-2">
+                                    <span class="absolute left-3 top-3 text-gray-400"><i class="fas fa-search"></i></span>
+                                    <input x-model="searchQuery"
+                                           @input="handleSearchInput()"
+                                           @keydown.enter.prevent
+                                           type="text"
+                                           class="liquid-glass-input w-full pl-10 pr-4 py-2.5 rounded-lg focus:ring-2 focus:ring-mocs-blue focus:border-mocs-blue text-gray-700"
+                                           placeholder="Busque pessoas, países ou temas da conferência">
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <template x-for="filter in filters" :key="filter">
+                                    <button @click="activeFilter = filter"
+                                            :class="activeFilter === filter ? 'bg-mocs-blue text-white shadow-md' : 'border border-gray-200 text-gray-600'"
+                                            class="px-3 py-1.5 rounded-full text-sm font-semibold transition">
+                                        <span x-text="filter"></span>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
 
-                <div class="lg:col-span-2 flex flex-col gap-6">
+                        <div class="mt-4 space-y-3" x-show="searchQuery && searchQuery.trim().length >= 2">
+                            <div class="text-sm text-gray-500 flex items-center gap-2" x-show="searchLoading">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <span>Buscando perfis...</span>
+                            </div>
+                            <div class="text-sm text-red-600" x-show="searchError" x-text="searchError"></div>
+                            <div class="space-y-2" x-show="!searchLoading && searchResults.length">
+                                <template x-for="user in searchResults" :key="user.id">
+                                    <div class="p-3 border border-gray-100 rounded-lg flex flex-col gap-1 hover:border-mocs-blue transition">
+                                        <div class="flex items-center justify-between text-sm">
+                                            <span class="font-semibold text-gray-800" x-text="user.nome"></span>
+                                            <span class="px-2 py-0.5 text-xs rounded-full bg-mocs-blue text-white" x-text="user.tipo"></span>
+                                        </div>
+                                        <p class="text-xs text-gray-500" x-text="user.email"></p>
+                                        <p class="text-xs text-gray-400" x-show="user.lastPostSnippet">
+                                            Último post · <span x-text="formatTime(user.lastPostDate)"></span> — <span x-text="user.lastPostSnippet"></span>
+                                        </p>
+                                    </div>
+                                </template>
+                            </div>
+                            <div class="space-y-2" x-show="!searchLoading && !searchResults.length && fallbackPosts.length">
+                                <p class="text-xs uppercase tracking-[0.3em] text-gray-400">Talvez você esteja procurando por</p>
+                                <template x-for="post in fallbackPosts" :key="`fallback-${post.id}`">
+                                    <div class="p-3 rounded-lg bg-gray-50 border border-dashed border-gray-200">
+                                        <p class="text-sm font-semibold text-gray-700" x-text="post.author"></p>
+                                        <p class="text-xs text-gray-500" x-text="post.excerpt"></p>
+                                        <span class="text-[11px] text-gray-400" x-text="post.time"></span>
+                                    </div>
+                                </template>
+                            </div>
+                            <div class="text-xs text-gray-400" x-show="!searchLoading && !searchResults.length && !fallbackPosts.length && !searchError">
+                                Nenhum perfil correspondente. Tente outro termo.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Galeria visual -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                        <div class="flex items-center justify-between flex-wrap gap-3">
+                            <div>
+                                <h2 class="text-xl font-bold text-mocs-blue">Galeria visual</h2>
+                                <p class="text-gray-500 text-sm">Últimas postagens (mais recentes primeiro).</p>
+                            </div>
+                            <button class="text-sm font-semibold text-mocs-blue hover:text-mocs-orange flex items-center gap-2">
+                                <i class="fas fa-sliders-h"></i> Filtrar mídias
+                            </button>
+                        </div>
+                        <div class="text-sm text-red-500 mt-4" x-show="feedError" x-text="feedError"></div>
+                        <div class="text-sm text-gray-500 mt-4 flex items-center gap-2" x-show="feedLoading">
+                            <i class="fas fa-spinner fa-spin text-mocs-blue"></i>
+                            <span>Carregando galeria...</span>
+                        </div>
+                        <div class="text-sm text-gray-400 mt-4" x-show="!feedLoading && !filteredMedia.length && !feedError">
+                            Nenhuma mídia disponível para este filtro ainda.
+                        </div>
+                        <div id="dashboardGalleryGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4" x-show="!feedLoading && filteredMedia.length">
+                            <template x-for="mediaItem in filteredMedia" :key="mediaItem.id">
+                                <button type="button"
+                                        class="dashboard-gallery-card relative rounded-2xl overflow-hidden shadow-sm group text-left cursor-pointer"
+                                        @click="openModal(mediaItem)">
+                                    <img class="w-full h-48 object-cover transition duration-300 group-hover:scale-105"
+                                         :src="mediaItem.url"
+                                         :alt="mediaItem.caption">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-3 text-white">
+                                        <p class="text-sm font-semibold" x-text="mediaItem.caption"></p>
+                                        <span class="text-xs text-white/80" x-text="mediaItem.meta"></span>
+                                    </div>
+                                    <div class="absolute top-3 left-3 bg-white/90 text-xs font-semibold px-2 py-1 rounded-full text-mocs-blue shadow" x-text="mediaItem.label"></div>
+                                    <div class="absolute top-3 right-3 bg-black/60 text-xs text-white px-2 py-1 rounded-full flex items-center gap-1">
+                                        <i class="fas fa-heart text-red-400"></i>
+                                        <span x-text="mediaItem.likes || 0"></span>
+                                    </div>
+                                </button>
+                            </template>
+                        </div>
+                        <!-- Modal de foto (clean + side info) -->
+                        <div x-cloak x-show="modalOpen" class="fixed inset-0 z-40 px-4" @keydown.window.escape="closeModal()">
+                            <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" @click="closeModal()"
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0"
+                                 x-transition:enter-end="opacity-100"
+                                 x-transition:leave="transition ease-in duration-150"
+                                 x-transition:leave-start="opacity-100"
+                                 x-transition:leave-end="opacity-0"></div>
+                            <div class="relative w-full h-full flex items-center justify-center">
+                                <button type="button" class="absolute top-6 right-6 text-white/80 hover:text-white text-2xl z-50" @click="closeModal()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                <div class="flex items-center gap-4">
+                                    <div class="flex items-center justify-center overflow-hidden">
+                                        <img :src="selectedMedia && selectedMedia.url ? selectedMedia.url : ''"
+                                             alt="Galeria MOCS"
+                                             @load="modalPortrait = $event.target.naturalHeight > $event.target.naturalWidth"
+                                             class="object-contain rounded-2xl"
+                                             :class="modalPortrait ? 'max-h-[85vh] max-w-[65vw]' : 'max-h-[85vh] max-w-[70vw]'">
+                                    </div>
+                                    <div class="w-[22rem] lg:w-[24rem] apple-glass p-5 flex flex-col gap-4 max-h-[85vh] overflow-y-auto text-gray-900">
+                                        <div class="flex items-center gap-3">
+                                            <div class="h-12 w-12 rounded-full bg-mocs-blue text-white flex items-center justify-center font-bold text-lg">
+                                                <span x-text="selectedMedia && selectedMedia.initials ? selectedMedia.initials : 'MO'"></span>
+                                            </div>
+                                            <div>
+                                            <p class="text-xs uppercase tracking-[0.35em] text-white/70" x-text="selectedMedia && selectedMedia.label ? selectedMedia.label : ''"></p>
+                                            <p class="text-lg font-semibold text-white" x-text="selectedMedia && selectedMedia.author ? selectedMedia.author : 'Delegado'"></p>
+                                            <p class="text-xs text-white/70" x-text="selectedMedia && selectedMedia.meta ? selectedMedia.meta : ''"></p>
+                                        </div>
+                                    </div>
+                                    <p class="text-sm text-white/85" x-text="selectedMedia && selectedMedia.caption ? selectedMedia.caption : ''"></p>
+                                    <div class="flex items-center gap-3">
+                                            <button type="button"
+                                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full border transition text-sm"
+                                                    :class="[(selectedMedia && selectedMedia.liked) ? 'bg-mocs-blue text-white border-mocs-blue' : 'border-mocs-blue text-mocs-blue hover:bg-mocs-blue hover:text-white', likeLoading ? 'opacity-60 cursor-not-allowed' : '']"
+                                                    :disabled="likeLoading"
+                                                    @click="toggleLike()">
+                                                <i class="fas fa-heart" :class="(selectedMedia && selectedMedia.liked) ? 'text-white' : 'text-red-500'"></i>
+                                                <span x-text="selectedMedia && selectedMedia.likes ? selectedMedia.likes : 0"></span>
+                                            </button>
+                                            <span class="text-xs text-gray-200">Curtidas</span>
+                                        </div>
+                                        <div class="flex-1 apple-glass p-4 text-white rounded-3xl comment-wrapper">
+                                            <div class="comment-scroll custom-scrollbar space-y-3 bg-transparent w-full">
+                                                <div class="text-center text-white/80 text-sm" x-show="commentLoading">
+                                                    <i class="fas fa-spinner fa-spin mr-2"></i> Carregando comentários...
+                                                </div>
+                                                <div class="text-center text-white/80 text-sm" x-show="!commentLoading && !comments.length">
+                                                    Seja o primeiro a comentar.
+                                                </div>
+                                                <template x-for="comment in comments" :key="comment.id">
+                                                    <div class="rounded-xl bg-white/90 shadow px-3 py-2 border border-white/60">
+                                                        <div class="flex justify-between text-xs text-gray-700">
+                                                            <span class="font-semibold text-gray-900" x-text="comment.autor"></span>
+                                                            <span class="text-gray-500" x-text="comment.tempo"></span>
+                                                        </div>
+                                                        <p class="text-sm text-gray-900" x-text="comment.mensagem"></p>
+                                                    </div>
+                                                </template>
+                                                <div class="text-xs text-red-500 text-center" x-show="commentError" x-text="commentError"></div>
+                                            </div>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <textarea x-model="commentText"
+                                                      class="w-full border border-gray-300 rounded-2xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-mocs-blue"
+                                                      rows="2"
+                                                      placeholder="Escreva um comentário..."></textarea>
+                                            <div class="flex justify-end items-center gap-2">
+                                                <button type="button"
+                                                        class="px-4 py-2 rounded-full bg-mocs-blue text-white text-sm font-semibold hover:bg-opacity-90 transition"
+                                                        @click="submitComment()">
+                                                    Publicar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                                <!-- Um terço direito: mural, agenda e avisos -->
+                <section class="lg:col-span-4 flex flex-col gap-6">
+                    <!-- INÍCIO: MURAL -->
                     <div x-data="muralData()" x-init="init()" class="bg-white p-6 rounded-xl shadow-lg">
                         <h2 class="text-2xl font-bold text-mocs-blue mb-4">Mural do Comitê - CSNU</h2>
 
+                        <!-- Formulário de Postagem -->
                         <div class="mb-6">
                             <textarea x-model="newMessage"
-                                class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue"
-                                rows="3" placeholder="Escreva um post no mural, envie um spotted anônimo..."></textarea>
+                                      class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue"
+                                      rows="3"
+                                      placeholder="Escreva um post no mural, envie um spotted anônimo..."></textarea>
 
                             <div class="flex justify-end items-center mt-2 space-x-4">
                                 <label class="text-sm text-gray-600 mr-4 flex items-center">
-                                    <input type="checkbox" x-model="postAsAnon" class="mr-2 rounded">Postar como anônimo
-                                    (Spotted)
+                                    <input type="checkbox" x-model="postAsAnon" class="mr-2 rounded">Postar como anônimo (Spotted)
                                 </label>
 
-                                <button @click.prevent="createPost(); location.reload()"
-                                    :class="{ 'opacity-60 cursor-not-allowed': posting }" :disabled="posting"
-                                    class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
+                                <button @click.prevent="createPost()"
+                                        :class="{ 'opacity-60 cursor-not-allowed': posting }"
+                                        :disabled="posting"
+                                        class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
                                     <span x-show="!posting">Postar</span>
                                     <span x-show="posting">Enviando...</span>
                                 </button>
                             </div>
                         </div>
 
+                        <!-- Mensagens de erro / carregamento -->
                         <div class="text-sm text-red-600 mb-3" x-show="error" x-text="error" style="display:none"></div>
-                        <div class="text-sm text-gray-500 mb-3" x-show="loading" style="display:none"><i
-                                class="fas fa-spinner fa-spin mr-2"></i> Carregando feed...</div>
+                        <div class="text-sm text-gray-500 mb-3" x-show="loading" style="display:none"><i class="fas fa-spinner fa-spin mr-2"></i> Carregando feed...</div>
 
-                        <div class="space-y-5"> 
+                        <!-- Feed de Posts -->
+                        <div class="space-y-5">
                             <template x-for="post in posts" :key="post.id">
                                 <div class="border-t pt-4">
                                     <div class="flex items-start space-x-4">
-                                        <div class="h-10 w-10 rounded-full flex items-center justify-center bg-gray-200 text-gray-700">
-                                            <template x-if="post.status === 'ANONIMO'">
-                                                <i class="fas fa-user-secret"></i>
-                                            </template>
-                                            <template x-if="post.status !== 'ANONIMO'">
-                                                <i class="fas fa-user"></i>
-                                            </template>
+                                        <div class="h-10 w-10 rounded-full overflow-hidden border border-gray-200 bg-gray-50 flex-shrink-0">
+                                            <img
+                                                :src="post.avatarUrl || (post.status === 'ANONIMO' ? anonAvatar : defaultAvatar)"
+                                                @error="$event.target.src = post.status === 'ANONIMO' ? anonAvatar : defaultAvatar"
+                                                alt="Avatar do autor"
+                                                class="h-full w-full object-cover">
                                         </div>
 
                                         <div class="flex-1">
@@ -108,356 +458,879 @@
                                             <p class="text-gray-700" x-text="post.mensagem"></p>
                                             <p class="text-xs text-gray-500 mt-1" x-text="timeAgo(post.data)"></p>
 
+                                            <!-- Reações rápidas -->
                                             <div class="mt-3 flex items-center gap-2 text-sm">
-                                                <button
-                                                    class="px-3 py-1 rounded-full flex items-center"
-                                                    @click="toggleCurtida(post)"
-                                                >
-                                                    <span>Curtir</span>
-                                                </button>
-
-                                                <button class="text-sm text-gray-600 underline" @click="openCurtidasModal(post)">
-                                                    <span x-text="(post._curtidaCount !== undefined) ? post._curtidaCount + ' pessoas' : '0 pessoas'"></span>
-                                                </button>
-                                            </div>
-
-
-                                            <div class="mt-3 flex items-center gap-2 text-sm">
-                                                <template x-for="emoji in emojis" :key="emoji">
-                                                    <button
-                                                        :class="{
-                                                            'ring-2 ring-offset-1 ring-blue-300': post.myReaction === emoji,
-                                                            'opacity-50 cursor-not-allowed': post._reacting
-                                                        }"
-                                                        class="px-2 py-1 bg-gray-100 rounded-full flex items-center"
-                                                        :disabled="post._reacting"
-                                                        @click="addReaction(post, emoji)"
-                                                    >
-                                                        <span x-text="emoji"></span>
-                                                        <span class="ml-1" x-text="reactionCount(post, emoji)"></span>
-                                                    </button>
-                                                </template>
-                                            </div>
-                                            <div class="mt-3">
-                                                <button class="text-sm text-gray-600" @click="toggleComments(post)">
-                                                    <span x-text="(post._commentsOpen ? 'Fechar' : 'Ver') + ' comentários'"></span>
-                                                </button>
-                                                <div x-show="post._commentsOpen" x-cloak class="mt-2 space-y-3">
-                                                    <div x-show="post._loadingComments" class="text-sm text-gray-500">Carregando comentários...</div>
-                                                    <template x-for="comment in (post.comments || [])" :key="comment.id">
-                                                        <div class="bg-gray-50 p-2 rounded">
-                                                            <div class="flex justify-between items-start">
-                                                                <div>
-                                                                    <p class="text-sm font-semibold" x-text="comment.usuarioNome"></p>
-                                                                    <template x-if="comment.status === 'EXCLUIDO'">
-                                                                        <p class="text-sm text-gray-400" x-text="comment.mensagem"></p>
-                                                                    </template>
-                                                                    <template x-if="comment.status !== 'EXCLUIDO'">
-                                                                        <p class="text-sm text-gray-700" x-text="comment.mensagem"></p>
-                                                                    </template>
-                                                                    <p class="text-xs text-gray-400" x-text="timeAgo(comment.createdAt)"></p>
-                                                                </div>
-                                                                <div>
-                                                                    <template x-if="(comment.usuario === currentUserEmail || comment.usuarioNome === currentUser) || isSecretary">
-                                                                        <button class="text-xs text-red-600" @click="deleteComment(post, comment.id)">Remover</button>
-                                                                    </template>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </template>
-                                                    <div x-show="!post._loadingComments && (!post.comments || post.comments.length === 0)" class="text-sm text-gray-500">Seja o primeiro a comentar.</div>
-                                                    <div class="pt-2">
-                                                        <textarea x-model="post._newComment" rows="2" class="w-full border rounded p-2 text-sm" placeholder="Escreva um comentário..."></textarea>
-                                                        <div class="flex justify-end mt-1">
-                                                            <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded"
-                                                                @click="addComment(post)"
-                                                                :disabled="post._postingComment || !(post._newComment && post._newComment.trim())">
-                                                                <span x-text="post._postingComment ? 'Enviando...' : 'Comentar'"></span>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '👏')">👏 <span class="ml-1" x-text="reactionCount(post,'👏')"></span></button>
+                                                <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '❤️')">❤️ <span class="ml-1" x-text="reactionCount(post,'❤️')"></span></button>
+                                                <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '😂')">😂 <span class="ml-1" x-text="reactionCount(post,'😂')"></span></button>
+                                                <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '😱')">😱 <span class="ml-1" x-text="reactionCount(post,'😱')"></span></button>
                                             </div>
                                         </div>
 
                                         <div class="flex flex-col items-end gap-2">
-                                            <template x-if="isSecretary">
-                                                <button class="text-sm text-red-600" @click="deletePost(post.id)"> Excluir
-                                                </button>
-                                            </template>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div x-show="post._curtidasModalOpen" x-cloak class="fixed inset-0 flex items-center justify-center z-50">
-                                    <div class="absolute inset-0 bg-black opacity-50" @click="closeCurtidasModal(post)"></div>
-                                    <div class="bg-white rounded shadow-lg p-4 max-w-md w-full z-10">
-                                        <div class="flex justify-between items-center mb-3">
-                                            <h3 class="text-lg font-semibold">Curtido por</h3>
-                                            <button class="text-sm text-gray-600" @click="closeCurtidasModal(post)">Fechar</button>
-                                        </div>
-                                        <div class="max-h-64 overflow-auto">
-                                            <template x-if="post._loadingCurtidas">
-                                                <div class="text-sm text-gray-500">Carregando...</div>
-                                            </template>
-                                            <template x-for="u in (post._curtidasList || [])" :key="u.usuario">
-                                                <div class="py-2 border-b">
-                                                    <div class="font-medium" x-text="u.usuarioNome"></div>
-                                                    <div class="text-xs text-gray-500" x-text="u.usuario"></div>
-                                                </div>
-                                            </template>
-                                            <div x-show="!post._loadingCurtidas && (!post._curtidasList || post._curtidasList.length === 0)" class="text-sm text-gray-500">Ninguém curtiu ainda.</div>
+                                            <button class="text-sm text-red-600" @click="deletePost(post.id)">Excluir</button>
                                         </div>
                                     </div>
                                 </div>
                             </template>
 
+                            <!-- Caso não haja posts -->
                             <div x-show="!loading && posts.length === 0" class="text-center text-gray-500 py-6" style="display:none">
                                 Nenhum post disponível.
                             </div>
-                        </div>  
+                        </div>
                     </div>
-                </div>
+                    <!-- FIM: MURAL -->
 
-                <div class="lg:col-span-1 flex flex-col gap-6" x-data="announcementsData()">
+                    <!-- Agenda (dinâmica) -->
                     <div x-data="calendarComponent()" x-init="init()" class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-bold text-mocs-blue mb-4 text-center">Agenda do Dia</h2>
 
-                    <h2 class="text-xl font-bold text-mocs-blue mb-4 text-center">Agenda do Dia</h2>
+                        <div class="flex justify-center border-b mb-4">
+                            <button
+                                @click="aba = 'calendario'"
+                                :class="aba === 'calendario' ? 'text-mocs-blue font-semibold border-b-2 border-mocs-blue' : 'text-gray-500'"
+                                class="px-4 py-2 mx-2 transition">
+                                Calendário
+                            </button>
 
-                    <div class="flex justify-center border-b mb-4">
-                        <button
-                        @click="aba = 'calendario'"
-                        :class="aba === 'calendario' ? 'text-mocs-blue font-semibold border-b-2 border-mocs-blue' : 'text-gray-500'"
-                        class="px-4 py-2 mx-2 transition">
-                        Calendário
-                        </button>
-
-                        <button
-                        @click="aba = 'hoje'"
-                        :class="aba === 'hoje' ? 'text-mocs-blue font-semibold border-b-2 border-mocs-blue' : 'text-gray-500'"
-                        class="px-4 py-2 mx-2 transition">
-                        Hoje
-                        </button>
-                    </div>
-
-                    <div x-show="aba === 'calendario'" x-transition class="p-2">
-                        <div class="p-4 border rounded-xl bg-white">
-
-                        <div class="flex justify-between items-center mb-4">
-                            <button @click="prevMonth()" class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300">‹</button>
-                            <h3 class="text-lg font-semibold text-gray-800"><span x-text="monthName + ' ' + year"></span></h3>
-                            <button @click="nextMonth()" class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300">›</button>
+                            <button
+                                @click="aba = 'hoje'"
+                                :class="aba === 'hoje' ? 'text-mocs-blue font-semibold border-b-2 border-mocs-blue' : 'text-gray-500'"
+                                class="px-4 py-2 mx-2 transition">
+                                Hoje
+                            </button>
                         </div>
 
-                        <div class="grid grid-cols-7 text-center text-sm font-semibold text-gray-600 mb-2">
-                            <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
-                        </div>
+                        <div x-show="aba === 'calendario'" x-transition class="p-2">
+                            <div class="p-4 border rounded-xl bg-white">
 
-                        <div class="relative">
-                            <div class="grid grid-cols-7 gap-1 text-center text-sm">
-
-                            <template x-for="n in blanks" :key="'b'+n">
-                                <div class="p-2"></div>
-                            </template>
-
-                            <template x-for="day in days" :key="day.date">
-                                <div
-                                class="p-2 rounded-lg cursor-pointer relative transition group"
-                                :class="day.isToday ? 'bg-mocs-orange text-white font-semibold' : (day.events && day.events.length ? 'bg-mocs-blue/10 border border-mocs-blue' : 'bg-gray-100 text-gray-700')"
-                                @click="openModal(day)"
-                                @mouseenter="showTooltip($event, day)"
-                                @mouseleave="hideTooltip()"
-                                >
-                                <div class="text-sm" x-text="day.number"></div>
+                                <div class="flex justify-between items-center mb-4">
+                                    <button @click="prevMonth()" class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300">&lt;</button>
+                                    <h3 class="text-lg font-semibold text-gray-800"><span x-text="monthName + ' ' + year"></span></h3>
+                                    <button @click="nextMonth()" class="px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300">&gt;</button>
                                 </div>
-                            </template>
 
-                            </div>
+                                <div class="grid grid-cols-7 text-center text-sm font-semibold text-gray-600 mb-2">
+                                    <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+                                </div>
 
-                            <div
-                            x-show="tooltipVisible"
-                            x-html="tooltipHtml"
-                            x-transition.opacity
-                            class="absolute z-50 w-64 p-2 rounded-lg shadow-lg border bg-white text-sm"
-                            :style="`left: ${tooltipX}px; top: ${tooltipY}px;`"
-                            style="display:none">
-                            </div>
+                                <div class="relative">
+                                    <div class="grid grid-cols-7 gap-1 text-center text-sm">
 
-                        </div>
-                        </div>
-                    </div>
+                                        <template x-for="n in blanks" :key="'b'+n">
+                                            <div class="p-2"></div>
+                                        </template>
 
-                    <div x-show="aba === 'hoje'" x-transition>
-                        <ul class="space-y-3 mt-2">
-                        <template x-for="ev in hojeEventos" :key="ev.titulo + ev.horario">
-                            <li class="flex items-center gap-4 p-3 border rounded-lg">
-                            <div class="w-10 text-center">
-                                <i class="fas fa-calendar-day text-mocs-blue"></i>
-                            </div>
-                            <div class="flex-1">
-                                <p class="font-semibold" x-text="ev.titulo"></p>
-                                <p class="text-sm text-gray-500" x-text="ev.horario + ' • ' + ev.local"></p>
-                            </div>
-                            </li>
-                        </template>
+                                        <template x-for="day in days" :key="day.date">
+                                            <div
+                                                class="p-2 rounded-lg cursor-pointer relative transition group"
+                                                :class="day.isToday ? 'bg-mocs-orange text-white font-semibold' : (day.events && day.events.length ? 'bg-mocs-blue/10 border border-mocs-blue' : 'bg-gray-100 text-gray-700')"
+                                                @click="openModal(day)"
+                                                @mouseenter="showTooltip($event, day)"
+                                                @mouseleave="hideTooltip()"
+                                            >
+                                                <div class="text-sm" x-text="day.number"></div>
+                                            </div>
+                                        </template>
 
-                        <div x-show="hojeEventos.length === 0" class="text-center text-gray-500 p-4">
-                            Nenhum evento para hoje.
-                        </div>
-                        </ul>
-                    </div>
-
-                    <div
-                        x-show="modalVisible"
-                        x-transition.opacity
-                        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-                        style="display:none"
-                        @keydown.escape.window="closeModal()"
-                        @click.self="closeModal()"
-                    >
-                        <div class="bg-white rounded-xl p-6 w-96 shadow-lg relative">
-                        <button @click="closeModal()" class="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl">&times;</button>
-
-                        <h2 class="text-xl font-bold mb-2" x-text="modalDateFormatted"></h2>
-
-                        <div class="space-y-3 mt-3">
-                            <template x-for="ev in modalEvents" :key="ev.titulo + ev.horario">
-                            <div class="p-3 border rounded-lg">
-                                <p class="font-semibold" x-text="ev.titulo"></p>
-                                <p class="text-sm text-gray-500" x-text="ev.horario + ' • ' + (ev.local || '')"></p>
-                                <p class="text-sm text-gray-700 mt-2" x-text="ev.descricao || ''"></p>
-                            </div>
-                            </template>
-
-                            <div x-show="modalEvents.length === 0" class="text-gray-500">
-                            Nenhum evento neste dia.
-                            </div>
-                        </div>
-
-                        <div class="mt-6 flex justify-end">
-                            <button @click="closeModal()" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Fechar</button>
-                        </div>
-                        </div>
-                    </div>
-                    
-                    <section id='posts_pendentes' >
-                        <h2 class="text-xl font-bold text-mocs-blue mb-4 text-center">Posts pendentes</h2>
-                        
-                        <article>
-                            <p>Posts aguardando aprovação:</p>
-                        </article>
-                    </section>
-                </div>
-                <div>
-                    <div x-data="muralData()" x-init="init()" class="bg-white p-6 rounded-xl shadow-lg">
-                        <!--x-if="isAutorizado" (dentro do muralData())-->
-                    <template x-for="post in postsPendentes" :key="post.id">
-                                <div class="border-t pt-4">
-                                    <div class="flex items-start space-x-4">
-                                        <div
-                                            class="h-10 w-10 rounded-full flex items-center justify-center bg-gray-200 text-gray-700">
-                                            <template x-if="post.status === 'ANONIMO'">
-                                                <i class="fas fa-user-secret"></i>
-                                            </template>
-                                            <template x-if="post.status !== 'ANONIMO'">
-                                                <i class="fas fa-user"></i>
-                                            </template>
-                                        </div>
-
-                                        <div class="flex-1">
-                                            <p class="font-bold text-gray-800" x-text="post.autor"></p>
-                                            <p class="text-gray-700" x-text="post.mensagem"></p>
-                                            <p class="text-xs text-gray-500 mt-1" x-text="timeAgo(post.data)"></p>
-                                        </div>
                                     </div>
-                                    <br>
-                                    <a :href="`postStatus/aceitar/${post.id}`"
-                                           class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
-                                            Aceitar Post
-                                        </a>
-                                        <a :href="`postStatus/negar/${post.id}`"
-                                           class="bg-mocs-orange text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
-                                            Negar Post
-                                        </a>
+
+                                    <div
+                                        x-show="tooltipVisible"
+                                        x-html="tooltipHtml"
+                                        x-transition.opacity
+                                        class="absolute z-50 w-64 p-2 rounded-lg shadow-lg border bg-white text-sm"
+                                        :style="`left: ${tooltipX}px; top: ${tooltipY}px;`"
+                                        style="display:none">
+                                    </div>
+
                                 </div>
-                            </template>
+                            </div>
                         </div>
 
-                    <div class="bg-white p-6 rounded-xl shadow-lg">
-                        <h2 class="text-xl font-bold text-mocs-blue mb-4">Avisos da Organização</h2>
-                        <div class="space-y-3" x-init="loadAvisos()">
-                            <div x-show="isLoading" class="text-center py-4 text-gray-500">
-                                <i class="fas fa-spinner fa-spin mr-2"></i> Carregando avisos...
-                            </div>
-                            <div x-show="!isLoading && !avisos.length" class="text-center py-4 text-gray-500">
-                                Nenhum aviso disponível.
-                            </div>
+                        <div x-show="aba === 'hoje'" x-transition>
+                            <ul class="space-y-3 mt-2">
+                                <template x-for="ev in hojeEventos" :key="ev.titulo + ev.horario">
+                                    <li class="flex items-center gap-4 p-3 border rounded-lg">
+                                        <div class="w-10 text-center">
+                                            <i class="fas fa-calendar-day text-mocs-blue"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-semibold" x-text="ev.titulo"></p>
+                                            <p class="text-sm text-gray-500" x-text="ev.horario + ' · ' + (ev.local || '')"></p>
+                                        </div>
+                                    </li>
+                                </template>
 
-                            <template x-for="aviso in paginatedAvisos" :key="aviso.titulo + aviso.data">
-                                <div class="border-t pt-3 cursor-pointer hover:bg-gray-50 rounded-lg px-2 py-1 transition duration-150"
-                                    @click="showAvisoModal(aviso)">
-                                    <p class="font-semibold text-sm text-gray-800" x-text="aviso.titulo"></p>
-                                    <p class="text-xs text-gray-500" x-text="formatTimeAgo(aviso.data)"></p>
+                                <div x-show="hojeEventos.length === 0" class="text-center text-gray-500 p-4">
+                                    Nenhum evento para hoje.
                                 </div>
-                            </template>
+                            </ul>
                         </div>
 
-                        <div x-show="totalPages > 1" class="flex justify-between items-center mt-4 pt-3 border-t">
-                            <button @click="prevPage()" :disabled="currentPage === 1"
-                                class="bg-mocs-orange text-white text-sm font-semibold py-1 px-3 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed">
-                                Anterior
-                            </button>
-                            <span class="text-sm text-gray-600">Página <span x-text="currentPage"></span> de <span
-                                    x-text="totalPages"></span></span>
-                            <button @click="nextPage()" :disabled="currentPage >= totalPages"
-                                class="bg-mocs-orange text-white text-sm font-semibold py-1 px-3 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed">
-                                Próxima
-                            </button>
+                        <div
+                            x-show="modalVisible"
+                            x-transition.opacity
+                            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                            style="display:none"
+                            @keydown.escape.window="closeModal()"
+                            @click.self="closeModal()"
+                        >
+                            <div class="bg-white rounded-xl p-6 w-96 shadow-lg relative">
+                                <button @click="closeModal()" class="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl">&times;</button>
+
+                                <h2 class="text-xl font-bold mb-2" x-text="modalDateFormatted"></h2>
+
+                                <div class="space-y-3 mt-3">
+                                    <template x-for="ev in modalEvents" :key="ev.titulo + ev.horario">
+                                        <div class="p-3 border rounded-lg">
+                                            <p class="font-semibold" x-text="ev.titulo"></p>
+                                            <p class="text-sm text-gray-500" x-text="ev.horario + ' · ' + (ev.local || '')"></p>
+                                            <p class="text-sm text-gray-700 mt-2" x-text="ev.descricao || ''"></p>
+                                        </div>
+                                    </template>
+
+                                    <div x-show="modalEvents.length === 0" class="text-gray-500">
+                                        Nenhum evento neste dia.
+                                    </div>
+                                </div>
+
+                                <div class="mt-6 flex justify-end">
+                                    <button @click="closeModal()" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Fechar</button>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
 
-                    <div x-show="isModalOpen" x-transition
-                        class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50"
-                        style="display:none" @click.away="closeAvisoModal()">
-                        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg mx-auto" @click.stop>
-                            <div class="flex justify-between items-start mb-4">
-                                <h3 class="text-2xl font-bold text-mocs-blue" x-text="currentAviso.titulo"></h3>
-                                <button @click="closeAvisoModal()" class="text-gray-400 hover:text-gray-600"><i
-                                        class="fas fa-times text-xl"></i></button>
+                    <!-- Avisos + Modal -->
+                    <div x-data="announcementsData()" class="space-y-6">
+                        <div class="bg-white p-6 rounded-xl shadow-lg">
+                            <h2 class="text-xl font-bold text-mocs-blue mb-4">Avisos da Organização</h2>
+                            <div class="space-y-3" x-init="loadAvisos()">
+                                <div x-show="isLoading" class="text-center py-4 text-gray-500">
+                                    <i class="fas fa-spinner fa-spin mr-2"></i> Carregando avisos...
+                                </div>
+                                <div x-show="!isLoading && !avisos.length" class="text-center py-4 text-gray-500">
+                                    Nenhum aviso disponível.
+                                </div>
+
+                                <template x-for="aviso in paginatedAvisos" :key="aviso.titulo + aviso.data">
+                                    <div class="border-t pt-3 cursor-pointer hover:bg-gray-50 rounded-lg px-2 py-1 transition duration-150" @click="showAvisoModal(aviso)">
+                                        <p class="font-semibold text-sm text-gray-800" x-text="aviso.titulo"></p>
+                                        <p class="text-xs text-gray-500" x-text="formatTimeAgo(aviso.data)"></p>
+                                    </div>
+                                </template>
                             </div>
-                            <p class="text-sm text-gray-500 mb-4 border-b pb-2">Postado por: <span class="font-semibold"
-                                    x-text="currentAviso.autor"></span></p>
-                            <div class="max-h-96 custom-scrollbar overflow-y-auto pr-2">
-                                <p class="text-gray-700 whitespace-pre-wrap" x-text="currentAviso.mensagem"></p>
+
+                            <!-- Paginação -->
+                            <div x-show="totalPages > 1" class="flex justify-between items-center mt-4 pt-3 border-t">
+                                <button @click="prevPage()" :disabled="currentPage === 1" class="bg-mocs-orange text-white text-sm font-semibold py-1 px-3 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed">
+                                    Anterior
+                                </button>
+                                <span class="text-sm text-gray-600">Página <span x-text="currentPage"></span> de <span x-text="totalPages"></span></span>
+                                <button @click="nextPage()" :disabled="currentPage >= totalPages" class="bg-mocs-orange text-white text-sm font-semibold py-1 px-3 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed">
+                                    Próxima
+                                </button>
                             </div>
-                            <div class="mt-6 flex justify-end">
-                                <button @click="closeAvisoModal()"
-                                    class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Fechar</button>
+                        </div>
+
+                        <!-- Modal -->
+                        <div x-show="isModalOpen" x-transition class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50" style="display:none" @click.away="closeAvisoModal()">
+                            <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg mx-auto" @click.stop>
+                                <div class="flex justify-between items-start mb-4">
+                                    <h3 class="text-2xl font-bold text-mocs-blue" x-text="currentAviso.titulo"></h3>
+                                    <button @click="closeAvisoModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-4 border-b pb-2">Postado por: <span class="font-semibold" x-text="currentAviso.autor"></span></p>
+                                <div class="max-h-96 custom-scrollbar overflow-y-auto pr-2">
+                                    <p class="text-gray-700 whitespace-pre-wrap" x-text="currentAviso.mensagem"></p>
+                                </div>
+                                <div class="mt-6 flex justify-end">
+                                    <button @click="closeAvisoModal()" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Fechar</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </section>
             </div>
-
-            <section class="mt-8" id="criar-comite-section">
-                <article class="bg-white p-6 rounded-xl shadow-lg">
-                    <form action="/comite/criar" method="get">
-                        <button type="submit" class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
-                            Criar Novo Comitê
-                        </button>
-                        <a th:href="@{/comite/listar}" class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90" style="margin-left: 10px; padding: 10px;">
-                                Listar Comitês
-                        </a>
-                    </form>
-                </article>
-            </section>
         </main>
+
+
     </div>
+
+    <!-- Script Lógica Alpine -->
+    <script>
+        // NOVO: Função para carregar o nome e o cargo do usuário logado
+        function profileData() {
+            return {
+                userName: 'Carregando...', // Estado inicial
+                isSecretario: false, // Estado inicial
+                userAvatar: 'https://placehold.co/40x40/cccccc/ffffff?text=U',
+                defaultAvatar: 'https://placehold.co/40x40/cccccc/ffffff?text=U',
+                
+                async loadUserInfo() {
+                    try {
+                        const response = await fetch(USER_ENDPOINT); 
+
+                        if (!response.ok) {
+                            this.userName = 'Erro ao carregar';
+                            this.userAvatar = this.defaultAvatar;
+                            return;
+                        }
+
+                        const data = await response.json();
+                        const resolvedName = data && data.nome ? data.nome : 'Delegado';
+                        this.userName = resolvedName;
+                        this.isSecretario = data && data.isSecretario ? data.isSecretario : false;
+                        await this.loadAvatar(resolvedName);
+                    } catch (error) {
+                        console.error('Falha ao buscar info do usuário:', error);
+                        this.userName = 'Delegado (Offline)';
+                        this.userAvatar = this.defaultAvatar;
+                    }
+                },
+
+                async loadAvatar(name) {
+                    if (!name) {
+                        this.userAvatar = this.defaultAvatar;
+                        return;
+                    }
+                    const encoded = encodeURIComponent(name);
+                    try {
+                        const url = `${USER_AVATAR_ENDPOINT}?name=${encoded}&ts=${Date.now()}`;
+                        const res = await fetch(url, { method: 'GET' });
+                        if (!res.ok) {
+                            this.userAvatar = this.defaultAvatar;
+                            return;
+                        }
+                        this.userAvatar = url;
+                    } catch (err) {
+                        console.warn('Falha ao carregar avatar do usuário', err);
+                        this.userAvatar = this.defaultAvatar;
+                    }
+                }
+            };
+        }
+
+        function headerController() {
+            const profile = profileData();
+            return Object.assign(profile, {
+                menuOpen: false,
+                toggleMenu() {
+                    this.menuOpen = !this.menuOpen;
+                }
+            });
+        }
+
+        function galeriaPreview() {
+            return {
+                filters: ['Meu comitê', 'Secretariado', 'Global'],
+                activeFilter: 'Meu comitê',
+                searchQuery: '',
+                searchResults: [],
+                searchLoading: false,
+                searchError: null,
+                searchDebounce: null,
+                fallbackPosts: [],
+                posts: [],
+                media: [],
+                feedLoading: true,
+                feedError: null,
+                currentUser: null,
+                defaultAvatar: DEFAULT_AVATAR_URL,
+                modalOpen: false,
+                selectedMedia: null,
+                modalPortrait: false,
+                likeLoading: false,
+                comments: [],
+                commentLoading: false,
+                commentText: '',
+                commentError: null,
+                floatingHearts: [],
+                decrementLikes(postId, delta = 1) {
+                    const mutate = list => {
+                        if (!Array.isArray(list)) return;
+                        const target = list.find(entry => entry.id === postId);
+                        if (target) {
+                            target.likes = Math.max(0, (target.likes || 0) - delta);
+                        }
+                    };
+                    mutate(this.posts);
+                    mutate(this.media);
+                    if (this.selectedMedia && this.selectedMedia.id === postId) {
+                        this.selectedMedia.likes = Math.max(0, (this.selectedMedia.likes || 0) - delta);
+                    }
+                },
+                init() {
+                    this.loadCurrentUser();
+                    this.loadFeed();
+                },
+                async loadCurrentUser() {
+                    try {
+                        const res = await fetch(USER_ENDPOINT);
+                        if (!res.ok) throw new Error('status ' + res.status);
+                        const data = await res.json();
+                        this.currentUser = data && data.nome ? data.nome : 'Delegado';
+                    } catch (err) {
+                        console.error('Erro ao buscar usuário para a galeria:', err);
+                        this.currentUser = 'Delegado';
+                    }
+                },
+                async loadFeed() {
+                    this.feedLoading = true;
+                    this.feedError = null;
+                    try {
+                        const res = await fetch(`${POST_API_BASE}/gallery`);
+                        if (!res.ok) throw new Error('status ' + res.status);
+                        const data = await res.json();
+                        const visible = data
+                            .filter(post => post.status !== 'EXCLUIDO')
+                            .sort((a, b) => new Date(b.data) - new Date(a.data));
+                        const parsed = visible
+                            .map((raw, index) => this.enrichPost(raw, index))
+                            .filter(item => item !== null);
+                        this.posts = parsed;
+                        this.media = parsed;
+                    } catch (error) {
+                        console.error('Erro ao carregar galeria:', error);
+                        this.posts = [];
+                        this.media = [];
+                        this.feedError = 'Não foi possível carregar a galeria agora.';
+                    } finally {
+                        this.feedLoading = false;
+                    }
+                },
+                enrichPost(raw, index) {
+                    if (!raw || !raw.mensagem || !raw.mensagem.startsWith('PHOTO|')) {
+                        return null;
+                    }
+                    const author = (raw.autor || 'Delegado').trim();
+                    const parts = raw.mensagem.split('|');
+                    if (parts.length < 2) {
+                        return null;
+                    }
+                    const filename = parts[1];
+                    const caption = parts.slice(2).join('|').trim();
+                    const segment = /secret/i.test(author) ? 'Secretariado' : 'Meu comitê';
+                    const tag = raw.status === 'ANONIMO' ? '#Spotted' : `#${segment.replace(' ', '')}`;
+                    const initials = author.split(/\s+/).slice(0, 2).map(part => part.charAt(0)).join('').toUpperCase() || 'DL';
+                    const reactions = raw.reactions || {};
+                    const likes = reactions['❤️'] || reactions['\u2764\uFE0F'] || reactions['❤'] || 0;
+                    return {
+                        id: raw.id || index,
+                        author,
+                        initials,
+                        segment,
+                        tag,
+                        time: this.formatRelativeTime(raw.data),
+                        excerpt: this.summarize(caption || author),
+                        rawMessage: caption || author,
+                        url: `/profile/gallery/media/${filename}`,
+                        caption: caption || author,
+                        meta: `${author} · ${this.formatRelativeTime(raw.data)}`,
+                        label: segment,
+                        likes,
+                        avatar: DEFAULT_AVATAR_URL
+                    };
+                },
+                summarize(text, limit = 140) {
+                    if (!text) return '';
+                    return text.length > limit ? `${text.slice(0, limit - 3)}...` : text;
+                },
+                formatRelativeTime(value) {
+                    if (!value) return 'agora mesmo';
+                    const date = new Date(value);
+                    if (Number.isNaN(date.getTime())) return 'agora mesmo';
+                    const diffSeconds = Math.max(1, Math.floor((Date.now() - date.getTime()) / 1000));
+                    if (diffSeconds < 60) return `há ${diffSeconds}s`;
+                    const minutes = Math.floor(diffSeconds / 60);
+                    if (minutes < 60) return `há ${minutes} min`;
+                    const hours = Math.floor(minutes / 60);
+                    if (hours < 24) return `há ${hours} h`;
+                    const days = Math.floor(hours / 24);
+                    if (days < 7) return `há ${days} d`;
+                    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+                },
+                handleSearchInput() {
+                    clearTimeout(this.searchDebounce);
+                    this.searchError = null;
+                    if (!this.searchQuery || this.searchQuery.trim().length < 2) {
+                        this.searchResults = [];
+                        this.fallbackPosts = [];
+                        return;
+                    }
+                    this.searchDebounce = setTimeout(() => this.performSearch(), 300);
+                },
+                async performSearch() {
+                    const query = (this.searchQuery || '').trim();
+                    if (query.length < 2) {
+                        this.searchResults = [];
+                        this.fallbackPosts = [];
+                        return;
+                    }
+                    this.searchLoading = true;
+                    this.searchError = null;
+                    try {
+                        const res = await fetch(`${API_BASE_URL}/user/search?q=${encodeURIComponent(query)}`);
+                        if (!res.ok) throw new Error('status ' + res.status);
+                        const payload = await res.json();
+                        this.searchResults = payload.map(user => ({
+                            ...user,
+                            tipo: this.formatRoleLabel(user.tipo)
+                        }));
+                        if (!this.searchResults.length) {
+                            this.buildFallbackPosts(query);
+                        } else {
+                            this.fallbackPosts = [];
+                        }
+                    } catch (error) {
+                        console.error('Erro na busca:', error);
+                        this.searchError = 'Não foi possível buscar agora.';
+                        this.fallbackPosts = [];
+                    } finally {
+                        this.searchLoading = false;
+                    }
+                },
+                buildFallbackPosts(query) {
+                    const normalized = query.toLowerCase();
+                    this.fallbackPosts = this.posts
+                        .filter(post => post.author.toLowerCase().includes(normalized) || post.rawMessage.toLowerCase().includes(normalized))
+                        .slice(0, 3);
+                },
+                spawnHeart() {
+                    const heart = {
+                        id: Date.now() + Math.random(),
+                        left: 35 + Math.random() * 30
+                    };
+                    this.floatingHearts.push(heart);
+                    setTimeout(() => {
+                        this.floatingHearts = this.floatingHearts.filter(item => item.id !== heart.id);
+                    }, 1100);
+                },
+                incrementLikes(postId, delta = 1) {
+                    const mutate = list => {
+                        if (!Array.isArray(list)) return;
+                        const target = list.find(entry => entry.id === postId);
+                        if (target) {
+                            target.likes = (target.likes || 0) + delta;
+                        }
+                    };
+                    mutate(this.posts);
+                    mutate(this.media);
+                    if (this.selectedMedia && this.selectedMedia.id === postId) {
+                        this.selectedMedia.likes = (this.selectedMedia.likes || 0) + delta;
+                    }
+                },
+                openModal(media) {
+                    this.selectedMedia = { ...media, liked: media.liked || false };
+                    this.modalPortrait = !!media.isPortrait;
+                    this.commentText = '';
+                    this.commentError = null;
+                    this.modalOpen = true;
+                    this.floatingHearts = [];
+                    this.loadComments(media.id);
+                },
+                closeModal() {
+                    this.modalOpen = false;
+                    this.selectedMedia = null;
+                    this.comments = [];
+                    this.floatingHearts = [];
+                },
+                async loadComments(postId) {
+                    this.commentLoading = true;
+                    this.commentError = null;
+                    try {
+                        const res = await fetch(`${POST_API_BASE}/${postId}/comments`);
+                        if (!res.ok) throw new Error('status ' + res.status);
+                        const data = await res.json();
+                        this.comments = data.map(item => ({
+                            ...item,
+                            tempo: this.formatRelativeTime(item.createdAt || item.data || item.created_at)
+                        }));
+                    } catch (err) {
+                        console.error('Erro ao buscar comentários:', err);
+                        this.commentError = 'Não foi possível carregar os comentários.';
+                        this.comments = [];
+                    } finally {
+                        this.commentLoading = false;
+                    }
+                },
+                async submitComment() {
+                    if (!this.selectedMedia || !this.commentText.trim()) {
+                        this.commentError = 'Escreva um comentário primeiro.';
+                        return;
+                    }
+                    this.commentError = null;
+                    try {
+                        const res = await fetch(`${POST_API_BASE}/${this.selectedMedia.id}/comments`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                autor: this.currentUser || 'Delegado',
+                                mensagem: this.commentText.trim()
+                            })
+                        });
+                        if (!res.ok) throw new Error('status ' + res.status);
+                        this.commentText = '';
+                        await this.loadComments(this.selectedMedia.id);
+                    } catch (err) {
+                        console.error('Erro ao comentar:', err);
+                        this.commentError = 'Falha ao salvar seu comentário.';
+                    }
+                },
+        async toggleLike() {
+            if (!this.selectedMedia || this.likeLoading) return;
+            if (!this.selectedMedia.id) {
+                alert('Não foi possível identificar o post para curtir.');
+                return;
+            }
+            this.likeLoading = true;
+            const liked = !!this.selectedMedia.liked;
+            const { token, header } = (typeof readCsrf === 'function') ? readCsrf() : { token: null, header: 'X-CSRF-TOKEN' };
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers[header] = token;
+            const body = JSON.stringify({
+                usuario: this.currentUser || 'Delegado',
+                emoji: '❤️'
+            });
+            const url = `${POST_API_BASE}/${this.selectedMedia.id}/reaction`;
+            try {
+                const res = await fetch(url, {
+                    method: liked ? 'DELETE' : 'POST',
+                    headers,
+                    credentials: 'same-origin',
+                    body
+                });
+
+                if (liked) {
+                    // Remover like: só ajusta contagem se servidor remover
+                    if (res.ok) {
+                        this.decrementLikes(this.selectedMedia.id, 1);
+                        this.selectedMedia.liked = false;
+                    } else {
+                        console.error('Erro ao remover reação:', res.status, await res.text());
+                        alert('Não foi possível remover sua reação. Status: ' + res.status);
+                    }
+                } else {
+                    // Adicionar like
+                    if (res.ok) {
+                        this.incrementLikes(this.selectedMedia.id, 1);
+                        this.selectedMedia.liked = true;
+                        this.spawnHeart();
+                    } else if (res.status === 409) {
+                        // Já existe reação: não incrementa, apenas marca como liked
+                        this.selectedMedia.liked = true;
+                    } else {
+                        console.error('Erro ao reagir:', res.status, await res.text());
+                        alert('Não foi possível registrar sua reação. Status: ' + res.status);
+                    }
+                }
+            } catch (err) {
+                console.error('Erro ao reagir na galeria:', err);
+                alert('Erro ao reagir: ' + err.message);
+            } finally {
+                this.likeLoading = false;
+            }
+        },
+                get filteredMedia() {
+                    if (this.activeFilter === 'Global') return this.media;
+                    return this.media.filter(item => item.segment === this.activeFilter);
+                },
+                formatRoleLabel(tipo) {
+                    if (!tipo) return 'Delegado';
+                    const cleaned = tipo.replace('ROLE_', '');
+                    return cleaned.charAt(0) + cleaned.slice(1).toLowerCase();
+                },
+                formatTime(value) {
+                    return value ? this.formatRelativeTime(value) : 'sem registro';
+                }
+            };
+        }
+
+        function announcementsData() {
+            return {
+                avisos: [],
+                currentPage: 1,
+                itemsPerPage: 5,
+                isLoading: false,
+                isModalOpen: false,
+                currentAviso: { titulo: '', mensagem: '', autor: '', data: '' },
+
+                get paginatedAvisos() {
+                    const start = (this.currentPage - 1) * this.itemsPerPage;
+                    const end = start + this.itemsPerPage;
+                    return this.avisos.slice(start, end);
+                },
+                get totalPages() {
+                    return Math.ceil(this.avisos.length / this.itemsPerPage);
+                },
+                nextPage() {
+                    if (this.currentPage < this.totalPages) this.currentPage++;
+                },
+                prevPage() {
+                    if (this.currentPage > 1) this.currentPage--;
+                },
+                showAvisoModal(aviso) {
+                    this.currentAviso = aviso;
+                    this.isModalOpen = true;
+                },
+                closeAvisoModal() {
+                    this.isModalOpen = false;
+                    this.currentAviso = { titulo: '', mensagem: '', autor: '', data: '' };
+                },
+                formatTimeAgo(dateString) {
+                    try {
+                        const postDate = new Date(dateString);
+                        const now = new Date();
+                        const diffInSeconds = Math.floor((now - postDate) / 1000);
+                        if (diffInSeconds < 60) return `${diffInSeconds} segundos atrás`;
+                        const diffInMinutes = Math.floor(diffInSeconds / 60);
+                        if (diffInMinutes < 60) return `${diffInMinutes} minutos atrás`;
+                        const diffInHours = Math.floor(diffInMinutes / 60);
+                        if (diffInHours < 24) return `${diffInHours} horas atrás`;
+                        const diffInDays = Math.floor(diffInHours / 24);
+                        if (diffInDays < 7) return `${diffInDays} dias atrás`;
+                        return postDate.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' });
+                    } catch {
+                        return 'Data inválida';
+                    }
+                },
+                async loadAvisos() {
+                    this.isLoading = true;
+                    try {
+                        const response = await fetch(API_ENDPOINT);
+                        if (!response.ok) throw new Error('Erro ao carregar avisos.');
+                        const data = await response.json();
+                        data.sort((a, b) => new Date(b.data) - new Date(a.data));
+                        this.avisos = data;
+                        this.currentPage = 1;
+                    } catch (error) {
+                        console.error('Falha ao buscar avisos:', error);
+                        this.avisos = [];
+                    } finally {
+                        this.isLoading = false;
+                    }
+                }
+            };
+        }
+    </script>    
     
-    <script th:src="@{/js/dashboard_config.js}"></script>
-    <script th:src="@{/js/profile_data.js}"></script>
-    <script th:src="@{/js/announcements_data.js}"></script>
-    <script th:src="@{/js/mural_data.js}"></script>
+    <script>
+    (function(){
+      const API_BASE = POST_API_BASE;
+
+      function readCsrf() {
+        const tokenMeta = document.querySelector('meta[name="_csrf"]');
+        const headerMeta = document.querySelector('meta[name="_csrf_header"]');
+        const token = tokenMeta ? tokenMeta.content : null;
+        const header = headerMeta ? headerMeta.content : 'X-CSRF-TOKEN';
+        return { token, header };
+      }
+
+      function timeAgo(dateString) {
+        try {
+          const d = new Date(dateString);
+          const now = new Date();
+          const s = Math.floor((now - d) / 1000);
+          if (s < 60) return `${s} segundos atrás`;
+          const m = Math.floor(s / 60);
+          if (m < 60) return `${m} minutos atrás`;
+          const h = Math.floor(m / 60);
+          if (h < 24) return `${h} horas atrás`;
+          const days = Math.floor(h / 24);
+          if (days < 7) return `${days} dias atrás`;
+          return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+        } catch (e) { return 'data inválida'; }
+      }
+
+      window.muralData = function() {
+        return {
+          posts: [],
+          loading: false,
+          posting: false,
+          newMessage: '',
+          postAsAnon: false,
+          currentUser: null,
+          error: null,
+          defaultAvatar: DEFAULT_AVATAR_URL,
+          anonAvatar: ANON_AVATAR_URL,
+
+          async init() {
+            await this.loadCurrentUser();
+            await this.loadPosts();
+          },
+
+          async loadCurrentUser() {
+            try {
+              const res = await fetch(USER_ENDPOINT);
+              if (!res.ok) {
+                console.warn('Falha ao buscar /user, status:', res.status);
+                this.currentUser = null;
+                return;
+              }
+              const data = await res.json();
+              this.currentUser = data.nome || null;
+            } catch (err) {
+              console.error('Erro ao buscar usuário:', err);
+              this.currentUser = null;
+            }
+          },
+
+          async loadPosts() {
+            this.loading = true;
+            try {
+              const res = await fetch(API_BASE);
+              if (!res.ok) throw new Error('status ' + res.status);
+              const data = await res.json();
+              data.sort((a,b) => new Date(b.data) - new Date(a.data));
+
+              this.posts = data
+                .filter(p => p.status !== 'EXCLUIDO')
+                .map(post => {
+                  const status = (post.status || '').toUpperCase();
+                  const autor = post.autor || '';
+                  const encodedName = autor ? encodeURIComponent(autor) : '';
+                  const avatarUrl = status === 'ANONIMO'
+                    ? this.anonAvatar
+                    : (encodedName ? `${USER_AVATAR_ENDPOINT}?name=${encodedName}` : this.defaultAvatar);
+                  return { ...post, status, avatarUrl };
+                });
+            } catch (err) {
+              console.error('Erro ao carregar posts:', err);
+              this.posts = [];
+              this.error = 'Erro ao carregar posts';
+            } finally {
+              this.loading = false;
+            }
+          },
+
+          async createPost() {
+            if (!this.newMessage || !this.newMessage.trim()) {
+              alert('Digite uma mensagem para postar.');
+              return;
+            }
+            this.posting = true;
+            const body = {
+              autor: this.postAsAnon ? (this.currentUser || '') : (this.currentUser || 'Delegado'),
+              mensagem: this.newMessage.trim(),
+              status: this.postAsAnon ? 'ANONIMO' : 'PUBLICO'
+            };
+
+            const { token, header } = readCsrf();
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers[header] = token;
+
+            try {
+              const res = await fetch(API_BASE, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(body)
+              });
+              if (res.status === 201) {
+                this.newMessage = '';
+                this.postAsAnon = false;
+                await this.loadPosts();
+              } else {
+                console.error('Erro ao postar, status:', res.status);
+                alert('Falha ao postar (status ' + res.status + ')');
+              }
+            } catch (err) {
+              console.error('Erro ao postar:', err);
+              alert('Erro ao postar: ' + err.message);
+            } finally {
+              this.posting = false;
+            }
+          },
+
+          
+          async deletePost(postId) {
+            if (!confirm('O post não será mais exibido a outros usuarios')) return;
+            const { token, header } = readCsrf();
+            const headers = {};
+            if (token) headers[header] = token;
+            try {
+              const res = await fetch(`${API_BASE}/${postId}/exclude`, { method: 'PATCH', headers });
+              if (res.ok || res.status === 204) {
+                await this.loadPosts();
+              } else if (res.status === 404) {
+                alert('Post não encontrado (já removido?).');
+              } else {
+                alert('Falha ao ocultar post (status ' + res.status + ')');
+              }
+            } catch (err) {
+              console.error('Erro ao ocultar post:', err);
+              alert('Erro ao ocultar post: ' + err.message);
+            }
+          },
+
+          async addReaction(postId, emoji) {
+            if (!emoji) return;
+            const usuario = this.currentUser || 'anônimo';
+            const body = { usuario, emoji };
+            const { token, header } = readCsrf();
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers[header] = token;
+
+            try {
+              const res = await fetch(`${API_BASE}/${postId}/reaction`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(body)
+              });
+              if (res.status === 201) {
+                await this.loadPosts();
+              } else if (res.status === 409) {
+                alert('Você já reagiu com este emoji neste post.');
+              } else {
+                throw new Error('status ' + res.status);
+              }
+            } catch (err) {
+              console.error('Erro ao adicionar reação:', err);
+              alert('Erro ao reagir: ' + err.message);
+            }
+          },
+
+          async removeReaction(postId, emoji) {
+            if (!emoji) return;
+            const usuario = this.currentUser || 'anônimo';
+            const body = { usuario, emoji };
+            const { token, header } = readCsrf();
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers[header] = token;
+
+            try {
+              const res = await fetch(`${API_BASE}/${postId}/reaction`, {
+                method: 'DELETE',
+                headers,
+                body: JSON.stringify(body)
+              });
+              if (res.status === 204 || res.ok) {
+                await this.loadPosts();
+              } else if (res.status === 404) {
+                alert('Reação não encontrada.');
+              } else {
+                throw new Error('status ' + res.status);
+              }
+            } catch (err) {
+              console.error('Erro ao remover reação:', err);
+              alert('Erro ao remover reação: ' + err.message);
+            }
+          },
+
+          reactionCount(post, emoji) {
+            if (!post || !post.reactions) return 0;
+            return post.reactions[emoji] || 0;
+          },
+
+          timeAgo,
+        };
+      };
+    })();
+    </script>
+
     <script th:src="@{/js/agenda.js}"></script>
 </body>
-
 </html>
+

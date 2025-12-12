@@ -13,6 +13,9 @@ import com.mocs_on.domain.Documento;
 import com.mocs_on.security.SecaoUsuario;
 import com.mocs_on.service.AvisoDAO;
 import com.mocs_on.service.DocumentoDAO;
+import com.mocs_on.service.PreRegistrationService;
+import com.mocs_on.service.SecretariatDashboardService;
+import com.mocs_on.service.SecretariatDashboardService.DashboardMetrics;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -24,6 +27,10 @@ public class HomeController {
     private DocumentoDAO documentoDAO;
     @Autowired
     private AvisoDAO avisoDAO;
+    @Autowired
+    private PreRegistrationService preRegistrationService;
+    @Autowired
+    private SecretariatDashboardService secretariatDashboardService;
 
     @GetMapping("/")
     public String index() {
@@ -69,8 +76,12 @@ public class HomeController {
         if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
             return "redirect:/login";
         }
+        // KPIs
+        DashboardMetrics metrics = secretariatDashboardService.collectMetrics();
+        model.addAttribute("dashboardMetrics", metrics);
         model.addAttribute("numAvisos", avisoDAO.quantidadeAvisos());
         model.addAttribute("numDocumentos", documentoDAO.quantidadeDocumentos());
+        model.addAttribute("pendingPreCount", preRegistrationService.countPending());
         populateUserAttributes(model);
         return "secretariado";
     }

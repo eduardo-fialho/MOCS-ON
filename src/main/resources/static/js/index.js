@@ -1,35 +1,19 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
-    const toggle = document.querySelector('.nav-toggle');
-    const nav = document.querySelector('.primary-nav');
+// Smooth scroll for in-page navigation links on the landing page
+document.addEventListener('DOMContentLoaded', () => {
+    const links = document.querySelectorAll('a[href^="#"]');
+    const offset = 70; // header spacing
 
-    if (toggle && nav) {
-        toggle.addEventListener('click', () => {
-            const expanded = toggle.getAttribute('aria-expanded') === 'true';
-            toggle.setAttribute('aria-expanded', (!expanded).toString());
-            nav.classList.toggle('is-open');
-        });
-    }
-
-    document.querySelectorAll('a[href^="#"]').forEach(link => {
+    links.forEach((link) => {
         link.addEventListener('click', (event) => {
             const targetId = link.getAttribute('href');
-            if (!targetId || targetId === '#' || targetId.length === 0) {
-                return;
-            }
-            const target = document.querySelector(targetId);
-            if (!target) {
-                return;
-            }
+            if (!targetId || targetId === '#') return;
+
+            const targetEl = document.querySelector(targetId);
+            if (!targetEl) return;
+
             event.preventDefault();
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-            if (nav && nav.classList.contains('is-open')) {
-                nav.classList.remove('is-open');
-                toggle?.setAttribute('aria-expanded', 'false');
-            }
+            const top = targetEl.getBoundingClientRect().top + window.pageYOffset - offset;
+            window.scrollTo({ top, behavior: 'smooth' });
         });
     });
 });
-

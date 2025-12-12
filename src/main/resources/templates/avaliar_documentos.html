@@ -1,134 +1,109 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOCS ON - Avaliar Documento</title>
+    <title>MOCS ON - Avaliação de Documento</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/documentos.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
+<body class="min-h-screen bg-slate-50 text-slate-900">
+    <div class="max-w-6xl mx-auto px-4 md:px-8 py-10 space-y-6">
 
-<body class="bg-gray-100">
-    <div class="flex flex-col min-h-screen">
-        <header class="bg-white shadow-md z-10 sticky top-0" x-data="() => profileData()" x-init="loadUserInfo()">
-            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-                
-                <div class="mt-4 md:mt-0">
-                    <a th:href="@{/documentos.html}"
-                    class="text-gray-600 hover:text-mocs-blue font-semibold py-2 px-4 rounded-lg hover:bg-gray-100 inline-flex items-center">
-                        <i class="fas fa-arrow-left mr-2"></i> Voltar à Lista
-                    </a>
+        <header class="bg-white border border-slate-200 rounded-2xl px-6 py-4 shadow-md flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+                x-data="() => profileData()" x-init="loadUserInfo()">
+            <div class="flex items-center gap-3">
+                <a th:href="@{/documentos.html}" class="inline-flex items-center text-mocs-blue hover:underline">
+                    <i class="fas fa-arrow-left mr-2"></i> Voltar
+                </a>
+                <span class="hidden md:inline-flex text-slate-300">|</span>
+                <a th:href="@{/}" class="text-lg font-bold tracking-tight">MOCS ON</a>
+            </div>
+            <div class="text-center md:text-left">
+                <h1 class="text-2xl font-extrabold text-slate-900">Avaliação de Documento</h1>
+                <p class="text-sm text-slate-500">Visualize o arquivo e registre o parecer.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="text-right hidden sm:block">
+                    <p class="text-sm text-slate-500" x-text="userCargo">Carregando...</p>
+                    <p class="text-sm font-semibold text-slate-900" x-text="userName">Usuário</p>
                 </div>
-                
-                <div class="flex items-center space-x-4">
-                    <a th:href="@{/}">
-                        <img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON"
-                            class="h-8">
-                    </a>
-                    <h1 class="text-xl font-bold text-mocs-blue hidden md:block">Avaliação de Documento</h1>
-                </div>
-
-                <div class="flex items-center space-x-6">
-                    <span class="font-semibold text-gray-700 hidden sm:block" x-text="userCargo">VISITANTE</span>
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center space-x-2">
-                            <img src="https://placehold.co/40x40/cccccc/ffffff?text=U" alt="Avatar"
-                                class="h-9 w-9 rounded-full border-2 border-mocs-blue">
-                            <span class="hidden md:block font-semibold text-gray-700"
-                                x-text="userName">Carregando...</span>
-                            <i class="fas fa-chevron-down text-xs text-gray-500"></i>
-                        </button>
-                        <div x-show="open" @click.away="open = false"
-                            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20"
-                            style="display: none;">
-                            <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b">
-                                <i class="fas fa-user mr-2"></i> Meu perfil
-                            </a>
-                            <template x-if="isSecretario">
-                                <div>
-                                    <a href="/secretariado.html"
-                                        class="block px-4 py-2 text-sm text-mocs-blue font-semibold hover:bg-gray-100 border-b">
-                                        <i class="fas fa-user-tie mr-2"></i> Área do Secretariado
-                                    </a>
-                                </div>
-                            </template>
-                            <a href="/auth/logout"
-                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
-                        </div>
-                    </div>
+                <div class="h-11 w-11 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center text-lg font-bold">
+                    <span x-text="avatarInitials()">U</span>
                 </div>
             </div>
         </header>
 
-        <main class="flex-grow container mx-auto p-4 md:p-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="lg:col-span-2 flex flex-col gap-6">
-                    <div class="bg-white p-6 rounded-xl shadow-lg flex-1">
-                        <h2 class="text-2xl font-bold text-mocs-blue mb-4">
-                            Visualização:
-                            <span th:text="${doc != null ? doc.nome : 'Carregando...'}"></span>
-                        </h2>
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <section class="lg:col-span-2 space-y-4">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Visualização</p>
+                            <h2 class="text-xl font-bold text-slate-900">
+                                <span th:text="${doc != null ? doc.nome : 'Carregando...'}"></span>
+                            </h2>
+                        </div>
+                        <div class="h-11 w-11 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                    </div>
 
-                        <div class="border-2 border-dashed border-gray-300 h-[600px] flex flex-col bg-gray-50">
-
-                            <iframe th:if="${doc != null}"
-                                    th:src="@{/documentos/{id}/visualizar(id=${doc.id})}"
-                                    width="100%"
-                                    height="100%"
-                                    class="border rounded-lg">
-                            </iframe>
-
-                            <p th:if="${doc == null}" class="text-center mt-6 text-gray-500">
+                    <div class="border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 min-h-[420px] flex flex-col">
+                        <iframe th:if="${doc != null}"
+                                th:src="@{/documentos/{id}/visualizar(id=${doc.id})}"
+                                class="w-full h-[460px] rounded-lg"
+                                allowfullscreen>
+                        </iframe>
+                        <div th:if="${doc == null}" class="flex flex-1 items-center justify-center text-slate-500 text-center px-6">
+                            <p class="text-sm">
                                 <i class="fas fa-file mr-2"></i>
                                 Selecione um documento para visualizar.
                             </p>
                         </div>
-
                     </div>
                 </div>
+            </section>
 
-                <div class="lg:col-span-1 flex flex-col gap-6">
-                    <div class="bg-white p-6 rounded-xl shadow-lg sticky top-20">
-                        <h2 class="text-xl font-bold text-mocs-orange mb-4">Formulário de Avaliação</h2>
+            <aside class="space-y-4">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm sticky top-8">
+                    <p class="text-xs uppercase tracking-[0.2em] text-slate-400 mb-2">Formulário</p>
+                    <h2 class="text-xl font-bold text-slate-900 mb-4">Avaliação</h2>
 
-                        <form id="evaluation-form" class="space-y-4">
-                            <input type="hidden" id="doc-id" th:value="${doc.id}">
+                    <form id="evaluation-form" class="space-y-4">
+                        <input type="hidden" id="doc-id" th:value="${doc.id}">
 
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1">Status *</label>
-                                <select id="status-select-eval" required
-                                    class="w-full p-2 border rounded-lg focus:ring-mocs-orange">
-                                    <option value="" disabled selected>Selecione</option>
-                                    <option value="Apreciado">Apreciado (Aprovado)</option>
-                                    <option value="Corrigir">Corrigir (Precisa de Revisão)</option>
-                                </select>
-                            </div>
+                        <div class="space-y-1">
+                            <label class="block text-sm font-semibold text-slate-700">Status *</label>
+                            <select id="status-select-eval" required
+                                    class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:ring-2 focus:ring-mocs-orange focus:outline-none">
+                                <option value="" disabled selected>Selecione</option>
+                                <option value="Apreciado">Apreciado (Aprovado)</option>
+                                <option value="Corrigir">Corrigir (Precisa de revisão)</option>
+                            </select>
+                        </div>
 
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 mb-1">Comentários *</label>
-                                <textarea id="reviewer-comments" rows="6" required
-                                    class="w-full p-3 border rounded-lg"
-                                    placeholder="Insira o feedback..."></textarea>
-                            </div>
+                        <div class="space-y-1">
+                            <label class="block text-sm font-semibold text-slate-700">Comentários *</label>
+                            <textarea id="reviewer-comments" rows="6" required
+                                      class="w-full px-3 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-mocs-orange focus:outline-none"
+                                      placeholder="Insira o feedback..."></textarea>
+                        </div>
 
-                            <button type="submit"
-                                class="w-full bg-mocs-blue text-white font-semibold py-3 rounded-lg">
-                                <i class="fas fa-save mr-2"></i> Salvar Avaliação
-                            </button>
-                        </form>
+                        <button type="submit"
+                                class="w-full bg-mocs-blue hover:bg-blue-700 transition text-white font-semibold py-3 rounded-xl shadow">
+                            <i class="fas fa-save mr-2"></i> Salvar Avaliação
+                        </button>
+                    </form>
 
-                        <div id="message-area"
-                             class="mt-4 text-sm font-medium p-3 rounded-lg text-center"
-                             style="display:none"></div>
-                    </div>
+                    <div id="message-area"
+                         class="mt-4 text-sm font-medium p-3 rounded-xl text-center bg-slate-100 text-slate-800 border border-slate-200"
+                         style="display:none"></div>
                 </div>
-
-            </div>
+            </aside>
         </main>
     </div>
 
