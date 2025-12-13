@@ -69,6 +69,8 @@
                         .filter(p => p.status !== 'EXCLUIDO')
                         .map(p => ({
                             ...p,
+                            reactions: p.reactions || {}, 
+                            myReaction: null, 
                             _reacting: false,
                             _commentsOpen: false,
                             _loadingComments: false,
@@ -82,10 +84,6 @@
                             _hasCurtido: false
                         }));
 
-                    this.posts = data.filter(p => p.status !== 'EXCLUIDO' && p.status !== 'PENDENTE');
-                    //&& p.comiteId === ALGUMA COISA COMITE
-
-                    this.postsPendentes = data.filter(p => p.status === 'PENDENTE');
                     if (this.posts.length > 0) {
                         await Promise.all(this.posts.map(async post => {
                             try {
@@ -123,7 +121,7 @@
                 const body = {
                     autor: this.postAsAnon ? (this.currentUser || '') : (this.currentUser || 'Delegado'),
                     mensagem: this.newMessage.trim(),
-                    status: this.postAsAnon ? 'ANONIMO' : 'PENDENTE',
+                    status: this.postAsAnon ? 'ANONIMO' : 'PUBLICO',
                     comiteId: 1
                 };
                 const { token, header } = readCsrf();
@@ -175,53 +173,52 @@
             },
 
             async addReaction(post, emoji) {
-                if (!emoji || !post) return;
+                if (!post || !emoji) return;
                 if (post._reacting) return;
+
                 post._reacting = true;
+
                 const usuario = this.currentUserEmail || this.currentUser || 'anônimo';
                 const body = { usuario, emoji };
                 const { token, header } = readCsrf();
+
                 const headers = { 'Content-Type': 'application/json' };
                 if (token) headers[header] = token;
+
                 try {
                     const res = await fetch(`${API_BASE}/${post.id}/reaction`, {
                         method: 'POST',
                         headers,
                         body: JSON.stringify(body)
                     });
-                    const prev = post.myReaction || null;
-                    if (res.status === 201) {
-                        post.reactions = post.reactions || {};
-                        post.reactions[emoji] = (post.reactions[emoji] || 0) + 1;
-                        post.myReaction = emoji;
-                        if (prev && prev !== emoji) {
-                            post.reactions[prev] = Math.max(0, (post.reactions[prev] || 1) - 1);
-                            if (post.reactions[prev] === 0) delete post.reactions[prev];
-                        }
-                    } else if (res.status === 200) {
-                        if (prev && prev !== emoji) {
-                            post.reactions[prev] = Math.max(0, (post.reactions[prev] || 1) - 1);
-                            if (post.reactions[prev] === 0) delete post.reactions[prev];
-                        }
-                        post.reactions = post.reactions || {};
-                        post.reactions[emoji] = (post.reactions[emoji] || 0) + 1;
-                        post.myReaction = emoji;
-                    } else if (res.status === 204) {
-                        if (prev) {
-                            post.reactions[prev] = Math.max(0, (post.reactions[prev] || 1) - 1);
-                            if (post.reactions[prev] === 0) delete post.reactions[prev];
+                    if (post.myReaction) {
+                        const old = post.myReaction;
+                        if (post.reactions[old] !== undefined) {
+                            post.reactions[old]--;
+
+                            if (post.reactions[old] <= 0) {
+                                delete post.reactions[old]; 
+                            }
                         }
                         post.myReaction = null;
-                    } else {
+                    }
+
+                    if (res.status === 201) {
+                        post.reactions[emoji] = (post.reactions[emoji] || 0) + 1;
+                        post.myReaction = emoji;
+                    }
+
+                    if (!res.ok && res.status !== 204) {
                         await this.loadPosts();
                     }
+
                 } catch (err) {
-                    alert('Erro ao reagir: ' + err.message);
                     await this.loadPosts();
                 } finally {
                     post._reacting = false;
                 }
             },
+
 
             reactionCount(post, emoji) {
                 if (!post || !post.reactions) return 0;
