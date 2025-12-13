@@ -1,4 +1,76 @@
-// Modal de visualização da galeria no dashboard
+document.addEventListener('alpine:init', () => {
+    Alpine.data('galeriaPreview', () => ({
+
+        searchQuery: '',
+        searchLoading: false,
+        searchError: null,
+        searchResults: [],
+        fallbackPosts: [],
+
+        filters: ['Todos', 'Fotos', 'Vídeos'],
+        activeFilter: 'Todos',
+
+        feedLoading: false,
+        feedError: null,
+        filteredMedia: [],
+
+        modalOpen: false,
+        selectedMedia: null,
+        modalPortrait: false,
+
+        likeLoading: false,
+
+        comments: [],
+        commentLoading: false,
+        commentError: null,
+        commentText: '',
+
+        init() {
+            console.log('Galeria inicializada');
+            this.loadFeed();
+        },
+
+        handleSearchInput() {
+            if (this.searchQuery.trim().length < 2) return;
+        },
+
+        loadFeed() {
+            this.feedLoading = true;
+            this.filteredMedia = [];
+            this.feedLoading = false;
+        },
+
+        openModal(media) {
+            this.selectedMedia = media;
+            this.modalOpen = true;
+        },
+
+        closeModal() {
+            this.modalOpen = false;
+            this.selectedMedia = null;
+            this.comments = [];
+        },
+
+        toggleLike() {
+            if (!this.selectedMedia) return;
+            this.selectedMedia.liked = !this.selectedMedia.liked;
+            this.selectedMedia.likes += this.selectedMedia.liked ? 1 : -1;
+        },
+
+        submitComment() {
+            if (!this.commentText.trim()) return;
+            this.comments.push({
+                id: Date.now(),
+                autor: 'Você',
+                mensagem: this.commentText,
+                tempo: 'agora'
+            });
+            this.commentText = '';
+        }
+    }));
+});
+
+
 document.addEventListener('DOMContentLoaded', () => {
     const grid = document.getElementById('dashboardGalleryGrid');
     const modal = document.getElementById('dashboardGalleryModal');
