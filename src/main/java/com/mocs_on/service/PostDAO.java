@@ -10,7 +10,6 @@ import java.util.Optional;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -87,7 +86,6 @@ public class PostDAO {
         return result.stream().findFirst();
     }
 
-    /** Ajuste solicitado pelo usuário: separar feed de texto e fotos para a curadoria (#galeria). */
     private List<Post> mapPosts(String sql, Object... args) {
         return jdbcTemplate.query(sql, (resultado, linha) -> {
             Post post = new Post();
@@ -204,8 +202,14 @@ public class PostDAO {
         return jdbcTemplate.update(sqlPost, postId);
     }
 
-    /** Remove todas as reações (likes) de todos os posts. */
+
     public int deleteAllReactions() {
         return jdbcTemplate.update("DELETE FROM post_reactions");
+    }
+
+    public boolean reactionExists(Long postId, String usuario, String emoji) {
+        String sql = "SELECT COUNT(*) FROM post_reactions WHERE post_id = ? AND usuario = ? AND emoji = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, postId, usuario, emoji);
+        return count != null && count > 0;
     }
 }
