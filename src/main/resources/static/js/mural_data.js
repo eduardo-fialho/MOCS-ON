@@ -191,25 +191,30 @@
                         headers,
                         body: JSON.stringify(body)
                     });
-                    if (post.myReaction) {
-                        const old = post.myReaction;
-                        if (post.reactions[old] !== undefined) {
-                            post.reactions[old]--;
 
-                            if (post.reactions[old] <= 0) {
-                                delete post.reactions[old]; 
+                    if (!res.ok) {
+                        await this.loadPosts();
+                        return;
+                    }
+
+                    const oldEmoji = post.myReaction; 
+                    
+
+                    if (oldEmoji) {
+                        if (post.reactions[oldEmoji] !== undefined) {
+                            post.reactions[oldEmoji]--;
+                            if (post.reactions[oldEmoji] <= 0) {
+                                delete post.reactions[oldEmoji];
                             }
                         }
-                        post.myReaction = null;
                     }
 
-                    if (res.status === 201) {
+                    if (oldEmoji === emoji) {
+                        
+                        post.myReaction = null;
+                    } else {
                         post.reactions[emoji] = (post.reactions[emoji] || 0) + 1;
                         post.myReaction = emoji;
-                    }
-
-                    if (!res.ok && res.status !== 204) {
-                        await this.loadPosts();
                     }
 
                 } catch (err) {
@@ -329,6 +334,7 @@
                 const usuario = this.currentUserEmail || this.currentUser || 'anônimo';
                 const usuarioNome = this.currentUser || this.currentUserEmail || null;
                 const body = { usuario, usuarioNome };
+                
                 const { token, header } = readCsrf();
                 const headers = { 'Content-Type': 'application/json' };
                 if (token) headers[header] = token;
@@ -356,6 +362,7 @@
 
             openCurtidasModal: async function (post) {
                 if (!post) return;
+                
                 post._loadingCurtidas = true;
                 post._curtidasList = [];
                 post._curtidasModalOpen = true;

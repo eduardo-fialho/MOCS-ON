@@ -68,16 +68,23 @@ public class PostController {
             return ResponseEntity.badRequest().build();
         }
 
-        boolean exists = postService.reactionExists(postId, usuario, body.getEmoji());
+        String currentReaction = postService.findUserReaction(postId, usuario);
 
-        if (exists) {
-            postService.removeReactionFromPost(postId, usuario, body.getEmoji());
-            return ResponseEntity.noContent().build();
-        } else {
+        if (currentReaction == null) {
             postService.addReactionToPost(postId, usuario, body.getEmoji());
             return ResponseEntity.status(HttpStatus.CREATED).build();
         }
+
+        if (currentReaction.equals(body.getEmoji())) {
+            postService.removeReactionFromPost(postId, usuario, body.getEmoji());
+            return ResponseEntity.noContent().build();
+        }
+
+        postService.removeReactionFromPost(postId, usuario, currentReaction);
+        postService.addReactionToPost(postId, usuario, body.getEmoji());
+        return ResponseEntity.ok().build();
     }
+
 
     @DeleteMapping("/{postId}/reaction")
     public ResponseEntity<Void> removeReaction(@PathVariable Long postId, @RequestBody Reaction body) {

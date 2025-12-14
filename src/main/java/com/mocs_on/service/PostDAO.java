@@ -212,4 +212,16 @@ public class PostDAO {
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, postId, usuario, emoji);
         return count != null && count > 0;
     }
+
+    public String findUserReaction(Long postId, String usuario) {
+        String sql = "SELECT emoji FROM post_reactions WHERE post_id = ? AND usuario = ? LIMIT 1";
+        List<String> result = jdbcTemplate.query(
+            sql,
+            (rs, rowNum) -> rs.getString("emoji"),
+            postId,
+            usuario
+        );
+        return result.isEmpty() ? null : result.get(0);
+    }
 }
+
