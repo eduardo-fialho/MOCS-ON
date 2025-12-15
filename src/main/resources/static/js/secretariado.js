@@ -155,7 +155,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Galeria visual (dashboard): modal de expansão
     const galleryGrid = document.getElementById("dashboardGalleryGrid");
     const galleryModal = document.getElementById("dashboardGalleryModal");
     const galleryImg = document.getElementById("dashboardGalleryImg");
