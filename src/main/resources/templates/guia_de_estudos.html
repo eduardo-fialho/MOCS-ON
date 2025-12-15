@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOCS ON - Visualizar Guia de Estudo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background-color: #f1f5f9; }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-6">
+
+        <header class="bg-white border border-slate-200 rounded-2xl px-6 py-4 shadow-md flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <a th:href="@{/guias_estudo.html}" class="inline-flex items-center text-blue-700 hover:underline">
+                    <i class="fas fa-arrow-left mr-2"></i> Voltar à Lista
+                </a>
+            </div>
+            <div class="text-center">
+                <h1 class="text-2xl font-extrabold text-slate-900" x-text="guiaTitle">Carregando Título...</h1>
+                <p class="text-sm text-slate-500" x-text="guiaComite">Carregando Comitê...</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-lg font-bold tracking-tight text-blue-700">MOCS ON</span>
+            </div>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-6" x-data="guiaData()" x-init="loadGuiaDetails()">
+            
+            <section class="lg:col-span-2 space-y-6">
+                
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <h2 class="text-xl font-bold text-amber-600 mb-4 flex items-center">
+                        <i class="fas fa-gavel mr-2"></i> Regras e Instruções
+                    </h2>
+                    <div id="regras-content" class="text-slate-700 space-y-3" x-html="guiaRegras">
+                        <p>Carregando as regras específicas para este Guia de Estudo...</p>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <h2 class="text-xl font-bold text-blue-700 mb-4 flex items-center">
+                        <i class="fas fa-book-open mr-2"></i> Tópicos e Conteúdo
+                    </h2>
+                    <div id="conteudo-content" class="text-slate-700 space-y-3" x-html="guiaConteudo">
+                         <p>Carregando o conteúdo detalhado e os tópicos de pesquisa...</p>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button x-show="guiaStatus === 'APROVADO'"
+                        class="w-full bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg hover:bg-blue-800 transition">
+                        <i class="fas fa-download mr-2"></i> Baixar Versão Oficial (PDF)
+                    </button>
+                    <p x-show="guiaStatus !== 'APROVADO'" class="text-center text-slate-500 italic">
+                        Este guia não está liberado para download oficial ainda.
+                    </p>
+                </div>
+            </section>
+
+            <aside class="lg:col-span-1 space-y-6">
+                
+                <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm sticky top-8"
+                     style="height: 50vh;">
+                    <h2 class="text-lg font-bold text-slate-800 mb-3 flex items-center">
+                        <i class="fas fa-file-pdf mr-2 text-red-600"></i> Documento Anexado
+                    </h2>
+                    <template x-if="guiaPdfUrl">
+                         <iframe :src="guiaPdfUrl" class="w-full h-full border border-slate-300 rounded-lg">
+                            Seu navegador não suporta iframes.
+                        </iframe>
+                    </template>
+                    <template x-if="!guiaPdfUrl">
+                        <div class="text-center p-8 bg-slate-50 rounded-lg h-full flex items-center justify-center">
+                            <p class="text-slate-500">Nenhum documento PDF anexado a este guia.</p>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <h2 class="text-lg font-bold text-green-600 mb-4 flex items-center">
+                        <i class="fas fa-link mr-2"></i> Links Relacionados
+                    </h2>
+                    <div id="links-content" class="space-y-3">
+                        <template x-if="guiaLinks.length > 0">
+                            <ul class="list-disc pl-5">
+                                <template x-for="link in guiaLinks" :key="link.url">
+                                    <li>
+                                        <a :href="link.url" target="_blank" class="text-blue-600 hover:text-blue-800 hover:underline transition">
+                                            <span x-text="link.nome"></span>
+                                        </a>
+                                    </li>
+                                </template>
+                            </ul>
+                        </template>
+                        <template x-if="guiaLinks.length === 0">
+                             <p class="text-slate-500">Nenhum link externo fornecido.</p>
+                        </template>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <script>
+        
+    </script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</body>
+</html>
