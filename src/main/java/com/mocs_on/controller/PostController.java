@@ -98,8 +98,7 @@ public class PostController {
             return ResponseEntity.notFound().build();
         }
     }
-
-    /** Zera todas as rea��es (likes) de todos os posts. */
+    
     @DeleteMapping("/reactions")
     public ResponseEntity<Void> deleteAllReactions() {
         postService.deleteAllReactions();

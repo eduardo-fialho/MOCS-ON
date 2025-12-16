@@ -190,4 +190,14 @@ CREATE TABLE IF NOT EXISTS `agenda_diaria` (
     `visivel` BOOLEAN DEFAULT TRUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `comites` (
+    `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+    `nome` varchar(200) NOT NULL,
+    `sigla` varchar(200) NOT NULL,
+    `num_delegados` BIGINT NOT NULL,
+    `descricao` VARCHAR(500) NOT NULL,
+    `status` VARCHAR(50) NOT NULL DEFAULT 'EM_ANDAMENTO',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
