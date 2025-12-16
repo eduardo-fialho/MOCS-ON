@@ -7,16 +7,19 @@ public class Materia {
     private Long id;
     private String titulo;
     private String lead;
-    private byte[] imagem;
     private String texto;
+    private byte[] imagem;
+
     private String autor;
     private String revisor;
+
     private Long comiteId;
     private StatusMateria status;
-    private Boolean ativo;
+    private boolean ativo;
 
-    private LocalDateTime dataCriacao;
-    private LocalDateTime dataEdicao;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime reviewedAt;
 
     public Long getId() {
         return id;
@@ -42,20 +45,20 @@ public class Materia {
         this.lead = lead;
     }
 
-    public byte[] getImagem() {
-        return imagem;
-    }
-
-    public void setImagem(byte[] imagem) {
-        this.imagem = imagem;
-    }
-
     public String getTexto() {
         return texto;
     }
 
     public void setTexto(String texto) {
         this.texto = texto;
+    }
+
+    public byte[] getImagem() {
+        return imagem;
+    }
+
+    public void setImagem(byte[] imagem) {
+        this.imagem = imagem;
     }
 
     public String getAutor() {
@@ -90,27 +93,35 @@ public class Materia {
         this.status = status;
     }
 
-    public Boolean getAtivo() {
+    public boolean isAtivo() {
         return ativo;
     }
 
-    public void setAtivo(Boolean ativo) {
+    public void setAtivo(boolean ativo) {
         this.ativo = ativo;
     }
 
-    public LocalDateTime getDataCriacao() {
-        return dataCriacao;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setDataCriacao(LocalDateTime dataCriacao) {
-        this.dataCriacao = dataCriacao;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public LocalDateTime getDataEdicao() {
-        return dataEdicao;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setDataEdicao(LocalDateTime dataEdicao) {
-        this.dataEdicao = dataEdicao;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public LocalDateTime getReviewedAt() {
+        return reviewedAt;
+    }
+
+    public void setReviewedAt(LocalDateTime reviewedAt) {
+        this.reviewedAt = reviewedAt;
     }
 }

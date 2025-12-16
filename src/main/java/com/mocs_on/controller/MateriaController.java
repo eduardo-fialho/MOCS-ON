@@ -1,91 +1,82 @@
 package com.mocs_on.controller;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.mocs_on.domain.Materia;
-import com.mocs_on.domain.StatusMateria;
-import com.mocs_on.service.MateriaDAO;
+import com.mocs_on.service.MateriaService;
+import com.mocs_on.security.SecaoUsuario;
 
-@RestController
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+@Controller
 @RequestMapping("/materias")
-@CrossOrigin(origins = "*")
 public class MateriaController {
 
-    @Autowired
-    private MateriaDAO materiaDAO;
+    private final MateriaService materiaService;
+
+    public MateriaController(MateriaService materiaService) {
+        this.materiaService = materiaService;
+    }
+
+    @GetMapping
+    public String listar(Model model) {
+        model.addAttribute("materias", materiaService.listarTodas());
+        return "materias/lista";
+    }
+
+    @GetMapping("/nova")
+    public String nova(Model model) {
+        model.addAttribute("materia", new Materia());
+        return "materias/form";
+    }
 
     @PostMapping
-    public ResponseEntity<String> criar(
-            @RequestParam String titulo,
-            @RequestParam String lead,
-            @RequestParam String texto,
-            @RequestParam String autor,
-            @RequestParam(required = false) Long comiteId,
-            @RequestParam(required = false) MultipartFile imagem
-    ) throws IOException {
-
-        Materia m = new Materia();
-        m.setTitulo(titulo);
-        m.setLead(lead);
-        m.setTexto(texto);
-        m.setAutor(autor);
-        m.setComiteId(comiteId);
-        m.setStatus(StatusMateria.PENDENTE);
-        m.setAtivo(true);
-
-        if (imagem != null && !imagem.isEmpty()) {
-            m.setImagem(imagem.getBytes());
-        }
-
-        materiaDAO.inserir(m);
-        return ResponseEntity.ok("Matéria criada com sucesso");
+    public String criar(@ModelAttribute Materia materia) {
+        String usuario = usuarioLogado();
+        materiaService.criar(materia, usuario);
+        return "redirect:/materias";
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<String> editar(
+    @GetMapping("/{id}/editar")
+    public String editar(@PathVariable Long id, Model model) {
+        model.addAttribute("materia", materiaService.buscarPorId(id));
+        return "materias/form";
+    }
+
+    @PostMapping("/{id}")
+    public String atualizar(@PathVariable Long id, @ModelAttribute Materia materia) {
+        String usuario = usuarioLogado();
+        materia.setId(id);
+        materiaService.atualizar(materia, usuario);
+        return "redirect:/materias";
+    }
+
+    @PostMapping("/{id}/aprovar")
+    public String aprovar(@PathVariable Long id) {
+        materiaService.aprovar(id, usuarioLogado());
+        return "redirect:/materias";
+    }
+
+    @PostMapping("/{id}/rejeitar")
+    public String rejeitar(
             @PathVariable Long id,
-            @RequestBody Materia dados,
-            @RequestParam String usuarioLogado
-    ) {
-        Materia m = materiaDAO.buscarPorId(id);
+            @RequestParam String motivo) {
 
-        if (m == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        if (!m.getAutor().equals(usuarioLogado)) {
-            return ResponseEntity.status(403).body("Apenas o autor pode editar");
-        }
-
-        m.setTitulo(dados.getTitulo());
-        m.setLead(dados.getLead());
-        m.setTexto(dados.getTexto());
-        m.setImagem(dados.getImagem());
-
-        materiaDAO.atualizar(m);
-        return ResponseEntity.ok("Matéria editada");
+        materiaService.rejeitar(id, motivo, usuarioLogado());
+        return "redirect:/materias";
     }
 
-    @GetMapping("/pendentes")
-    public List<Materia> pendentes() {
-        return materiaDAO.listarPendentes();
-    }
 
-    @PostMapping("/{id}/avaliar")
-    public ResponseEntity<String> avaliar(
-            @PathVariable Long id,
-            @RequestBody Map<String, String> body,
-            @RequestParam String revisor
-    ) {
-        StatusMateria status = StatusMateria.valueOf(body.get("status"));
-        materiaDAO.avaliar(id, status, revisor);
-        return ResponseEntity.ok("Matéria avaliada");
+    private String usuarioLogado() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = auth.getPrincipal();
+
+        if (principal instanceof SecaoUsuario secaoUsuario) {
+            return secaoUsuario.getUsername(); 
+        }
+
+        return "sistema";
     }
 }
