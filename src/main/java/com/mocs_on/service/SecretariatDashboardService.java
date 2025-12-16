@@ -31,7 +31,7 @@ public class SecretariatDashboardService {
      * aprovados) or pré-inscrições. It's our proxy for committees that estão ativos
      * ou em formação.
      */
-    private static final String ACTIVE_COMMITTEES_SQL = """
+    /*private static final String ACTIVE_COMMITTEES_SQL = """
             SELECT COUNT(*) FROM (
                 SELECT DISTINCT TRIM(UPPER(comite_preferido)) AS nome
                 FROM user_profiles
@@ -44,7 +44,7 @@ public class SecretariatDashboardService {
                 WHERE comite_preferido IS NOT NULL AND comite_preferido <> ''
             ) committees
             """;
-
+    */
     private final JdbcTemplate jdbcTemplate;
 
     public SecretariatDashboardService(JdbcTemplate jdbcTemplate) {
@@ -55,7 +55,8 @@ public class SecretariatDashboardService {
         long participants = queryForLong(PARTICIPANTS_SQL);
         long announcements = queryForLong(ANNOUNCEMENTS_SQL);
         long documents = queryForLong(DOCUMENTS_SQL);
-        long committees = queryForLong(ACTIVE_COMMITTEES_SQL);
+        //long committees = queryForLong(ACTIVE_COMMITTEES_SQL);
+        long committees = 0;
         return new DashboardMetrics(participants, committees, documents, announcements);
     }
 
