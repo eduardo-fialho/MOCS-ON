@@ -69,6 +69,8 @@
                         .filter(p => p.status !== 'EXCLUIDO')
                         .map(p => ({
                             ...p,
+                            reactions: p.reactions || {}, 
+                            myReaction: null, 
                             _reacting: false,
                             _commentsOpen: false,
                             _loadingComments: false,
@@ -82,10 +84,6 @@
                             _hasCurtido: false
                         }));
 
-                    this.posts = data.filter(p => p.status !== 'EXCLUIDO' && p.status !== 'PENDENTE');
-                    //&& p.comiteId === ALGUMA COISA COMITE
-
-                    this.postsPendentes = data.filter(p => p.status === 'PENDENTE');
                     if (this.posts.length > 0) {
                         await Promise.all(this.posts.map(async post => {
                             try {
@@ -123,7 +121,7 @@
                 const body = {
                     autor: this.postAsAnon ? (this.currentUser || '') : (this.currentUser || 'Delegado'),
                     mensagem: this.newMessage.trim(),
-                    status: this.postAsAnon ? 'ANONIMO' : 'PENDENTE',
+                    status: this.postAsAnon ? 'ANONIMO' : 'PUBLICO',
                     comiteId: 1
                 };
                 const { token, header } = readCsrf();
@@ -175,53 +173,57 @@
             },
 
             async addReaction(post, emoji) {
-                if (!emoji || !post) return;
+                if (!post || !emoji) return;
                 if (post._reacting) return;
+
                 post._reacting = true;
+
                 const usuario = this.currentUserEmail || this.currentUser || 'anônimo';
                 const body = { usuario, emoji };
                 const { token, header } = readCsrf();
+
                 const headers = { 'Content-Type': 'application/json' };
                 if (token) headers[header] = token;
+
                 try {
                     const res = await fetch(`${API_BASE}/${post.id}/reaction`, {
                         method: 'POST',
                         headers,
                         body: JSON.stringify(body)
                     });
-                    const prev = post.myReaction || null;
-                    if (res.status === 201) {
-                        post.reactions = post.reactions || {};
-                        post.reactions[emoji] = (post.reactions[emoji] || 0) + 1;
-                        post.myReaction = emoji;
-                        if (prev && prev !== emoji) {
-                            post.reactions[prev] = Math.max(0, (post.reactions[prev] || 1) - 1);
-                            if (post.reactions[prev] === 0) delete post.reactions[prev];
+
+                    if (!res.ok) {
+                        await this.loadPosts();
+                        return;
+                    }
+
+                    const oldEmoji = post.myReaction; 
+                    
+
+                    if (oldEmoji) {
+                        if (post.reactions[oldEmoji] !== undefined) {
+                            post.reactions[oldEmoji]--;
+                            if (post.reactions[oldEmoji] <= 0) {
+                                delete post.reactions[oldEmoji];
+                            }
                         }
-                    } else if (res.status === 200) {
-                        if (prev && prev !== emoji) {
-                            post.reactions[prev] = Math.max(0, (post.reactions[prev] || 1) - 1);
-                            if (post.reactions[prev] === 0) delete post.reactions[prev];
-                        }
-                        post.reactions = post.reactions || {};
-                        post.reactions[emoji] = (post.reactions[emoji] || 0) + 1;
-                        post.myReaction = emoji;
-                    } else if (res.status === 204) {
-                        if (prev) {
-                            post.reactions[prev] = Math.max(0, (post.reactions[prev] || 1) - 1);
-                            if (post.reactions[prev] === 0) delete post.reactions[prev];
-                        }
+                    }
+
+                    if (oldEmoji === emoji) {
+                        
                         post.myReaction = null;
                     } else {
-                        await this.loadPosts();
+                        post.reactions[emoji] = (post.reactions[emoji] || 0) + 1;
+                        post.myReaction = emoji;
                     }
+
                 } catch (err) {
-                    alert('Erro ao reagir: ' + err.message);
                     await this.loadPosts();
                 } finally {
                     post._reacting = false;
                 }
             },
+
 
             reactionCount(post, emoji) {
                 if (!post || !post.reactions) return 0;
@@ -332,6 +334,7 @@
                 const usuario = this.currentUserEmail || this.currentUser || 'anônimo';
                 const usuarioNome = this.currentUser || this.currentUserEmail || null;
                 const body = { usuario, usuarioNome };
+                
                 const { token, header } = readCsrf();
                 const headers = { 'Content-Type': 'application/json' };
                 if (token) headers[header] = token;
@@ -359,6 +362,7 @@
 
             openCurtidasModal: async function (post) {
                 if (!post) return;
+                
                 post._loadingCurtidas = true;
                 post._curtidasList = [];
                 post._curtidasModalOpen = true;

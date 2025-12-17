@@ -36,7 +36,6 @@
         .border-mocs-blue { border-color: #205395; }
         .border-mocs-orange { border-color: #FF8C00; }
 
-        /* Scrollbar minimal e contida */
         .custom-scrollbar::-webkit-scrollbar { width: 8px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb {
@@ -95,7 +94,7 @@
             position: relative;
             z-index: 2;
         }
-        /* Apple-like glass panel for modal */
+
         .apple-glass {
             position: relative;
             background: linear-gradient(145deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08));
@@ -156,39 +155,13 @@
             transform: translateY(-1px);
         }
     </style>
-
-    <script>
-        const APP_CONTEXT_PATH = (() => {
-            const path = window.location.pathname || '';
-            const base = path.replace(/\/[^/]*$/, '');
-            if (!base || base === '/' || base === path) {
-                return '';
-            }
-            return base;
-        })();
-        const API_BASE_URL = `${window.location.origin}${APP_CONTEXT_PATH}`;
-        const API_ENDPOINT = `${API_BASE_URL}/aviso`;
-        const USER_ENDPOINT = `${API_BASE_URL}/user`;
-        const POST_API_BASE = `${API_BASE_URL}/post`;
-        const USER_AVATAR_ENDPOINT = `${API_BASE_URL}/user/avatar`;
-        const DEFAULT_AVATAR_URL = `${API_BASE_URL}/images/avatar-default.svg`;
-        const ANON_AVATAR_URL = `${API_BASE_URL}/images/avatar-default.svg`;
-
-        // Helper global para CSRF
-        function readCsrf() {
-            const tokenMeta = document.querySelector('meta[name="_csrf"]');
-            const headerMeta = document.querySelector('meta[name="_csrf_header"]');
-            const token = tokenMeta ? tokenMeta.content : null;
-            const header = headerMeta ? headerMeta.content : 'X-CSRF-TOKEN';
-            return { token, header };
-        }
-    </script>
 </head>
 
 <body class="bg-gray-100 dashboard-bg">
     <div class="flex flex-col min-h-screen">
         <!-- Cabeçalho -->
-        <header class="z-10 sticky top-0" x-data="headerController()" x-init="loadUserInfo()" @click.away="menuOpen = false">
+        <header class="z-10 sticky top-0" x-data="profileData()" @click.away="menuOpen = false"
+>
             <div class="container mx-auto px-4 py-3">
                 <div class="liquid-glass liquid-glass--header w-full transition-all duration-500" :class="menuOpen ? 'pb-4' : ''">
                     <div class="flex flex-wrap items-center justify-between gap-4">
@@ -208,7 +181,7 @@
                                         <i class="fas fa-user"></i> Meu perfil
                                     </a>
                                     <template x-if="isSecretario">
-                                        <a href="/secretariado.html" class="menu-chip w-full justify-center">
+                                        <a th:href="@{/secretariado.html}" class="menu-chip w-full justify-center">
                                             <i class="fas fa-user-tie"></i> Área do Secretariado
                                         </a>
                                     </template>
@@ -417,19 +390,18 @@
                         <!-- Formulário de Postagem -->
                         <div class="mb-6">
                             <textarea x-model="newMessage"
-                                      class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue"
-                                      rows="3"
-                                      placeholder="Escreva um post no mural, envie um spotted anônimo..."></textarea>
+                                class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue"
+                                rows="3" placeholder="Escreva um post no mural, envie um spotted anônimo..."></textarea>
 
                             <div class="flex justify-end items-center mt-2 space-x-4">
                                 <label class="text-sm text-gray-600 mr-4 flex items-center">
-                                    <input type="checkbox" x-model="postAsAnon" class="mr-2 rounded">Postar como anônimo (Spotted)
+                                    <input type="checkbox" x-model="postAsAnon" class="mr-2 rounded">Postar como anônimo
+                                    (Spotted)
                                 </label>
 
                                 <button @click.prevent="createPost()"
-                                        :class="{ 'opacity-60 cursor-not-allowed': posting }"
-                                        :disabled="posting"
-                                        class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
+                                    :class="{ 'opacity-60 cursor-not-allowed': posting }" :disabled="posting"
+                                    class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
                                     <span x-show="!posting">Postar</span>
                                     <span x-show="posting">Enviando...</span>
                                 </button>
@@ -445,12 +417,13 @@
                             <template x-for="post in posts" :key="post.id">
                                 <div class="border-t pt-4">
                                     <div class="flex items-start space-x-4">
-                                        <div class="h-10 w-10 rounded-full overflow-hidden border border-gray-200 bg-gray-50 flex-shrink-0">
-                                            <img
-                                                :src="post.avatarUrl || (post.status === 'ANONIMO' ? anonAvatar : defaultAvatar)"
-                                                @error="$event.target.src = post.status === 'ANONIMO' ? anonAvatar : defaultAvatar"
-                                                alt="Avatar do autor"
-                                                class="h-full w-full object-cover">
+                                        <div class="h-10 w-10 rounded-full flex items-center justify-center bg-gray-200 text-gray-700">
+                                            <template x-if="post.status === 'ANONIMO'">
+                                                <i class="fas fa-user-secret"></i>
+                                            </template>
+                                            <template x-if="post.status !== 'ANONIMO'">
+                                                <i class="fas fa-user"></i>
+                                            </template>
                                         </div>
 
                                         <div class="flex-1">
@@ -458,23 +431,109 @@
                                             <p class="text-gray-700" x-text="post.mensagem"></p>
                                             <p class="text-xs text-gray-500 mt-1" x-text="timeAgo(post.data)"></p>
 
-                                            <!-- Reações rápidas -->
                                             <div class="mt-3 flex items-center gap-2 text-sm">
-                                                <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '👏')">👏 <span class="ml-1" x-text="reactionCount(post,'👏')"></span></button>
-                                                <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '❤️')">❤️ <span class="ml-1" x-text="reactionCount(post,'❤️')"></span></button>
-                                                <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '😂')">😂 <span class="ml-1" x-text="reactionCount(post,'😂')"></span></button>
-                                                <button class="px-2 py-1 bg-gray-100 rounded-full" @click="addReaction(post.id, '😱')">😱 <span class="ml-1" x-text="reactionCount(post,'😱')"></span></button>
+                                                <button
+                                                    class="bg-mocs-blue text-white font-semibold py-1 px-2 rounded-lg hover:bg-opacity-90"
+                                                    @click="toggleCurtida(post)"
+                                                >
+                                                    <span>Curtir</span>
+                                                </button>
+
+                                                <button class="text-sm text-gray-600 underline" @click="openCurtidasModal(post)">
+                                                    <span x-text="(post._curtidaCount !== undefined) ? post._curtidaCount + ' pessoas' : '0 pessoas'"></span>
+                                                </button>
+                                            </div>
+
+
+                                            <div class="mt-3 flex items-center gap-2 text-sm">
+                                                <template x-for="emoji in emojis" :key="emoji">
+                                                    <button
+                                                        :class="{
+                                                            'ring-2 ring-offset-1 ring-blue-300': post.myReaction === emoji,
+                                                            'opacity-50 cursor-not-allowed': post._reacting
+                                                        }"
+                                                        class="px-2 py-1 bg-gray-100 rounded-full flex items-center"
+                                                        :disabled="post._reacting"
+                                                        @click="addReaction(post, emoji)"
+                                                    >
+                                                        <span x-text="emoji"></span>
+                                                        <span class="ml-1" x-text="reactionCount(post, emoji)"></span>
+                                                    </button>
+                                                </template>
+                                            </div>
+                                            <div class="mt-3">
+                                                <button class="text-sm text-gray-600" @click="toggleComments(post)">
+                                                    <span x-text="(post._commentsOpen ? 'Fechar' : 'Ver') + ' comentários'"></span>
+                                                </button>
+                                                <div x-show="post._commentsOpen" x-cloak class="mt-2 space-y-3">
+                                                    <div x-show="post._loadingComments" class="text-sm text-gray-500">Carregando comentários...</div>
+                                                    <template x-for="comment in (post.comments || [])" :key="comment.id">
+                                                        <div class="bg-gray-50 p-2 rounded">
+                                                            <div class="flex justify-between items-start">
+                                                                <div>
+                                                                    <p class="text-sm font-semibold" x-text="comment.usuarioNome"></p>
+                                                                    <template x-if="comment.status === 'EXCLUIDO'">
+                                                                        <p class="text-sm text-gray-400" x-text="comment.mensagem"></p>
+                                                                    </template>
+                                                                    <template x-if="comment.status !== 'EXCLUIDO'">
+                                                                        <p class="text-sm text-gray-700" x-text="comment.mensagem"></p>
+                                                                    </template>
+                                                                    <p class="text-xs text-gray-400" x-text="timeAgo(comment.createdAt)"></p>
+                                                                </div>
+                                                                <div>
+                                                                    <template x-if="(comment.usuario === currentUserEmail || comment.usuarioNome === currentUser) || isSecretary">
+                                                                        <button class="text-xs text-red-600" @click="deleteComment(post, comment.id)">Remover</button>
+                                                                    </template>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                    <div x-show="!post._loadingComments && (!post.comments || post.comments.length === 0)" class="text-sm text-gray-500">Seja o primeiro a comentar.</div>
+                                                    <div class="pt-2">
+                                                        <textarea x-model="post._newComment" rows="2" class="w-full border rounded p-2 text-sm" placeholder="Escreva um comentário..."></textarea>
+                                                        <div class="flex justify-end mt-1">
+                                                            <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded"
+                                                                @click="addComment(post)"
+                                                                :disabled="post._postingComment || !(post._newComment && post._newComment.trim())">
+                                                                <span x-text="post._postingComment ? 'Enviando...' : 'Comentar'"></span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 
                                         <div class="flex flex-col items-end gap-2">
-                                            <button class="text-sm text-red-600" @click="deletePost(post.id)">Excluir</button>
+                                            <template x-if="isSecretary">
+                                                <button class="text-sm text-red-600" @click="deletePost(post.id)"> Excluir
+                                                </button>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div x-show="post._curtidasModalOpen" x-cloak class="fixed inset-0 flex items-center justify-center z-50">
+                                    <div class="absolute inset-0 bg-black opacity-50" @click="closeCurtidasModal(post)"></div>
+                                    <div class="bg-white rounded shadow-lg p-4 max-w-md w-full z-10">
+                                        <div class="flex justify-between items-center mb-3">
+                                            <h3 class="text-lg font-semibold">Curtido por</h3>
+                                            <button class="text-sm text-gray-600" @click="closeCurtidasModal(post)">Fechar</button>
+                                        </div>
+                                        <div class="max-h-64 overflow-auto">
+                                            <template x-if="post._loadingCurtidas">
+                                                <div class="text-sm text-gray-500">Carregando...</div>
+                                            </template>
+                                            <template x-for="u in (post._curtidasList || [])" :key="u.usuario">
+                                                <div class="py-2 border-b">
+                                                    <div class="font-medium" x-text="u.usuarioNome"></div>
+                                                    <div class="text-xs text-gray-500" x-text="u.usuario"></div>
+                                                </div>
+                                            </template>
+                                            <div x-show="!post._loadingCurtidas && (!post._curtidasList || post._curtidasList.length === 0)" class="text-sm text-gray-500">Ninguém curtiu ainda.</div>
                                         </div>
                                     </div>
                                 </div>
                             </template>
 
-                            <!-- Caso não haja posts -->
                             <div x-show="!loading && posts.length === 0" class="text-center text-gray-500 py-6" style="display:none">
                                 Nenhum post disponível.
                             </div>
@@ -656,680 +715,14 @@
                 </section>
             </div>
         </main>
-
-
     </div>
 
-    <!-- Script Lógica Alpine -->
-    <script>
-        // NOVO: Função para carregar o nome e o cargo do usuário logado
-        function profileData() {
-            return {
-                userName: 'Carregando...', // Estado inicial
-                isSecretario: false, // Estado inicial
-                userAvatar: 'https://placehold.co/40x40/cccccc/ffffff?text=U',
-                defaultAvatar: 'https://placehold.co/40x40/cccccc/ffffff?text=U',
-                
-                async loadUserInfo() {
-                    try {
-                        const response = await fetch(USER_ENDPOINT); 
-
-                        if (!response.ok) {
-                            this.userName = 'Erro ao carregar';
-                            this.userAvatar = this.defaultAvatar;
-                            return;
-                        }
-
-                        const data = await response.json();
-                        const resolvedName = data && data.nome ? data.nome : 'Delegado';
-                        this.userName = resolvedName;
-                        this.isSecretario = data && data.isSecretario ? data.isSecretario : false;
-                        await this.loadAvatar(resolvedName);
-                    } catch (error) {
-                        console.error('Falha ao buscar info do usuário:', error);
-                        this.userName = 'Delegado (Offline)';
-                        this.userAvatar = this.defaultAvatar;
-                    }
-                },
-
-                async loadAvatar(name) {
-                    if (!name) {
-                        this.userAvatar = this.defaultAvatar;
-                        return;
-                    }
-                    const encoded = encodeURIComponent(name);
-                    try {
-                        const url = `${USER_AVATAR_ENDPOINT}?name=${encoded}&ts=${Date.now()}`;
-                        const res = await fetch(url, { method: 'GET' });
-                        if (!res.ok) {
-                            this.userAvatar = this.defaultAvatar;
-                            return;
-                        }
-                        this.userAvatar = url;
-                    } catch (err) {
-                        console.warn('Falha ao carregar avatar do usuário', err);
-                        this.userAvatar = this.defaultAvatar;
-                    }
-                }
-            };
-        }
-
-        function headerController() {
-            const profile = profileData();
-            return Object.assign(profile, {
-                menuOpen: false,
-                toggleMenu() {
-                    this.menuOpen = !this.menuOpen;
-                }
-            });
-        }
-
-        function galeriaPreview() {
-            return {
-                filters: ['Meu comitê', 'Secretariado', 'Global'],
-                activeFilter: 'Meu comitê',
-                searchQuery: '',
-                searchResults: [],
-                searchLoading: false,
-                searchError: null,
-                searchDebounce: null,
-                fallbackPosts: [],
-                posts: [],
-                media: [],
-                feedLoading: true,
-                feedError: null,
-                currentUser: null,
-                defaultAvatar: DEFAULT_AVATAR_URL,
-                modalOpen: false,
-                selectedMedia: null,
-                modalPortrait: false,
-                likeLoading: false,
-                comments: [],
-                commentLoading: false,
-                commentText: '',
-                commentError: null,
-                floatingHearts: [],
-                decrementLikes(postId, delta = 1) {
-                    const mutate = list => {
-                        if (!Array.isArray(list)) return;
-                        const target = list.find(entry => entry.id === postId);
-                        if (target) {
-                            target.likes = Math.max(0, (target.likes || 0) - delta);
-                        }
-                    };
-                    mutate(this.posts);
-                    mutate(this.media);
-                    if (this.selectedMedia && this.selectedMedia.id === postId) {
-                        this.selectedMedia.likes = Math.max(0, (this.selectedMedia.likes || 0) - delta);
-                    }
-                },
-                init() {
-                    this.loadCurrentUser();
-                    this.loadFeed();
-                },
-                async loadCurrentUser() {
-                    try {
-                        const res = await fetch(USER_ENDPOINT);
-                        if (!res.ok) throw new Error('status ' + res.status);
-                        const data = await res.json();
-                        this.currentUser = data && data.nome ? data.nome : 'Delegado';
-                    } catch (err) {
-                        console.error('Erro ao buscar usuário para a galeria:', err);
-                        this.currentUser = 'Delegado';
-                    }
-                },
-                async loadFeed() {
-                    this.feedLoading = true;
-                    this.feedError = null;
-                    try {
-                        const res = await fetch(`${POST_API_BASE}/gallery`);
-                        if (!res.ok) throw new Error('status ' + res.status);
-                        const data = await res.json();
-                        const visible = data
-                            .filter(post => post.status !== 'EXCLUIDO')
-                            .sort((a, b) => new Date(b.data) - new Date(a.data));
-                        const parsed = visible
-                            .map((raw, index) => this.enrichPost(raw, index))
-                            .filter(item => item !== null);
-                        this.posts = parsed;
-                        this.media = parsed;
-                    } catch (error) {
-                        console.error('Erro ao carregar galeria:', error);
-                        this.posts = [];
-                        this.media = [];
-                        this.feedError = 'Não foi possível carregar a galeria agora.';
-                    } finally {
-                        this.feedLoading = false;
-                    }
-                },
-                enrichPost(raw, index) {
-                    if (!raw || !raw.mensagem || !raw.mensagem.startsWith('PHOTO|')) {
-                        return null;
-                    }
-                    const author = (raw.autor || 'Delegado').trim();
-                    const parts = raw.mensagem.split('|');
-                    if (parts.length < 2) {
-                        return null;
-                    }
-                    const filename = parts[1];
-                    const caption = parts.slice(2).join('|').trim();
-                    const segment = /secret/i.test(author) ? 'Secretariado' : 'Meu comitê';
-                    const tag = raw.status === 'ANONIMO' ? '#Spotted' : `#${segment.replace(' ', '')}`;
-                    const initials = author.split(/\s+/).slice(0, 2).map(part => part.charAt(0)).join('').toUpperCase() || 'DL';
-                    const reactions = raw.reactions || {};
-                    const likes = reactions['❤️'] || reactions['\u2764\uFE0F'] || reactions['❤'] || 0;
-                    return {
-                        id: raw.id || index,
-                        author,
-                        initials,
-                        segment,
-                        tag,
-                        time: this.formatRelativeTime(raw.data),
-                        excerpt: this.summarize(caption || author),
-                        rawMessage: caption || author,
-                        url: `/profile/gallery/media/${filename}`,
-                        caption: caption || author,
-                        meta: `${author} · ${this.formatRelativeTime(raw.data)}`,
-                        label: segment,
-                        likes,
-                        avatar: DEFAULT_AVATAR_URL
-                    };
-                },
-                summarize(text, limit = 140) {
-                    if (!text) return '';
-                    return text.length > limit ? `${text.slice(0, limit - 3)}...` : text;
-                },
-                formatRelativeTime(value) {
-                    if (!value) return 'agora mesmo';
-                    const date = new Date(value);
-                    if (Number.isNaN(date.getTime())) return 'agora mesmo';
-                    const diffSeconds = Math.max(1, Math.floor((Date.now() - date.getTime()) / 1000));
-                    if (diffSeconds < 60) return `há ${diffSeconds}s`;
-                    const minutes = Math.floor(diffSeconds / 60);
-                    if (minutes < 60) return `há ${minutes} min`;
-                    const hours = Math.floor(minutes / 60);
-                    if (hours < 24) return `há ${hours} h`;
-                    const days = Math.floor(hours / 24);
-                    if (days < 7) return `há ${days} d`;
-                    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
-                },
-                handleSearchInput() {
-                    clearTimeout(this.searchDebounce);
-                    this.searchError = null;
-                    if (!this.searchQuery || this.searchQuery.trim().length < 2) {
-                        this.searchResults = [];
-                        this.fallbackPosts = [];
-                        return;
-                    }
-                    this.searchDebounce = setTimeout(() => this.performSearch(), 300);
-                },
-                async performSearch() {
-                    const query = (this.searchQuery || '').trim();
-                    if (query.length < 2) {
-                        this.searchResults = [];
-                        this.fallbackPosts = [];
-                        return;
-                    }
-                    this.searchLoading = true;
-                    this.searchError = null;
-                    try {
-                        const res = await fetch(`${API_BASE_URL}/user/search?q=${encodeURIComponent(query)}`);
-                        if (!res.ok) throw new Error('status ' + res.status);
-                        const payload = await res.json();
-                        this.searchResults = payload.map(user => ({
-                            ...user,
-                            tipo: this.formatRoleLabel(user.tipo)
-                        }));
-                        if (!this.searchResults.length) {
-                            this.buildFallbackPosts(query);
-                        } else {
-                            this.fallbackPosts = [];
-                        }
-                    } catch (error) {
-                        console.error('Erro na busca:', error);
-                        this.searchError = 'Não foi possível buscar agora.';
-                        this.fallbackPosts = [];
-                    } finally {
-                        this.searchLoading = false;
-                    }
-                },
-                buildFallbackPosts(query) {
-                    const normalized = query.toLowerCase();
-                    this.fallbackPosts = this.posts
-                        .filter(post => post.author.toLowerCase().includes(normalized) || post.rawMessage.toLowerCase().includes(normalized))
-                        .slice(0, 3);
-                },
-                spawnHeart() {
-                    const heart = {
-                        id: Date.now() + Math.random(),
-                        left: 35 + Math.random() * 30
-                    };
-                    this.floatingHearts.push(heart);
-                    setTimeout(() => {
-                        this.floatingHearts = this.floatingHearts.filter(item => item.id !== heart.id);
-                    }, 1100);
-                },
-                incrementLikes(postId, delta = 1) {
-                    const mutate = list => {
-                        if (!Array.isArray(list)) return;
-                        const target = list.find(entry => entry.id === postId);
-                        if (target) {
-                            target.likes = (target.likes || 0) + delta;
-                        }
-                    };
-                    mutate(this.posts);
-                    mutate(this.media);
-                    if (this.selectedMedia && this.selectedMedia.id === postId) {
-                        this.selectedMedia.likes = (this.selectedMedia.likes || 0) + delta;
-                    }
-                },
-                openModal(media) {
-                    this.selectedMedia = { ...media, liked: media.liked || false };
-                    this.modalPortrait = !!media.isPortrait;
-                    this.commentText = '';
-                    this.commentError = null;
-                    this.modalOpen = true;
-                    this.floatingHearts = [];
-                    this.loadComments(media.id);
-                },
-                closeModal() {
-                    this.modalOpen = false;
-                    this.selectedMedia = null;
-                    this.comments = [];
-                    this.floatingHearts = [];
-                },
-                async loadComments(postId) {
-                    this.commentLoading = true;
-                    this.commentError = null;
-                    try {
-                        const res = await fetch(`${POST_API_BASE}/${postId}/comments`);
-                        if (!res.ok) throw new Error('status ' + res.status);
-                        const data = await res.json();
-                        this.comments = data.map(item => ({
-                            ...item,
-                            tempo: this.formatRelativeTime(item.createdAt || item.data || item.created_at)
-                        }));
-                    } catch (err) {
-                        console.error('Erro ao buscar comentários:', err);
-                        this.commentError = 'Não foi possível carregar os comentários.';
-                        this.comments = [];
-                    } finally {
-                        this.commentLoading = false;
-                    }
-                },
-                async submitComment() {
-                    if (!this.selectedMedia || !this.commentText.trim()) {
-                        this.commentError = 'Escreva um comentário primeiro.';
-                        return;
-                    }
-                    this.commentError = null;
-                    try {
-                        const res = await fetch(`${POST_API_BASE}/${this.selectedMedia.id}/comments`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                autor: this.currentUser || 'Delegado',
-                                mensagem: this.commentText.trim()
-                            })
-                        });
-                        if (!res.ok) throw new Error('status ' + res.status);
-                        this.commentText = '';
-                        await this.loadComments(this.selectedMedia.id);
-                    } catch (err) {
-                        console.error('Erro ao comentar:', err);
-                        this.commentError = 'Falha ao salvar seu comentário.';
-                    }
-                },
-        async toggleLike() {
-            if (!this.selectedMedia || this.likeLoading) return;
-            if (!this.selectedMedia.id) {
-                alert('Não foi possível identificar o post para curtir.');
-                return;
-            }
-            this.likeLoading = true;
-            const liked = !!this.selectedMedia.liked;
-            const { token, header } = (typeof readCsrf === 'function') ? readCsrf() : { token: null, header: 'X-CSRF-TOKEN' };
-            const headers = { 'Content-Type': 'application/json' };
-            if (token) headers[header] = token;
-            const body = JSON.stringify({
-                usuario: this.currentUser || 'Delegado',
-                emoji: '❤️'
-            });
-            const url = `${POST_API_BASE}/${this.selectedMedia.id}/reaction`;
-            try {
-                const res = await fetch(url, {
-                    method: liked ? 'DELETE' : 'POST',
-                    headers,
-                    credentials: 'same-origin',
-                    body
-                });
-
-                if (liked) {
-                    // Remover like: só ajusta contagem se servidor remover
-                    if (res.ok) {
-                        this.decrementLikes(this.selectedMedia.id, 1);
-                        this.selectedMedia.liked = false;
-                    } else {
-                        console.error('Erro ao remover reação:', res.status, await res.text());
-                        alert('Não foi possível remover sua reação. Status: ' + res.status);
-                    }
-                } else {
-                    // Adicionar like
-                    if (res.ok) {
-                        this.incrementLikes(this.selectedMedia.id, 1);
-                        this.selectedMedia.liked = true;
-                        this.spawnHeart();
-                    } else if (res.status === 409) {
-                        // Já existe reação: não incrementa, apenas marca como liked
-                        this.selectedMedia.liked = true;
-                    } else {
-                        console.error('Erro ao reagir:', res.status, await res.text());
-                        alert('Não foi possível registrar sua reação. Status: ' + res.status);
-                    }
-                }
-            } catch (err) {
-                console.error('Erro ao reagir na galeria:', err);
-                alert('Erro ao reagir: ' + err.message);
-            } finally {
-                this.likeLoading = false;
-            }
-        },
-                get filteredMedia() {
-                    if (this.activeFilter === 'Global') return this.media;
-                    return this.media.filter(item => item.segment === this.activeFilter);
-                },
-                formatRoleLabel(tipo) {
-                    if (!tipo) return 'Delegado';
-                    const cleaned = tipo.replace('ROLE_', '');
-                    return cleaned.charAt(0) + cleaned.slice(1).toLowerCase();
-                },
-                formatTime(value) {
-                    return value ? this.formatRelativeTime(value) : 'sem registro';
-                }
-            };
-        }
-
-        function announcementsData() {
-            return {
-                avisos: [],
-                currentPage: 1,
-                itemsPerPage: 5,
-                isLoading: false,
-                isModalOpen: false,
-                currentAviso: { titulo: '', mensagem: '', autor: '', data: '' },
-
-                get paginatedAvisos() {
-                    const start = (this.currentPage - 1) * this.itemsPerPage;
-                    const end = start + this.itemsPerPage;
-                    return this.avisos.slice(start, end);
-                },
-                get totalPages() {
-                    return Math.ceil(this.avisos.length / this.itemsPerPage);
-                },
-                nextPage() {
-                    if (this.currentPage < this.totalPages) this.currentPage++;
-                },
-                prevPage() {
-                    if (this.currentPage > 1) this.currentPage--;
-                },
-                showAvisoModal(aviso) {
-                    this.currentAviso = aviso;
-                    this.isModalOpen = true;
-                },
-                closeAvisoModal() {
-                    this.isModalOpen = false;
-                    this.currentAviso = { titulo: '', mensagem: '', autor: '', data: '' };
-                },
-                formatTimeAgo(dateString) {
-                    try {
-                        const postDate = new Date(dateString);
-                        const now = new Date();
-                        const diffInSeconds = Math.floor((now - postDate) / 1000);
-                        if (diffInSeconds < 60) return `${diffInSeconds} segundos atrás`;
-                        const diffInMinutes = Math.floor(diffInSeconds / 60);
-                        if (diffInMinutes < 60) return `${diffInMinutes} minutos atrás`;
-                        const diffInHours = Math.floor(diffInMinutes / 60);
-                        if (diffInHours < 24) return `${diffInHours} horas atrás`;
-                        const diffInDays = Math.floor(diffInHours / 24);
-                        if (diffInDays < 7) return `${diffInDays} dias atrás`;
-                        return postDate.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' });
-                    } catch {
-                        return 'Data inválida';
-                    }
-                },
-                async loadAvisos() {
-                    this.isLoading = true;
-                    try {
-                        const response = await fetch(API_ENDPOINT);
-                        if (!response.ok) throw new Error('Erro ao carregar avisos.');
-                        const data = await response.json();
-                        data.sort((a, b) => new Date(b.data) - new Date(a.data));
-                        this.avisos = data;
-                        this.currentPage = 1;
-                    } catch (error) {
-                        console.error('Falha ao buscar avisos:', error);
-                        this.avisos = [];
-                    } finally {
-                        this.isLoading = false;
-                    }
-                }
-            };
-        }
-    </script>    
-    
-    <script>
-    (function(){
-      const API_BASE = POST_API_BASE;
-
-      function readCsrf() {
-        const tokenMeta = document.querySelector('meta[name="_csrf"]');
-        const headerMeta = document.querySelector('meta[name="_csrf_header"]');
-        const token = tokenMeta ? tokenMeta.content : null;
-        const header = headerMeta ? headerMeta.content : 'X-CSRF-TOKEN';
-        return { token, header };
-      }
-
-      function timeAgo(dateString) {
-        try {
-          const d = new Date(dateString);
-          const now = new Date();
-          const s = Math.floor((now - d) / 1000);
-          if (s < 60) return `${s} segundos atrás`;
-          const m = Math.floor(s / 60);
-          if (m < 60) return `${m} minutos atrás`;
-          const h = Math.floor(m / 60);
-          if (h < 24) return `${h} horas atrás`;
-          const days = Math.floor(h / 24);
-          if (days < 7) return `${days} dias atrás`;
-          return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
-        } catch (e) { return 'data inválida'; }
-      }
-
-      window.muralData = function() {
-        return {
-          posts: [],
-          loading: false,
-          posting: false,
-          newMessage: '',
-          postAsAnon: false,
-          currentUser: null,
-          error: null,
-          defaultAvatar: DEFAULT_AVATAR_URL,
-          anonAvatar: ANON_AVATAR_URL,
-
-          async init() {
-            await this.loadCurrentUser();
-            await this.loadPosts();
-          },
-
-          async loadCurrentUser() {
-            try {
-              const res = await fetch(USER_ENDPOINT);
-              if (!res.ok) {
-                console.warn('Falha ao buscar /user, status:', res.status);
-                this.currentUser = null;
-                return;
-              }
-              const data = await res.json();
-              this.currentUser = data.nome || null;
-            } catch (err) {
-              console.error('Erro ao buscar usuário:', err);
-              this.currentUser = null;
-            }
-          },
-
-          async loadPosts() {
-            this.loading = true;
-            try {
-              const res = await fetch(API_BASE);
-              if (!res.ok) throw new Error('status ' + res.status);
-              const data = await res.json();
-              data.sort((a,b) => new Date(b.data) - new Date(a.data));
-
-              this.posts = data
-                .filter(p => p.status !== 'EXCLUIDO')
-                .map(post => {
-                  const status = (post.status || '').toUpperCase();
-                  const autor = post.autor || '';
-                  const encodedName = autor ? encodeURIComponent(autor) : '';
-                  const avatarUrl = status === 'ANONIMO'
-                    ? this.anonAvatar
-                    : (encodedName ? `${USER_AVATAR_ENDPOINT}?name=${encodedName}` : this.defaultAvatar);
-                  return { ...post, status, avatarUrl };
-                });
-            } catch (err) {
-              console.error('Erro ao carregar posts:', err);
-              this.posts = [];
-              this.error = 'Erro ao carregar posts';
-            } finally {
-              this.loading = false;
-            }
-          },
-
-          async createPost() {
-            if (!this.newMessage || !this.newMessage.trim()) {
-              alert('Digite uma mensagem para postar.');
-              return;
-            }
-            this.posting = true;
-            const body = {
-              autor: this.postAsAnon ? (this.currentUser || '') : (this.currentUser || 'Delegado'),
-              mensagem: this.newMessage.trim(),
-              status: this.postAsAnon ? 'ANONIMO' : 'PUBLICO'
-            };
-
-            const { token, header } = readCsrf();
-            const headers = { 'Content-Type': 'application/json' };
-            if (token) headers[header] = token;
-
-            try {
-              const res = await fetch(API_BASE, {
-                method: 'POST',
-                headers,
-                body: JSON.stringify(body)
-              });
-              if (res.status === 201) {
-                this.newMessage = '';
-                this.postAsAnon = false;
-                await this.loadPosts();
-              } else {
-                console.error('Erro ao postar, status:', res.status);
-                alert('Falha ao postar (status ' + res.status + ')');
-              }
-            } catch (err) {
-              console.error('Erro ao postar:', err);
-              alert('Erro ao postar: ' + err.message);
-            } finally {
-              this.posting = false;
-            }
-          },
-
-          
-          async deletePost(postId) {
-            if (!confirm('O post não será mais exibido a outros usuarios')) return;
-            const { token, header } = readCsrf();
-            const headers = {};
-            if (token) headers[header] = token;
-            try {
-              const res = await fetch(`${API_BASE}/${postId}/exclude`, { method: 'PATCH', headers });
-              if (res.ok || res.status === 204) {
-                await this.loadPosts();
-              } else if (res.status === 404) {
-                alert('Post não encontrado (já removido?).');
-              } else {
-                alert('Falha ao ocultar post (status ' + res.status + ')');
-              }
-            } catch (err) {
-              console.error('Erro ao ocultar post:', err);
-              alert('Erro ao ocultar post: ' + err.message);
-            }
-          },
-
-          async addReaction(postId, emoji) {
-            if (!emoji) return;
-            const usuario = this.currentUser || 'anônimo';
-            const body = { usuario, emoji };
-            const { token, header } = readCsrf();
-            const headers = { 'Content-Type': 'application/json' };
-            if (token) headers[header] = token;
-
-            try {
-              const res = await fetch(`${API_BASE}/${postId}/reaction`, {
-                method: 'POST',
-                headers,
-                body: JSON.stringify(body)
-              });
-              if (res.status === 201) {
-                await this.loadPosts();
-              } else if (res.status === 409) {
-                alert('Você já reagiu com este emoji neste post.');
-              } else {
-                throw new Error('status ' + res.status);
-              }
-            } catch (err) {
-              console.error('Erro ao adicionar reação:', err);
-              alert('Erro ao reagir: ' + err.message);
-            }
-          },
-
-          async removeReaction(postId, emoji) {
-            if (!emoji) return;
-            const usuario = this.currentUser || 'anônimo';
-            const body = { usuario, emoji };
-            const { token, header } = readCsrf();
-            const headers = { 'Content-Type': 'application/json' };
-            if (token) headers[header] = token;
-
-            try {
-              const res = await fetch(`${API_BASE}/${postId}/reaction`, {
-                method: 'DELETE',
-                headers,
-                body: JSON.stringify(body)
-              });
-              if (res.status === 204 || res.ok) {
-                await this.loadPosts();
-              } else if (res.status === 404) {
-                alert('Reação não encontrada.');
-              } else {
-                throw new Error('status ' + res.status);
-              }
-            } catch (err) {
-              console.error('Erro ao remover reação:', err);
-              alert('Erro ao remover reação: ' + err.message);
-            }
-          },
-
-          reactionCount(post, emoji) {
-            if (!post || !post.reactions) return 0;
-            return post.reactions[emoji] || 0;
-          },
-
-          timeAgo,
-        };
-      };
-    })();
-    </script>
-
+    <script th:src="@{/js/profile_data.js}"></script>
+    <script th:src="@{/js/header.js}"></script>
+    <script th:src="@{/js/dashboard_config.js}"></script>
+    <script th:src="@{/js/dashboard-gallery.js}"></script>
+    <script th:src="@{/js/announcements_data.js}"></script>
+    <script th:src="@{/js/mural_data.js}"></script>
     <script th:src="@{/js/agenda.js}"></script>
 </body>
 </html>

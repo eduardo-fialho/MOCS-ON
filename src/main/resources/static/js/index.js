@@ -1,7 +1,7 @@
-// Smooth scroll for in-page navigation links on the landing page
+
 document.addEventListener('DOMContentLoaded', () => {
     const links = document.querySelectorAll('a[href^="#"]');
-    const offset = 70; // header spacing
+    const offset = 70; 
 
     links.forEach((link) => {
         link.addEventListener('click', (event) => {

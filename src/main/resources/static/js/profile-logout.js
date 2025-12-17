@@ -1,5 +1,4 @@
-﻿// Modal de logout no perfil
-(function(){
+﻿(function () {
   const triggers = Array.from(document.querySelectorAll('#logoutButton, .logout-action, a[href="/auth/logout"]'));
   const modal = document.getElementById('logoutModal');
   const cancelBtn = document.getElementById('cancelLogout');
