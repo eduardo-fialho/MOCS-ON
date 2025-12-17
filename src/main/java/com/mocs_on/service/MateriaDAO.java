@@ -1,13 +1,17 @@
 package com.mocs_on.service;
 
-import com.mocs_on.domain.Materia;
-import com.mocs_on.domain.StatusMateria;
-
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
-
+import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.List;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+
+import com.mocs_on.domain.Materia;
+import com.mocs_on.domain.StatusMateria;
 
 @Repository
 public class MateriaDAO {
@@ -18,24 +22,34 @@ public class MateriaDAO {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public int salvar(Materia materia) {
+    public Long salvar(Materia materia) {
         String sql = """
             INSERT INTO materias
-            (titulo, lead, texto, autor, comite_id, status, ativo, imagem, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
+            (titulo, lead, texto, autor, comite_id, status, ativo, imagem)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
-        return jdbcTemplate.update(
-            sql,
-            materia.getTitulo(),
-            materia.getLead(),
-            materia.getTexto(),
-            materia.getAutor(),
-            materia.getComiteId(),
-            materia.getStatus().name(),
-            materia.isAtivo(),
-            materia.getImagem()
-        );
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                sql,
+                Statement.RETURN_GENERATED_KEYS
+            );
+            ps.setString(1, materia.getTitulo());
+            ps.setString(2, materia.getLead());
+            ps.setString(3, materia.getTexto());
+            ps.setString(4, materia.getAutor());
+            ps.setObject(5, materia.getComiteId());
+            ps.setString(6, materia.getStatus().name());
+            ps.setBoolean(7, materia.isAtivo());
+            ps.setBytes(8, materia.getImagem());
+            return ps;
+        }, keyHolder);
+
+        Long id = keyHolder.getKey().longValue();
+        materia.setId(id);
+        return id;
     }
 
     public Materia buscarPorId(Long id) {
@@ -54,20 +68,20 @@ public class MateriaDAO {
             m.setStatus(StatusMateria.valueOf(rs.getString("status")));
             m.setAtivo(rs.getBoolean("ativo"));
 
-            Timestamp created = rs.getTimestamp("created_at");
-            Timestamp updated = rs.getTimestamp("updated_at");
-            Timestamp reviewed = rs.getTimestamp("reviewed_at");
+            Timestamp criacao = rs.getTimestamp("data_criacao");
+            Timestamp edicao = rs.getTimestamp("data_edicao");
+            Timestamp aprovacao = rs.getTimestamp("data_aprovacao");
 
-            if (created != null) m.setCreatedAt(created.toLocalDateTime());
-            if (updated != null) m.setUpdatedAt(updated.toLocalDateTime());
-            if (reviewed != null) m.setReviewedAt(reviewed.toLocalDateTime());
+            if (criacao != null) m.setCreatedAt(criacao.toLocalDateTime());
+            if (edicao != null) m.setUpdatedAt(edicao.toLocalDateTime());
+            if (aprovacao != null) m.setReviewedAt(aprovacao.toLocalDateTime());
 
             return m;
         }, id);
     }
 
     public List<Materia> listar() {
-        String sql = "SELECT * FROM materias ORDER BY created_at DESC";
+        String sql = "SELECT * FROM materias ORDER BY data_criacao DESC";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             Materia m = new Materia();
@@ -78,8 +92,10 @@ public class MateriaDAO {
             m.setAutor(rs.getString("autor"));
             m.setAtivo(rs.getBoolean("ativo"));
 
-            Timestamp created = rs.getTimestamp("created_at");
-            if (created != null) m.setCreatedAt(created.toLocalDateTime());
+            Timestamp criacao = rs.getTimestamp("data_criacao");
+            if (criacao != null) {
+                m.setCreatedAt(criacao.toLocalDateTime());
+            }
 
             return m;
         });
@@ -102,7 +118,7 @@ public class MateriaDAO {
     public int atualizar(Materia materia) {
         String sql = """
             UPDATE materias
-            SET titulo = ?, lead = ?, texto = ?, imagem = ?, ativo = ?, updated_at = NOW()
+            SET titulo = ?, lead = ?, texto = ?, imagem = ?, ativo = ?, data_edicao = NOW()
             WHERE id = ?
         """;
 
@@ -120,10 +136,44 @@ public class MateriaDAO {
     public int atualizarStatus(Long id, StatusMateria status) {
         String sql = """
             UPDATE materias
-            SET status = ?, reviewed_at = NOW()
+            SET status = ?, data_aprovacao = NOW()
             WHERE id = ?
         """;
 
         return jdbcTemplate.update(sql, status.name(), id);
+    }
+
+    public List<Materia> listarAprovadas() {
+        String sql = """
+            SELECT *
+            FROM materias
+            WHERE status = 'APROVADA'
+            AND ativo = true
+            ORDER BY data_criacao DESC
+        """;
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Materia m = new Materia();
+            m.setId(rs.getLong("id"));
+            m.setTitulo(rs.getString("titulo"));
+            m.setLead(rs.getString("lead"));
+            m.setTexto(rs.getString("texto"));
+            m.setImagem(rs.getBytes("imagem"));
+            m.setAutor(rs.getString("autor"));
+            m.setRevisor(rs.getString("revisor"));
+            m.setComiteId(rs.getObject("comite_id", Long.class));
+            m.setStatus(StatusMateria.valueOf(rs.getString("status")));
+            m.setAtivo(rs.getBoolean("ativo"));
+
+            Timestamp criacao = rs.getTimestamp("data_criacao");
+            Timestamp edicao = rs.getTimestamp("data_edicao");
+            Timestamp aprovacao = rs.getTimestamp("data_aprovacao");
+
+            if (criacao != null) m.setCreatedAt(criacao.toLocalDateTime());
+            if (edicao != null) m.setUpdatedAt(edicao.toLocalDateTime());
+            if (aprovacao != null) m.setReviewedAt(aprovacao.toLocalDateTime());
+
+            return m;
+        });
     }
 }

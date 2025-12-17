@@ -5,6 +5,7 @@ import com.mocs_on.service.MateriaDAO;
 import com.mocs_on.service.MateriaLogDAO;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,10 +28,20 @@ public class MateriaService {
         return materiaDAO.buscarPorId(id);
     }
 
+    @Transactional
     public void criar(Materia materia, String usuario) {
-        materiaDAO.salvar(materia);
-        registrarLog(materia.getId(), AcaoMateriaLog.CRIACAO, usuario, "Matéria criada");
+
+        Long materiaId = materiaDAO.salvar(materia);
+
+        MateriaLog log = new MateriaLog();
+        log.setMateriaId(materiaId);
+        log.setAcao(AcaoMateriaLog.CRIACAO);
+        log.setUsuario(usuario);
+        log.setDescricao("Matéria criada");
+
+        materiaLogDAO.registrar(log);
     }
+
 
     public void atualizar(Materia materia, String usuario) {
         materiaDAO.atualizar(materia);

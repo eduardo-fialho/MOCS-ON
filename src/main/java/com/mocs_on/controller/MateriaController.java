@@ -1,6 +1,7 @@
 package com.mocs_on.controller;
 
 import com.mocs_on.domain.Materia;
+import com.mocs_on.domain.StatusMateria;
 import com.mocs_on.service.MateriaService;
 import com.mocs_on.security.SecaoUsuario;
 
@@ -9,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("/materias")
@@ -29,15 +31,39 @@ public class MateriaController {
     @GetMapping("/nova")
     public String nova(Model model) {
         model.addAttribute("materia", new Materia());
-        return "materias/form";
+        return "nova_materia";
     }
 
     @PostMapping
-    public String criar(@ModelAttribute Materia materia) {
+    public String criar(
+            @RequestParam String titulo,
+            @RequestParam String lead,
+            @RequestParam String texto,
+            @RequestParam(required = false) MultipartFile imagem
+    ) {
         String usuario = usuarioLogado();
+
+        Materia materia = new Materia();
+        materia.setTitulo(titulo);
+        materia.setLead(lead);
+        materia.setTexto(texto);
+        materia.setAutor(usuario);
+        materia.setStatus(StatusMateria.PENDENTE);
+        materia.setAtivo(true);
+
+        if (imagem != null && !imagem.isEmpty()) {
+            try {
+                materia.setImagem(imagem.getBytes());
+            } catch (Exception e) {
+                throw new RuntimeException("Erro ao processar imagem", e);
+            }
+        }
+
         materiaService.criar(materia, usuario);
-        return "redirect:/materias";
+
+        return "redirect:/imprensa";
     }
+
 
     @GetMapping("/{id}/editar")
     public String editar(@PathVariable Long id, Model model) {

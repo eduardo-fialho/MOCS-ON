@@ -17,8 +17,8 @@ public class MateriaLogDAO {
 
         String sql = """
             INSERT INTO materia_logs
-            (materia_id, acao, usuario, descricao, data)
-            VALUES (?, ?, ?, ?, NOW())
+            (materia_id, acao, usuario, descricao)
+            VALUES (?, ?, ?, ?)
         """;
 
         jdbcTemplate.update(
