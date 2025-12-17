@@ -597,9 +597,7 @@
                     grid.innerHTML = '<p class="col-span-full text-sm text-gray-400 text-center">Voc? ainda n?o publicou nada na galeria.</p>';
                     return;
                 }
-                    return;
-                }
-                }
+                   
                 mine.forEach(post => {
                     const parts = (post.mensagem || '').split('|');
                     const filename = parts[1];
@@ -634,7 +632,6 @@
     });
 </script>
 <script>
-    // Controles de camera (galeria - captura)
     function setupCameraControls(options) {
         const startBtn = document.getElementById(options.startBtnId);
         const captureBtn = document.getElementById(options.captureBtnId);
@@ -685,11 +682,11 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         setupCameraControls({
-            startBtnId: 'galleryStartcameraBtn',
+            startBtnId: 'galleryStartcameraBtn',
             captureBtnId: 'galleryCaptureBtn',
-            closeBtnId: 'galleryClosecameraBtn',
-            videoId: 'gallerycameraPreview',
-            canvasId: 'gallerycameraCanvas',
+            closeBtnId: 'galleryClosecameraBtn',
+            videoId: 'gallerycameraPreview',
+            canvasId: 'gallerycameraCanvas',
             hiddenInputId: 'galleryCapturedImageInput',
             formId: 'galleryCaptureForm',
             beforeSubmit: () => {
@@ -828,7 +825,6 @@
             });
         }
 
-        // Bind dos cards da galeria
         if (grid) {
             grid.querySelectorAll('[data-post-id]').forEach(card => {
                 card.addEventListener('click', () => {
@@ -847,7 +843,7 @@
     });
 </script>
 <script>
-    // Confirma��o de logout (modal glass no perfil)
+    
     document.addEventListener('DOMContentLoaded', () => {
         const trigger = document.getElementById('logoutButton');
         const modal = document.getElementById('logoutModal');
@@ -880,7 +876,7 @@
     });
 </script>
 <style>
-/* Overrides for logout glass modal */
+
 .glass-confirm-backdrop {
     background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08), transparent 35%),
                 radial-gradient(circle at 80% 10%, rgba(255,255,255,0.12), transparent 38%),
@@ -909,7 +905,8 @@
     border-radius: 28px;
     box-shadow: 0 22px 55px rgba(8,15,35,0.28), inset 0 1px 0 rgba(255,255,255,0.5);
     backdrop-filter: blur(22px);
-    color: #fff;\n    transform: translateY(20px) scale(0.97);
+    color: #fff; 
+    transform: translateY(20px) scale(0.97);
     opacity: 0;
     transition: transform 0.35s ease, opacity 0.35s ease;
 }
@@ -948,18 +945,3 @@
 }</style>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
