@@ -183,10 +183,11 @@ CREATE TABLE IF NOT EXISTS `ouvidoria_relatos` (
 
 CREATE TABLE IF NOT EXISTS `agenda_diaria` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
-    `titulo` VARCHAR(255),
-    `descricao` VARCHAR(255),
-    `data_evento` DATE,
-    `hora_evento` TIME,
+    `titulo` VARCHAR(255) NOT NULL,
+    `descricao` VARCHAR(255) NOT NULL,
+    `data_evento` DATE NOT NULL,
+    `hora_evento` TIME NOT NULL,
+    `tipo` VARCHAR(255) DEFAULT 'GERAL',
     `visivel` BOOLEAN DEFAULT TRUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

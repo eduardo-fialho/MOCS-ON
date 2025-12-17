@@ -1,10 +1,9 @@
 package com.mocs_on.service;
 
 import com.mocs_on.domain.AgendaDiaria;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import org.springframework.stereotype.Service;
 
 @Service
 public class AgendaService {
@@ -19,12 +18,12 @@ public class AgendaService {
         dao.salvar(agenda);
     }
 
-    public List<AgendaDiaria> listarPorMes(int ano, int mes) {
-        return dao.listarPorMes(ano, mes);
+    public List<AgendaDiaria> listarPorMes(int ano, int mes, String tipo) {
+        return dao.listarPorMes(ano, mes, tipo);
     }
 
-    public List<AgendaDiaria> listarTodos() {
-        return dao.listarTodos();
+    public List<AgendaDiaria> listarTodos(String tipo) {
+        return dao.listarTodos(tipo);
     }
 
     public void editar(Long id, AgendaDiaria dados) {
@@ -35,4 +34,3 @@ public class AgendaService {
         dao.atualizarVisibilidade(id, visivel);
     }
 }
-
