@@ -90,6 +90,33 @@ public class PresencaDao {
         return id == null ? 0L : id;
     }
 
+    public int atualizarLista(ListaPresenca lista) {
+        String sql = """
+                UPDATE presenca_listas
+                SET comite_id = ?,
+                    titulo = ?,
+                    data_sessao = ?,
+                    hora_inicio = ?,
+                    hora_fim = ?,
+                    observacao = ?
+                WHERE id = ?
+                """;
+        return jdbc.update(sql,
+                lista.getComiteId(),
+                lista.getTitulo(),
+                lista.getDataSessao(),
+                lista.getHoraInicio(),
+                lista.getHoraFim(),
+                lista.getObservacao(),
+                lista.getId()
+        );
+    }
+
+    public int removerLista(long id) {
+        String sql = "DELETE FROM presenca_listas WHERE id = ?";
+        return jdbc.update(sql, id);
+    }
+
     public List<RegistroPresenca> listarRegistros(long listaId) {
         String sql = """
                 SELECT id, lista_id, usuario_id, usuario_nome, usuario_email, status, observacao

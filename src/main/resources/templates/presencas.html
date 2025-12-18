@@ -56,7 +56,7 @@
         <main class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <section class="lg:col-span-4 space-y-6">
                 <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    <h2 class="text-lg font-bold text-slate-900 mb-4">Nova lista</h2>
+                    <h2 id="presenca-form-title" class="text-lg font-bold text-slate-900 mb-4">Nova lista</h2>
                     <form id="form-presenca" class="space-y-4">
                         <div>
                             <label class="block text-sm font-semibold text-slate-600 mb-1" for="presenca-titulo">Titulo</label>
@@ -86,9 +86,14 @@
                             <label class="block text-sm font-semibold text-slate-600 mb-1" for="presenca-observacao">Observacao</label>
                             <textarea id="presenca-observacao" rows="3" class="w-full px-3 py-2 border border-slate-200 rounded-xl" placeholder="Observacoes da sessao"></textarea>
                         </div>
-                        <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 rounded-xl hover:bg-blue-700 transition">
-                            Criar lista
-                        </button>
+                        <div class="flex flex-col gap-2">
+                            <button id="presenca-submit" type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 rounded-xl hover:bg-blue-700 transition">
+                                Criar lista
+                            </button>
+                            <button id="presenca-cancelar" type="button" class="hidden w-full border border-slate-200 text-slate-700 font-semibold py-2 rounded-xl hover:bg-slate-50 transition">
+                                Cancelar edicao
+                            </button>
+                        </div>
                     </form>
                 </div>
 
@@ -114,9 +119,17 @@
                             <h2 id="presenca-detalhe-titulo" class="text-xl font-bold text-slate-900">Selecione uma lista</h2>
                             <p id="presenca-detalhe-info" class="text-sm text-slate-500">Escolha uma lista para registrar presenca.</p>
                         </div>
-                        <button id="salvar-presenca" class="px-4 py-2 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition disabled:opacity-60 disabled:cursor-not-allowed" disabled>
-                            Salvar lista
-                        </button>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button id="editar-lista" class="px-3 py-2 rounded-xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-50 transition disabled:opacity-60 disabled:cursor-not-allowed" disabled>
+                                Editar lista
+                            </button>
+                            <button id="apagar-lista" class="px-3 py-2 rounded-xl bg-rose-500 text-white font-semibold hover:bg-rose-600 transition disabled:opacity-60 disabled:cursor-not-allowed" disabled>
+                                Apagar lista
+                            </button>
+                            <button id="salvar-presenca" class="px-4 py-2 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition disabled:opacity-60 disabled:cursor-not-allowed" disabled>
+                                Salvar lista
+                            </button>
+                        </div>
                     </div>
                     <div id="presenca-resumo" class="mt-4 flex flex-wrap gap-2 text-sm"></div>
                 </div>

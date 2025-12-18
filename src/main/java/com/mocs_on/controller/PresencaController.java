@@ -1,5 +1,7 @@
 package com.mocs_on.controller;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -7,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -72,18 +75,77 @@ public class PresencaController {
         if (!StringUtils.hasText(titulo) || !StringUtils.hasText(dataSessao)) {
             return ResponseEntity.badRequest().body("Titulo e data da sessao sao obrigatorios.");
         }
+        String horaInicio = trimToNull(request.getHoraInicio());
+        String horaFim = trimToNull(request.getHoraFim());
+        String horarioErro = validarHorario(horaInicio, horaFim);
+        if (horarioErro != null) {
+            return ResponseEntity.badRequest().body(horarioErro);
+        }
 
         ListaPresenca lista = new ListaPresenca();
         lista.setTitulo(titulo);
         lista.setDataSessao(dataSessao);
-        lista.setHoraInicio(trimToNull(request.getHoraInicio()));
-        lista.setHoraFim(trimToNull(request.getHoraFim()));
+        lista.setHoraInicio(horaInicio);
+        lista.setHoraFim(horaFim);
         lista.setObservacao(trimToNull(request.getObservacao()));
         lista.setComiteId(request.getComiteId());
         lista.setCriadoPor(resolveUserName(session));
 
         ListaPresenca criada = presencaService.criarLista(lista);
         return ResponseEntity.status(HttpStatus.CREATED).body(criada);
+    }
+
+    @PutMapping("/listas/{id}")
+    public ResponseEntity<?> atualizarLista(@PathVariable("id") Long id,
+                                            @RequestBody ListaPresenca request,
+                                            HttpSession session) {
+        if (!canManage(session)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Acesso negado");
+        }
+        if (id == null) {
+            return ResponseEntity.badRequest().body("Lista invalida.");
+        }
+        String titulo = trimToNull(request.getTitulo());
+        String dataSessao = trimToNull(request.getDataSessao());
+        if (!StringUtils.hasText(titulo) || !StringUtils.hasText(dataSessao)) {
+            return ResponseEntity.badRequest().body("Titulo e data da sessao sao obrigatorios.");
+        }
+        String horaInicio = trimToNull(request.getHoraInicio());
+        String horaFim = trimToNull(request.getHoraFim());
+        String horarioErro = validarHorario(horaInicio, horaFim);
+        if (horarioErro != null) {
+            return ResponseEntity.badRequest().body(horarioErro);
+        }
+
+        ListaPresenca lista = new ListaPresenca();
+        lista.setId(id);
+        lista.setTitulo(titulo);
+        lista.setDataSessao(dataSessao);
+        lista.setHoraInicio(horaInicio);
+        lista.setHoraFim(horaFim);
+        lista.setObservacao(trimToNull(request.getObservacao()));
+        lista.setComiteId(request.getComiteId());
+
+        ListaPresenca atualizada = presencaService.atualizarLista(lista);
+        if (atualizada == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(atualizada);
+    }
+
+    @DeleteMapping("/listas/{id}")
+    public ResponseEntity<?> removerLista(@PathVariable("id") Long id, HttpSession session) {
+        if (!canManage(session)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Acesso negado");
+        }
+        if (id == null) {
+            return ResponseEntity.badRequest().body("Lista invalida.");
+        }
+        boolean removida = presencaService.removerLista(id);
+        if (!removida) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/listas/{id}/registros")
@@ -160,6 +222,22 @@ public class PresencaController {
         }
         String trimmed = value.trim();
         return trimmed.isEmpty() ? null : trimmed;
+    }
+
+    private String validarHorario(String horaInicio, String horaFim) {
+        if (!StringUtils.hasText(horaInicio) || !StringUtils.hasText(horaFim)) {
+            return null;
+        }
+        try {
+            LocalTime inicio = LocalTime.parse(horaInicio);
+            LocalTime fim = LocalTime.parse(horaFim);
+            if (inicio.isAfter(fim)) {
+                return "Hora inicio nao pode ser depois da hora fim.";
+            }
+        } catch (DateTimeParseException ex) {
+            return "Horario invalido.";
+        }
+        return null;
     }
 
     public static class RegistrosRequest {

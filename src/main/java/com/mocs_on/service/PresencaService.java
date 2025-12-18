@@ -46,6 +46,22 @@ public class PresencaService {
         return criada != null ? criada : lista;
     }
 
+    public ListaPresenca atualizarLista(ListaPresenca lista) {
+        if (lista == null || lista.getId() == null) {
+            return null;
+        }
+        int updated = dao.atualizarLista(lista);
+        if (updated == 0) {
+            return null;
+        }
+        ListaPresenca atualizada = dao.buscarLista(lista.getId());
+        return atualizada != null ? atualizada : lista;
+    }
+
+    public boolean removerLista(long id) {
+        return dao.removerLista(id) > 0;
+    }
+
     public void atualizarRegistros(long listaId, List<RegistroPresenca> registros) {
         if (registros == null || registros.isEmpty()) {
             return;

@@ -16,6 +16,9 @@ const STATUS_STYLES = {
 
 const els = {
     form: document.getElementById('form-presenca'),
+    formTitle: document.getElementById('presenca-form-title'),
+    submit: document.getElementById('presenca-submit'),
+    cancelEdit: document.getElementById('presenca-cancelar'),
     titulo: document.getElementById('presenca-titulo'),
     comite: document.getElementById('presenca-comite'),
     data: document.getElementById('presenca-data'),
@@ -28,6 +31,8 @@ const els = {
     detalheInfo: document.getElementById('presenca-detalhe-info'),
     resumo: document.getElementById('presenca-resumo'),
     salvar: document.getElementById('salvar-presenca'),
+    editar: document.getElementById('editar-lista'),
+    apagar: document.getElementById('apagar-lista'),
     registros: document.getElementById('presenca-registros'),
     busca: document.getElementById('presenca-busca'),
     filtroStatus: document.getElementById('presenca-filtro-status'),
@@ -36,6 +41,7 @@ const els = {
 
 let listas = [];
 let listaAtual = null;
+let editandoListaId = null;
 let registros = [];
 let registrosByUserId = new Map();
 
@@ -43,11 +49,30 @@ document.addEventListener('DOMContentLoaded', () => {
     if (els.form) {
         els.form.addEventListener('submit', handleCriarLista);
     }
+    if (els.cancelEdit) {
+        els.cancelEdit.addEventListener('click', cancelarEdicao);
+    }
+    if (els.horaInicio) {
+        els.horaInicio.addEventListener('change', () => {
+            syncHoraFimMin();
+        });
+    }
+    if (els.horaFim) {
+        els.horaFim.addEventListener('change', () => {
+            validateHorario(false);
+        });
+    }
     if (els.reloadListas) {
         els.reloadListas.addEventListener('click', () => carregarListas(true));
     }
     if (els.salvar) {
         els.salvar.addEventListener('click', salvarRegistros);
+    }
+    if (els.editar) {
+        els.editar.addEventListener('click', iniciarEdicao);
+    }
+    if (els.apagar) {
+        els.apagar.addEventListener('click', removerListaAtual);
     }
     if (els.busca) {
         els.busca.addEventListener('input', renderRegistros);
@@ -134,6 +159,7 @@ async function selecionarLista(id) {
     if (!id) {
         return;
     }
+    cancelarEdicaoSilenciosa();
     try {
         const response = await fetch(`${PRESENCA_BASE}/listas/${id}`);
         if (!response.ok) {
@@ -168,9 +194,7 @@ function renderDetalhe() {
     if (els.detalheInfo) {
         els.detalheInfo.textContent = formatListaInfo(listaAtual);
     }
-    if (els.salvar) {
-        els.salvar.disabled = false;
-    }
+    setListActionsEnabled(true);
     atualizarResumo();
 }
 
@@ -187,9 +211,7 @@ function limparDetalhe() {
     if (els.resumo) {
         els.resumo.innerHTML = '';
     }
-    if (els.salvar) {
-        els.salvar.disabled = true;
-    }
+    setListActionsEnabled(false);
     if (els.registros) {
         els.registros.textContent = 'Nenhuma lista selecionada.';
     }
@@ -368,17 +390,24 @@ async function handleCriarLista(event) {
         showAlert('Informe titulo e data da sessao.', 'error');
         return;
     }
+    if (!validateHorario(true)) {
+        return;
+    }
+    const horaInicio = (els.horaInicio?.value || '').trim();
+    const horaFim = (els.horaFim?.value || '').trim();
     const payload = {
         titulo,
         dataSessao,
-        horaInicio: (els.horaInicio?.value || '').trim() || null,
-        horaFim: (els.horaFim?.value || '').trim() || null,
+        horaInicio: horaInicio || null,
+        horaFim: horaFim || null,
         observacao: (els.observacao?.value || '').trim() || null,
         comiteId: els.comite?.value ? Number(els.comite.value) : null
     };
     try {
-        const response = await fetch(`${PRESENCA_BASE}/listas`, {
-            method: 'POST',
+        const editing = editandoListaId != null;
+        const url = editing ? `${PRESENCA_BASE}/listas/${editandoListaId}` : `${PRESENCA_BASE}/listas`;
+        const response = await fetch(url, {
+            method: editing ? 'PUT' : 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
@@ -386,22 +415,202 @@ async function handleCriarLista(event) {
             const text = await response.text();
             throw new Error(text || 'Erro ao criar');
         }
-        const nova = await response.json();
-        showAlert('Lista criada com sucesso.', 'success');
-        limparFormulario();
+        const listaAtualizada = await response.json();
+        showAlert(editing ? 'Lista atualizada com sucesso.' : 'Lista criada com sucesso.', 'success');
+        cancelarEdicaoSilenciosa();
+        if (!editing) {
+            limparFormulario();
+        }
         await carregarListas(true);
-        if (nova && nova.id) {
-            selecionarLista(nova.id);
+        if (listaAtualizada && listaAtualizada.id) {
+            selecionarLista(listaAtualizada.id);
         }
     } catch (err) {
         console.warn(err);
-        showAlert('Nao foi possivel criar a lista.', 'error');
+        showAlert(editandoListaId != null ? 'Nao foi possivel atualizar a lista.' : 'Nao foi possivel criar a lista.', 'error');
     }
+}
+
+function setFormMode(editing) {
+    if (els.formTitle) {
+        els.formTitle.textContent = editing ? 'Editar lista' : 'Nova lista';
+    }
+    if (els.submit) {
+        els.submit.textContent = editing ? 'Atualizar lista' : 'Criar lista';
+    }
+    if (els.cancelEdit) {
+        if (editing) {
+            els.cancelEdit.classList.remove('hidden');
+        } else {
+            els.cancelEdit.classList.add('hidden');
+        }
+    }
+}
+
+function preencherFormulario(lista) {
+    if (!lista) {
+        return;
+    }
+    if (els.titulo) {
+        els.titulo.value = lista.titulo || '';
+    }
+    if (els.data) {
+        els.data.value = lista.dataSessao || '';
+    }
+    if (els.horaInicio) {
+        els.horaInicio.value = normalizeTimeValue(lista.horaInicio);
+    }
+    if (els.horaFim) {
+        els.horaFim.value = normalizeTimeValue(lista.horaFim);
+    }
+    if (els.observacao) {
+        els.observacao.value = lista.observacao || '';
+    }
+    if (els.comite) {
+        els.comite.value = lista.comiteId != null ? String(lista.comiteId) : '';
+    }
+    syncHoraFimMin();
+}
+
+function iniciarEdicao() {
+    if (!listaAtual || !listaAtual.id) {
+        showAlert('Selecione uma lista para editar.', 'error');
+        return;
+    }
+    editandoListaId = listaAtual.id;
+    preencherFormulario(listaAtual);
+    setFormMode(true);
+}
+
+function cancelarEdicao() {
+    cancelarEdicaoSilenciosa();
+    limparFormulario();
+}
+
+function cancelarEdicaoSilenciosa() {
+    if (editandoListaId == null) {
+        setFormMode(false);
+        return;
+    }
+    editandoListaId = null;
+    setFormMode(false);
+    limparFormulario();
+}
+
+async function removerListaAtual() {
+    if (!listaAtual || !listaAtual.id) {
+        return;
+    }
+    const titulo = listaAtual.titulo ? ` "${listaAtual.titulo}"` : '';
+    const confirmar = window.confirm(`Tem certeza que deseja apagar a lista${titulo}? Essa acao nao pode ser desfeita.`);
+    if (!confirmar) {
+        return;
+    }
+    if (els.apagar) {
+        els.apagar.disabled = true;
+        els.apagar.textContent = 'Apagando...';
+    }
+    try {
+        const response = await fetch(`${PRESENCA_BASE}/listas/${listaAtual.id}`, { method: 'DELETE' });
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error(text || 'Erro ao apagar');
+        }
+        showAlert('Lista apagada com sucesso.', 'success');
+        cancelarEdicaoSilenciosa();
+        await carregarListas(true);
+    } catch (err) {
+        console.warn(err);
+        showAlert('Nao foi possivel apagar a lista.', 'error');
+    } finally {
+        if (els.apagar) {
+            els.apagar.disabled = !listaAtual;
+            els.apagar.textContent = 'Apagar lista';
+        }
+    }
+}
+
+function setListActionsEnabled(enabled) {
+    if (els.salvar) {
+        els.salvar.disabled = !enabled;
+    }
+    if (els.editar) {
+        els.editar.disabled = !enabled;
+    }
+    if (els.apagar) {
+        els.apagar.disabled = !enabled;
+    }
+}
+
+function normalizeTimeValue(value) {
+    if (!value) {
+        return '';
+    }
+    const trimmed = String(value).trim();
+    if (!trimmed) {
+        return '';
+    }
+    const parts = trimmed.split(':');
+    if (parts.length < 2) {
+        return trimmed;
+    }
+    const hours = parts[0].padStart(2, '0');
+    const minutes = parts[1].padStart(2, '0');
+    return `${hours}:${minutes}`;
 }
 
 function limparFormulario() {
     if (els.form) {
         els.form.reset();
+    }
+    syncHoraFimMin();
+}
+
+function parseHoraToMinutes(value) {
+    if (!value) {
+        return null;
+    }
+    const parts = value.split(':');
+    if (parts.length < 2) {
+        return null;
+    }
+    const hours = Number(parts[0]);
+    const minutes = Number(parts[1]);
+    if (!Number.isFinite(hours) || !Number.isFinite(minutes)) {
+        return null;
+    }
+    return hours * 60 + minutes;
+}
+
+function validateHorario(showMessage) {
+    const horaInicio = (els.horaInicio?.value || '').trim();
+    const horaFim = (els.horaFim?.value || '').trim();
+    if (!horaInicio || !horaFim) {
+        return true;
+    }
+    const start = parseHoraToMinutes(horaInicio);
+    const end = parseHoraToMinutes(horaFim);
+    if (start == null || end == null) {
+        return true;
+    }
+    if (start > end) {
+        if (showMessage) {
+            showAlert('Hora inicio nao pode ser depois da hora fim.', 'error');
+        }
+        return false;
+    }
+    return true;
+}
+
+function syncHoraFimMin() {
+    if (!els.horaFim || !els.horaInicio) {
+        return;
+    }
+    const horaInicio = (els.horaInicio.value || '').trim();
+    if (horaInicio) {
+        els.horaFim.min = horaInicio;
+    } else {
+        els.horaFim.removeAttribute('min');
     }
 }
 
