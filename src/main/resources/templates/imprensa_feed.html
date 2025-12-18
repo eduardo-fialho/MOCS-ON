@@ -1,30 +1,35 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOCS ON - Documentos</title>
+    <title>MOCS ON - Imprensa</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet" th:href="@{/css/imprensa_feed.css}">
 </head>
-<body class="min-h-screen bg-slate-50 text-slate-900">
+
+<body class="feed-bg min-h-screen bg-slate-50 text-slate-900 font-[Inter]">
     <div class="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-6">
 
         <header class="bg-white border border-slate-200 rounded-2xl px-6 py-4 shadow-md flex flex-col md:flex-row md:items-center md:justify-between gap-4"
                 x-data="() => profileData()" x-init="loadUserInfo()">
             <div class="flex items-center gap-3">
-                <a th:href="@{/secretariado.html}" class="inline-flex items-center text-blue-700 hover:underline">
+                <a th:href="@{/dashboard}" class="inline-flex items-center text-blue-700 hover:underline">
                     <i class="fas fa-arrow-left mr-2"></i> Voltar
                 </a>
                 <span class="hidden md:inline-flex text-slate-300">|</span>
-                <span class="text-lg font-bold tracking-tight text-blue-700">MOCS ON</span>
             </div>
             <div class="text-center md:text-left">
-                <h1 class="text-2xl font-extrabold text-slate-900">Documentos do Secretariado</h1>
-                <p class="text-sm text-slate-500">Envio, download e avaliação em um só painel.</p>
+                <h1 class="text-2xl font-extrabold text-slate-900">Bem Vindo a Imprensa</h1>
             </div>
             <div class="flex items-center gap-3">
                 <span class="hidden sm:block text-slate-600 font-semibold" x-text="userCargo">VISITANTE</span>
@@ -49,36 +54,54 @@
             </div>
         </header>
 
-        <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <section class="lg:col-span-2 space-y-4">
-                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                    <input id="search-input" type="text" placeholder="Buscar por título, autor ou tipo..."
-                           class="w-full sm:flex-1 px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                    <a th:href="@{/submissao_documentos.html}"
-                       class="inline-flex items-center bg-amber-500 text-white font-semibold px-5 py-3 rounded-xl shadow hover:bg-amber-600 transition">
-                        <i class="fas fa-plus mr-2"></i> Novo Documento
-                    </a>
-                </div>
-
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    <h2 class="text-xl font-bold text-slate-900 mb-4">Documentos enviados</h2>
-                    <div id="document-list-container" class="space-y-3 max-h-[70vh] overflow-y-auto pr-1 custom-scrollbar"></div>
+        <main class="gap-6">
+             
+            <section class="gap-6">
+                <div class="md:col-span-2 bg-white p-6 rounded-xl shadow-sm border mb-4"
+                    id="detalhes-materia">
+                    <p class="text-slate-500 text-center">
+                        Selecione uma matéria para visualizar
+                    </p>
                 </div>
             </section>
 
-            <aside class="lg:col-span-1">
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm sticky top-8">
-                    <h2 class="text-lg font-bold text-amber-600 mb-4">Detalhes</h2>
-                    <div id="details-view-container" class="text-slate-800"></div>
+            <section class="liquid-glass w-full p-4 rounded-lg focus:ring-2 focus:ring-mocs-blue focus:border-mocs-blue text-gray-700 mb-4">
+                            
+                <p class="text-xs font-semibold text-gray-600 tracking-widest uppercase mb-4">Explorar Matérias MOCS ON</p>
+                <input
+                    id="filtro-titulo"
+                    type="text"
+                    placeholder="Buscar por título..."
+                    class="liquid-glass-input pl-10 pr-4 py-2.5 rounded-lg focus:ring-2 focus:ring-mocs-blue focus:border-mocs-blue text-gray-700"
+                >
+
+                <input
+                    id="filtro-data"
+                    type="date"
+                    class="liquid-glass-input pl-10 pr-4 py-2.5 rounded-lg focus:ring-2 focus:ring-mocs-blue focus:border-mocs-blue text-gray-700"
+                >
+
+                <button
+                    onclick="aplicarFiltros()"
+                    class="bg-mocs-blue text-white px-6 py-3 rounded-lg font-semibold"
+                >
+                    Buscar
+                </button>
+            </section>
+
+            <section class="bg-white p-4 rounded-xl shadow-sm border mb-6 gap-2">
+                <h2 class="text-2xl font-bold text-mocs-blue mb-4">Matérias:</h2>
+                <div class="md:col-span-1 space-y-4"
+                    id="lista-materias">
                 </div>
-            </aside>
+            </section>
         </main>
     </div>
 
-    
-    <script th:src="@{/js/documentos.js}"></script>
+    <script th:src="@{/js/usuario_logado_helper.js}"></script>
     <script th:src="@{/js/dashboard_config.js}"></script>
-    <script th:src="@{/js/profile_data.js}"></script>
+    <script th:src="@{/js/imprensa_feed.js}"></script>
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </body>
+
 </html>

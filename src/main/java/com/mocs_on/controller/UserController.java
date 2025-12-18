@@ -43,10 +43,11 @@ public class UserController {
     public InformacoesUsuarioDTO getUserInfo(HttpSession session) {
         if (session != null) {
             Object nameAttr = session.getAttribute(AuthController.SESSION_USER_NAME);
+            Object emailAttr = session.getAttribute(AuthController.SESSION_USER_ATTRIBUTE);
             Object roleAttr = session.getAttribute(AuthController.SESSION_USER_ROLE);
             if (nameAttr != null) {
                 boolean isSecretariado = roleAttr != null && "SECRETARIADO".equalsIgnoreCase(roleAttr.toString());
-                return new InformacoesUsuarioDTO(nameAttr.toString(), isSecretariado);
+                return new InformacoesUsuarioDTO(nameAttr.toString(), isSecretariado, emailAttr.toString());
             }
         }
 
@@ -55,10 +56,11 @@ public class UserController {
         if (authentication != null && authentication.getPrincipal() instanceof SecaoUsuario) {
             SecaoUsuario user = (SecaoUsuario) authentication.getPrincipal();
             boolean isSecretario = user.getCargo().name().equals("SECRETARIO");
-            return new InformacoesUsuarioDTO(user.getNome(), isSecretario);
+            String email = user.getUsername();
+            return new InformacoesUsuarioDTO(user.getNome(), isSecretario, email);
         }
 
-        return new InformacoesUsuarioDTO("Usuário Desconhecido", false);
+        return new InformacoesUsuarioDTO("Usuário Desconhecido", false, "Usuário Desconhecido");
     }
 
     @GetMapping("/user/search")

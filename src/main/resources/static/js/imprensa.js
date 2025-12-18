@@ -29,7 +29,6 @@ async function fetchMaterias() {
         }
 
         const data = await res.json();
-        console.log('Resposta do backend:', data);
 
         if (!Array.isArray(data)) {
             throw new Error('Resposta inválida do servidor');
@@ -100,17 +99,24 @@ function renderLista(containerId, materias) {
     `).join('');
 }
 
-function renderMateriaDetails(m) {
+async function renderMateriaDetails(m) {
     const c = document.getElementById('details-view-container');
     if (!c || !m) return;
 
-    const usuarioLogado = window.usuarioLogadoEmail;
+    const usuario = await getUsuarioLogado();
+    console.log(usuario);
+    
     const podeAprovar =
         m.status === 'PENDENTE' &&
-        m.autor !== usuarioLogado;
+        usuario.isSecretario 
+        /* &&  m.autor !== usuario.email */
+        ;
 
     c.innerHTML = `
         <h3 class="text-xl font-bold">${m.titulo}</h3>
+        <div class="mt-4">
+            <p>${m.lead}</p>
+        </div>
 
         <p class="text-sm text-slate-500">
             Autor: <strong>${m.autor}</strong>
@@ -127,20 +133,16 @@ function renderMateriaDetails(m) {
             </p>
         ` : ''}
 
-        <div class="mt-4">
-            <p class="font-semibold">Lead</p>
-            <p>${m.lead}</p>
-        </div>
+        ${m.imagem ? `
+            <img src="/imprensa/materias/${m.id}/imagem"
+                 class="rounded-xl mt-4 border">
+        ` : ''
+        }
 
         <div class="mt-4">
             <p class="font-semibold">Conteúdo</p>
             <div class="prose max-w-none">${m.texto}</div>
         </div>
-
-        ${m.imagem ? `
-            <img src="/imprensa/materias/${m.id}/imagem"
-                 class="rounded-xl mt-4 border">
-        ` : ''}
 
         ${podeAprovar ? `
             <div class="flex gap-3 mt-6">
@@ -157,7 +159,6 @@ function renderMateriaDetails(m) {
         ` : ''}
     `;
 }
-
 
 function selectMateria(id) {
     selectedMateriaId = id;

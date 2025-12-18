@@ -380,6 +380,19 @@
                             </div>
                         </div>
                     </div>
+
+                    <!--Parte da Imprensa-->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                        <div class="mb-6">
+                            <h2 class="text-xl font-bold text-mocs-blue">Imprensa</h2>
+                            <p class="text-gray-500 text-sm">Venha ficar por dentro das ultimas notícias do MOCS ON</p>
+                        </div>
+                        
+                        <a th:href="@{/imprensa/feed}" class="mt-4 p-2 text-white bg-blue-700 mt-4 border-radius">
+                            <i class="fas fa-newspaper"></i>
+                            <span>Imprensa</span>
+                        </a>
+                    </div>
                 </section>
                                 <!-- Um terço direito: mural, agenda e avisos -->
                 <section class="lg:col-span-4 flex flex-col gap-6">
@@ -413,7 +426,7 @@
                         <div class="text-sm text-gray-500 mb-3" x-show="loading" style="display:none"><i class="fas fa-spinner fa-spin mr-2"></i> Carregando feed...</div>
 
                         <!-- Feed de Posts -->
-                        <div class="space-y-5">
+                        <div class="flex flex-col gap-5 max-h-[40vh] overflow-y-auto">
                             <template x-for="post in posts" :key="post.id">
                                 <div class="border-t pt-4">
                                     <div class="flex items-start space-x-4">

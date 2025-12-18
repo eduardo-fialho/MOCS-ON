@@ -26,7 +26,6 @@ function profileData() {
                 }
 
                 const user = await response.json();
-                console.log(user)
 
                 this.userName = user.nome ?? user.username ?? 'Usuário';
                 this.userAvatar = user.avatar

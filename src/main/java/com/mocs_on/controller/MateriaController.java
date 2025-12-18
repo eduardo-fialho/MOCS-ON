@@ -25,7 +25,7 @@ public class MateriaController {
     @GetMapping
     public String listar(Model model) {
         model.addAttribute("materias", materiaService.listarTodas());
-        return "materias/lista";
+        return "imprensa/feed";
     }
 
     @GetMapping("/nova")

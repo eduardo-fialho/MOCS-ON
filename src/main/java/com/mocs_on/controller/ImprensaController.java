@@ -21,4 +21,10 @@ public class ImprensaController {
     public String paginaImprensa() {
         return "imprensa"; 
     }
+
+    @GetMapping("/feed")
+    public String feedImprensa() {
+        return "imprensa_feed.html"; 
+    }
+    
 }

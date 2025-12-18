@@ -1,3 +1,13 @@
+function validarImagem(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    if (file.type !== 'image/png') {
+        alert('Apenas imagens PNG são permitidas.');
+        input.value = '';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('form-materia');
     const messageArea = document.getElementById('message-area');
@@ -21,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
+                
                 let errorMsg = `Erro HTTP ${response.status}`;
                 try {
                     const data = await response.json();
@@ -37,7 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
             form.reset();
         } catch (err) {
             console.error('Erro ao enviar matéria:', err);
-            messageArea.textContent = `Erro ao enviar matéria: ${err.message}`;
+            if(err.message == "Erro HTTP 413"){
+                messageArea.textContent = `Tamanho do Arquivo é muito grande! Tente outro.`;
+            }
+            else{
+                messageArea.textContent = `Erro ao enviar matéria: ${err.message}`;
+            }
             messageArea.classList.remove('hidden');
             messageArea.classList.add('bg-red-100', 'text-red-800');
         }

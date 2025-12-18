@@ -17,6 +17,7 @@
             <div>
                 <h1 class="text-2xl font-bold text-gray-800">Novo Usuário</h1>
                 <p class="text-sm text-gray-500 mt-1">Cadastre um participante e defina seu papel inicial.</p>
+                <p th:text="${secretariadoFuncaoOptions}"></p>
             </div>
             <a href="/admin/users" class="text-sm text-blue-600 hover:underline">Voltar para lista</a>
         </div>
@@ -118,6 +119,7 @@
                             <span class="font-medium">Técnico administrativo:</span> organiza logística, cuida da
                             comunicação oficial e dá suporte aos participantes.
                         </p>
+                        
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -130,7 +132,8 @@
                                 <option th:each="funcao : ${secretariadoFuncaoOptions}" th:value="${funcao}"
                                     th:text="${funcao}"
                                     th:selected="${form.secretariadoFuncao != null and #strings.equalsIgnoreCase(funcao, form.secretariadoFuncao)}">
-                                    DOCENTE</option>
+                                    DOCENTE
+                                </option>
                             </select>
                         </div>
                         <div>
