@@ -9,12 +9,14 @@ public class GuiaEstudos {
     private String autor;
     private String titulo;
     private String conteudo;
-    private List<String> links;
+    private String regras;
+    private List<LinkGuia> links;
     private byte[] arquivo;
     private LocalDateTime data;
     private LocalDateTime atualizadoEm;
     private Boolean oficial;
     private Boolean ativo;
+    private Long id_comite;
 
     public Long getId() {
         return id;
@@ -48,11 +50,11 @@ public class GuiaEstudos {
         this.conteudo = conteudo;
     }
 
-    public List<String> getLinks() {
+    public List<LinkGuia> getLinks() {
         return links;
     }
 
-    public void setLinks(List<String> links) {
+    public void setLinks(List<LinkGuia> links) {
         this.links = links;
     }
 
@@ -94,6 +96,22 @@ public class GuiaEstudos {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public Long getId_comite() {
+        return id_comite;
+    }
+
+    public void setId_comite(Long id_comite) {
+        this.id_comite = id_comite;
+    }
+
+    public String getRegras() {
+        return regras;
+    }
+
+    public void setRegras(String regras) {
+        this.regras = regras;
     }
 
 }
