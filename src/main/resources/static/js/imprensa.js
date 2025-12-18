@@ -111,6 +111,8 @@ async function renderMateriaDetails(m) {
         usuario.isSecretario 
         /* &&  m.autor !== usuario.email */
         ;
+    
+    const podeEditar = usuario.email == m.autor;
 
     c.innerHTML = `
         <h3 class="text-xl font-bold">${m.titulo}</h3>
@@ -154,6 +156,15 @@ async function renderMateriaDetails(m) {
                 <button onclick="rejeitar(${m.id})"
                         class="bg-red-600 text-white px-4 py-2 rounded-lg">
                     Rejeitar
+                </button>
+            </div>
+        ` : ''}
+
+        ${podeEditar ? `
+            <div class="flex gap-3 mt-6">
+                <button onclick="editar(${m.id})"
+                        class="bg-orange-600 text-white px-4 py-2 rounded-lg">
+                    Editar
                 </button>
             </div>
         ` : ''}
@@ -222,4 +233,8 @@ function rejeitar(id) {
         body: `motivo=${encodeURIComponent(motivo)}`,
         credentials: 'include'
     }).then(() => location.reload());
+}
+
+function editar(id) {
+    window.location.href = `/materias/${id}/editar`;
 }

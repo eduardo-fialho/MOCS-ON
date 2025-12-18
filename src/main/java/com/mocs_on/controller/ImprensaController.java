@@ -26,5 +26,7 @@ public class ImprensaController {
     public String feedImprensa() {
         return "imprensa_feed.html"; 
     }
+
+    
     
 }

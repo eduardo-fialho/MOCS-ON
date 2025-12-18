@@ -64,20 +64,43 @@ public class MateriaController {
         return "redirect:/imprensa";
     }
 
-
     @GetMapping("/{id}/editar")
     public String editar(@PathVariable Long id, Model model) {
         model.addAttribute("materia", materiaService.buscarPorId(id));
-        return "materias/form";
+        return "editar_materia";
     }
 
     @PostMapping("/{id}")
-    public String atualizar(@PathVariable Long id, @ModelAttribute Materia materia) {
+    public String atualizar(
+            @PathVariable Long id,
+            @RequestParam String titulo,
+            @RequestParam String lead,
+            @RequestParam String texto,
+            @RequestParam(required = false) MultipartFile imagem
+    ) {
         String usuario = usuarioLogado();
-        materia.setId(id);
+
+        Materia materia = materiaService.buscarPorId(id);
+
+        materia.setTitulo(titulo);
+        materia.setLead(lead);
+        materia.setTexto(texto);
+
+        materia.setStatus(StatusMateria.PENDENTE);
+
+        if (imagem != null && !imagem.isEmpty()) {
+            try {
+                materia.setImagem(imagem.getBytes());
+            } catch (Exception e) {
+                throw new RuntimeException("Erro ao processar imagem", e);
+            }
+        }
+
         materiaService.atualizar(materia, usuario);
-        return "redirect:/materias";
+
+        return "redirect:/imprensa";
     }
+
 
     @PostMapping("/{id}/aprovar")
     public String aprovar(@PathVariable Long id) {

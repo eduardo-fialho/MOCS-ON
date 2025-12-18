@@ -43,10 +43,28 @@ public class MateriaService {
     }
 
 
-    public void atualizar(Materia materia, String usuario) {
+    public void atualizar(Materia materiaEditada, String usuario) {
+        Materia materia = materiaDAO.buscarPorId(materiaEditada.getId());
+
+        materia.setTitulo(materiaEditada.getTitulo());
+        materia.setLead(materiaEditada.getLead());
+        materia.setTexto(materiaEditada.getTexto());
+
+        if (materiaEditada.getImagem() != null) {
+            materia.setImagem(materiaEditada.getImagem());
+        }
+
+        materiaDAO.atualizarStatus(materia.getId(), StatusMateria.PENDENTE);
         materiaDAO.atualizar(materia);
-        registrarLog(materia.getId(), AcaoMateriaLog.EDICAO, usuario, "Matéria editada");
+
+        registrarLog(
+            materia.getId(),
+            AcaoMateriaLog.EDICAO,
+            usuario,
+            "Matéria editada – voltou para PENDENTE"
+        );
     }
+
 
     public void aprovar(Long id, String usuario) {
         materiaDAO.atualizarStatus(id, StatusMateria.APROVADA);
