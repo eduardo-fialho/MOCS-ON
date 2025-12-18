@@ -143,6 +143,16 @@ public class MateriaDAO {
         return jdbcTemplate.update(sql, status.name(), id);
     }
 
+    public int atualizarRevisor(Long id, String revisor) {
+        String sql = """
+            UPDATE materias
+            SET revisor = ?
+            WHERE id = ?
+        """;
+
+        return jdbcTemplate.update(sql, revisor, id);
+    }
+
     public List<Materia> listarAprovadas() {
         String sql = """
             SELECT *

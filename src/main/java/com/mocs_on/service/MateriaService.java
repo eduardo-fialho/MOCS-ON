@@ -68,6 +68,7 @@ public class MateriaService {
 
     public void aprovar(Long id, String usuario) {
         materiaDAO.atualizarStatus(id, StatusMateria.APROVADA);
+        materiaDAO.atualizarRevisor(id, usuario);
         registrarLog(id, AcaoMateriaLog.APROVACAO, usuario, "Matéria aprovada");
     }
 

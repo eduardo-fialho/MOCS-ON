@@ -13,9 +13,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/imprensa_feed.css}">
 </head>
 
-<body class="min-h-screen bg-slate-50 text-slate-900 font-[Inter]">
+<body class="feed-bg min-h-screen bg-slate-50 text-slate-900 font-[Inter]">
 
     <div class="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-6">
 
@@ -121,9 +122,9 @@
                 </div>
             </section>
 
-            <aside class="lg:col-span-1">
+            <aside class="rounded-2xl px-4 pb-4 bg-white border-slate-500">
                 <div id="details-view-container"
-                    class="text-slate-700 text-sm space-y-4">
+                    class="max-h-[60vh] overflow-y-auto rounded-2xl p-1 mt-8 shadow-sm text-slate-700 text-sm space-y-4">
                     <p class="text-slate-500">
                         Selecione uma matéria para ver os detalhes.
                     </p>

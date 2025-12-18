@@ -17,6 +17,10 @@ function timeAgo(dateString) {
     } catch (e) { return 'data inválida'; }
 }
 
+function toogleMateriaView(){
+
+}
+
 async function fetchMaterias() {
     try {
         const res = await fetch('/imprensa/materias', {
@@ -44,9 +48,6 @@ async function fetchMaterias() {
         renderLista('lista-todas', todas);
         renderLista('lista-pendentes', pendentes);
         renderLista('lista-aprovadas', aprovadas);
-
-        selectedMateriaId = todas.length ? todas[0].id : null;
-        renderMateriaDetails(getMateriaById(selectedMateriaId));
 
     } catch (err) {
         console.error('Erro ao buscar matérias:', err);
@@ -146,28 +147,45 @@ async function renderMateriaDetails(m) {
             <div class="prose max-w-none">${m.texto}</div>
         </div>
 
-        ${podeAprovar ? `
-            <div class="flex gap-3 mt-6">
+        <h3 class="text-xl font-bold mb-4">Opções:</h3>
+        <div class="flex flex-wrap gap-3 mt-4">
+            ${podeAprovar ? `
                 <button onclick="aprovar(${m.id})"
-                        class="bg-green-600 text-white px-4 py-2 rounded-lg">
+                        class="btn bg-green-600 text-white px-5 py-2 rounded-lg font-medium 
+           transition-all duration-200
+           hover:opacity-90 
+           min-w-[110px] text-center">
                     Aprovar
                 </button>
 
                 <button onclick="rejeitar(${m.id})"
-                        class="bg-red-600 text-white px-4 py-2 rounded-lg">
+                        class="btn bg-red-600 text-white px-5 py-2 rounded-lg font-medium 
+           transition-all duration-200
+           hover:opacity-90 
+           min-w-[110px] text-center">
                     Rejeitar
                 </button>
-            </div>
-        ` : ''}
+            ` : ''}
 
-        ${podeEditar ? `
-            <div class="flex gap-3 mt-6">
+            ${podeEditar ? `
                 <button onclick="editar(${m.id})"
-                        class="bg-orange-600 text-white px-4 py-2 rounded-lg">
+                        class="btn bg-orange-600 text-white px-5 py-2 rounded-lg font-medium 
+           transition-all duration-200
+           hover:opacity-90 
+           min-w-[110px] text-center">
                     Editar
                 </button>
-            </div>
-        ` : ''}
+
+                <button onclick=""
+                        class="btn bg-orange-500
+                        text-white px-5 py-2 rounded-lg font-medium 
+           transition-all duration-200
+           hover:opacity-90 
+           min-w-[110px] text-center">
+                    Arquivar
+                </button>
+            ` : ''}
+        </div>
     `;
 }
 
