@@ -13,7 +13,10 @@ function galeriaPreview() {
         feedLoading: true,
         feedError: null,
         currentUser: null,
+        currentUserEmail: null,
+        isSecretary: false,
         defaultAvatar: DEFAULT_AVATAR_URL,
+        heartEmoji: '\u2764\uFE0F',
         modalOpen: false,
         selectedMedia: null,
         modalPortrait: false,
@@ -23,19 +26,18 @@ function galeriaPreview() {
         commentText: '',
         commentError: null,
         floatingHearts: [],
-        decrementLikes(postId, delta = 1) {
-            const mutate = list => {
-                if (!Array.isArray(list)) return;
-                const target = list.find(entry => entry.id === postId);
-                if (target) {
-                    target.likes = Math.max(0, (target.likes || 0) - delta);
-                }
-            };
-            mutate(this.posts);
-            mutate(this.media);
-            if (this.selectedMedia && this.selectedMedia.id === postId) {
-                this.selectedMedia.likes = Math.max(0, (this.selectedMedia.likes || 0) - delta);
+        applyLikesDelta(postId, delta) {
+            const pick = list => Array.isArray(list) ? list.find(entry => entry.id === postId) : null;
+            const target = pick(this.media) || pick(this.posts);
+            if (target) {
+                target.likes = Math.max(0, (target.likes || 0) + delta);
             }
+            if (this.selectedMedia && this.selectedMedia.id === postId) {
+                this.selectedMedia.likes = Math.max(0, (this.selectedMedia.likes || 0) + delta);
+            }
+        },
+        decrementLikes(postId, delta = 1) {
+            this.applyLikesDelta(postId, -delta);
         },
         init() {
             this.loadCurrentUser();
@@ -47,9 +49,13 @@ function galeriaPreview() {
                 if (!res.ok) throw new Error('status ' + res.status);
                 const data = await res.json();
                 this.currentUser = data && data.nome ? data.nome : 'Delegado';
+                this.currentUserEmail = data && (data.email || data.username) ? (data.email || data.username) : null;
+                this.isSecretary = !!data.isSecretario;
             } catch (err) {
                 console.error('Erro ao buscar usuário para a galeria:', err);
                 this.currentUser = 'Delegado';
+                this.currentUserEmail = null;
+                this.isSecretary = false;
             }
         },
         async loadFeed() {
@@ -93,7 +99,7 @@ function galeriaPreview() {
             const tag = raw.status === 'ANONIMO' ? '#Spotted' : `#${segment.replace(' ', '')}`;
             const initials = author.split(/\s+/).slice(0, 2).map(part => part.charAt(0)).join('').toUpperCase() || 'DL';
             const reactions = raw.reactions || {};
-            const likes = reactions['❤️'] || reactions['\u2764\uFE0F'] || reactions['❤'] || 0;
+            const likes = this.getHeartCount(reactions);
             return {
                 id: raw.id || index,
                 author,
@@ -186,18 +192,17 @@ function galeriaPreview() {
             }, 1100);
         },
         incrementLikes(postId, delta = 1) {
-            const mutate = list => {
-                if (!Array.isArray(list)) return;
-                const target = list.find(entry => entry.id === postId);
-                if (target) {
-                    target.likes = (target.likes || 0) + delta;
-                }
-            };
-            mutate(this.posts);
-            mutate(this.media);
-            if (this.selectedMedia && this.selectedMedia.id === postId) {
-                this.selectedMedia.likes = (this.selectedMedia.likes || 0) + delta;
+            this.applyLikesDelta(postId, delta);
+        },
+        getHeartCount(reactions) {
+            if (!reactions) return 0;
+            const primary = this.heartEmoji;
+            const fallback = '\u2764';
+            let total = reactions[primary] || 0;
+            if (fallback !== primary) {
+                total += reactions[fallback] || 0;
             }
+            return total;
         },
         openModal(media) {
             this.selectedMedia = { ...media, liked: media.liked || false };
@@ -221,10 +226,13 @@ function galeriaPreview() {
                 const res = await fetch(`${POST_API_BASE}/${postId}/comments`);
                 if (!res.ok) throw new Error('status ' + res.status);
                 const data = await res.json();
-                this.comments = data.map(item => ({
-                    ...item,
-                    tempo: this.formatRelativeTime(item.createdAt || item.data || item.created_at)
-                }));
+                this.comments = (data || [])
+                    .filter(item => (item.status || item.estado || null) !== 'EXCLUIDO')
+                    .map(item => ({
+                        ...item,
+                        autor: item.usuarioNome || item.usuario || item.autor || 'Usuario',
+                        tempo: this.formatRelativeTime(item.createdAt || item.data || item.created_at)
+                    }));
             } catch (err) {
                 console.error('Erro ao buscar comentários:', err);
                 this.commentError = 'Não foi possível carregar os comentários.';
@@ -244,7 +252,7 @@ function galeriaPreview() {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        autor: this.currentUser || 'Delegado',
+                        usuario: this.currentUserEmail || this.currentUser || 'Delegado',
                         mensagem: this.commentText.trim()
                     })
                 });
@@ -259,7 +267,7 @@ function galeriaPreview() {
         async toggleLike() {
             if (!this.selectedMedia || this.likeLoading) return;
             if (!this.selectedMedia.id) {
-                alert('Não foi possível identificar o post para curtir.');
+                alert('N?o foi poss?vel identificar o post para curtir.');
                 return;
             }
             this.likeLoading = true;
@@ -268,8 +276,8 @@ function galeriaPreview() {
             const headers = { 'Content-Type': 'application/json' };
             if (token) headers[header] = token;
             const body = JSON.stringify({
-                usuario: this.currentUser || 'Delegado',
-                emoji: '❤️'
+                usuario: this.currentUserEmail || this.currentUser || 'Delegado',
+                emoji: this.heartEmoji
             });
             const url = `${POST_API_BASE}/${this.selectedMedia.id}/reaction`;
             try {
@@ -279,28 +287,26 @@ function galeriaPreview() {
                     credentials: 'same-origin',
                     body
                 });
-
+            
                 if (liked) {
-                    // Remover like: só ajusta contagem se servidor remover
                     if (res.ok) {
                         this.decrementLikes(this.selectedMedia.id, 1);
                         this.selectedMedia.liked = false;
                     } else {
-                        console.error('Erro ao remover reação:', res.status, await res.text());
-                        alert('Não foi possível remover sua reação. Status: ' + res.status);
+                        console.error('Erro ao remover rea??o:', res.status, await res.text());
+                        alert('N?o foi poss?vel remover sua rea??o. Status: ' + res.status);
                     }
                 } else {
-                    // Adicionar like
-                    if (res.ok) {
+                    if (res.status === 201 || res.status === 200) {
                         this.incrementLikes(this.selectedMedia.id, 1);
                         this.selectedMedia.liked = true;
                         this.spawnHeart();
-                    } else if (res.status === 409) {
-                        // Já existe reação: não incrementa, apenas marca como liked
-                        this.selectedMedia.liked = true;
+                    } else if (res.status === 204) {
+                        this.decrementLikes(this.selectedMedia.id, 1);
+                        this.selectedMedia.liked = false;
                     } else {
                         console.error('Erro ao reagir:', res.status, await res.text());
-                        alert('Não foi possível registrar sua reação. Status: ' + res.status);
+                        alert('N?o foi poss?vel registrar sua rea??o. Status: ' + res.status);
                     }
                 }
             } catch (err) {
@@ -308,6 +314,32 @@ function galeriaPreview() {
                 alert('Erro ao reagir: ' + err.message);
             } finally {
                 this.likeLoading = false;
+            }
+        },
+        async deleteSelectedMedia() {
+            if (!this.selectedMedia || !this.selectedMedia.id) {
+                return;
+            }
+            if (!this.isSecretary) {
+                alert('Apenas secretariado pode apagar fotos.');
+                return;
+            }
+            if (!confirm('Deseja remover esta foto da galeria?')) {
+                return;
+            }
+            try {
+                const res = await fetch(`/profile/gallery/${this.selectedMedia.id}/delete`, {
+                    method: 'POST',
+                    credentials: 'same-origin'
+                });
+                if (!res.ok && res.status !== 204) {
+                    throw new Error('status ' + res.status);
+                }
+                await this.loadFeed();
+                this.closeModal();
+            } catch (err) {
+                console.error('Erro ao excluir foto:', err);
+                alert('Nao foi possivel apagar a foto.');
             }
         },
         get filteredMedia() {

@@ -331,7 +331,7 @@
                                         </div>
                                     </div>
                                     <p class="text-sm text-white/85" x-text="selectedMedia && selectedMedia.caption ? selectedMedia.caption : ''"></p>
-                                    <div class="flex items-center gap-3">
+                                        <div class="flex items-center gap-3">
                                             <button type="button"
                                                     class="inline-flex items-center gap-2 px-4 py-2 rounded-full border transition text-sm"
                                                     :class="[(selectedMedia && selectedMedia.liked) ? 'bg-mocs-blue text-white border-mocs-blue' : 'border-mocs-blue text-mocs-blue hover:bg-mocs-blue hover:text-white', likeLoading ? 'opacity-60 cursor-not-allowed' : '']"
@@ -341,6 +341,12 @@
                                                 <span x-text="selectedMedia && selectedMedia.likes ? selectedMedia.likes : 0"></span>
                                             </button>
                                             <span class="text-xs text-gray-200">Curtidas</span>
+                                            <button type="button"
+                                                    x-show="isSecretary"
+                                                    class="ml-auto inline-flex items-center gap-2 px-3 py-2 rounded-full bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition"
+                                                    @click="deleteSelectedMedia()">
+                                                <i class="fas fa-trash"></i> Apagar
+                                            </button>
                                         </div>
                                         <div class="flex-1 apple-glass p-4 text-white rounded-3xl comment-wrapper">
                                             <div class="comment-scroll custom-scrollbar space-y-3 bg-transparent w-full">
@@ -726,4 +732,3 @@
     <script th:src="@{/js/agenda.js}"></script>
 </body>
 </html>
-

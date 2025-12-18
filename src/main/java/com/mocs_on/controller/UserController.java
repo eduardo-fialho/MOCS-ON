@@ -44,9 +44,11 @@ public class UserController {
         if (session != null) {
             Object nameAttr = session.getAttribute(AuthController.SESSION_USER_NAME);
             Object roleAttr = session.getAttribute(AuthController.SESSION_USER_ROLE);
+            Object emailAttr = session.getAttribute(AuthController.SESSION_USER_ATTRIBUTE);
             if (nameAttr != null) {
-                boolean isSecretariado = roleAttr != null && "SECRETARIADO".equalsIgnoreCase(roleAttr.toString());
-                return new InformacoesUsuarioDTO(nameAttr.toString(), isSecretariado);
+                boolean isSecretariado = isSecretariatRole(roleAttr != null ? roleAttr.toString() : null);
+                String email = emailAttr != null ? emailAttr.toString() : null;
+                return new InformacoesUsuarioDTO(nameAttr.toString(), email, isSecretariado);
             }
         }
 
@@ -54,11 +56,11 @@ public class UserController {
 
         if (authentication != null && authentication.getPrincipal() instanceof SecaoUsuario) {
             SecaoUsuario user = (SecaoUsuario) authentication.getPrincipal();
-            boolean isSecretario = user.getCargo().name().equals("SECRETARIO");
-            return new InformacoesUsuarioDTO(user.getNome(), isSecretario);
+            boolean isSecretario = isSecretariatRole(user.getCargo().name());
+            return new InformacoesUsuarioDTO(user.getNome(), user.getUsername(), isSecretario);
         }
 
-        return new InformacoesUsuarioDTO("Usuário Desconhecido", false);
+        return new InformacoesUsuarioDTO("Usuário Desconhecido", null, false);
     }
 
     @GetMapping("/user/search")
@@ -117,6 +119,14 @@ public class UserController {
                 .cacheControl(CacheControl.noCache())
                 .contentType(mediaType)
                 .body(resource);
+    }
+
+    private boolean isSecretariatRole(String role) {
+        if (role == null) {
+            return false;
+        }
+        String normalized = role.trim().toUpperCase();
+        return normalized.equals("SECRETARIADO") || normalized.equals("SECRETARIO");
     }
 
     private String truncateSnippet(String mensagem) {

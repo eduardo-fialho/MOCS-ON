@@ -30,7 +30,11 @@
                 <span class="hidden sm:block text-slate-600 font-semibold" x-text="userCargo">VISITANTE</span>
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-full px-3 py-2">
-                        <img src="https://placehold.co/40x40/94a3b8/ffffff?text=U" alt="Avatar" class="h-9 w-9 rounded-full border border-slate-200">
+                        <img :src="userAvatar"
+                             src="https://placehold.co/40x40/94a3b8/ffffff?text=U"
+                             data-user-avatar
+                             @error="$event.target.src = defaultAvatar"
+                             alt="Avatar" class="h-9 w-9 rounded-full border border-slate-200">
                         <span class="hidden md:block font-semibold text-slate-900" x-text="userName">Carregando...</span>
                         <i class="fas fa-chevron-down text-xs text-slate-400"></i>
                     </button>
