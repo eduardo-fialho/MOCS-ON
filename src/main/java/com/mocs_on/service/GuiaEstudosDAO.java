@@ -61,9 +61,9 @@ public class GuiaEstudosDAO {
         """;
 
         return jdbcTemplate.query(
-            sql,
-            rs -> rs.next() ? rs.getBytes("arquivo") : null,
-            id
+                sql,
+                rs -> rs.next() ? rs.getBytes("arquivo") : null,
+                id
         );
     }
 
@@ -104,30 +104,33 @@ public class GuiaEstudosDAO {
 
     @Transactional
     public int atualizarPorId(Long id, GuiaEstudos guia) {
+        GuiaEstudos existente = recuperarPorId(id);
+        byte[] arquivoParaAtualizar = guia.getArquivo() != null ? guia.getArquivo() : existente.getArquivo();
+
         String sqlGuia = """
-            UPDATE guia_estudos
-            SET autor = ?,
-                titulo = ?,
-                conteudo = ?,
-                regras = ?,
-                arquivo = ?,
-                oficial = ?,
-                id_comite = ?,
-                atualizado_em = ?
-            WHERE id = ?
-        """;
+        UPDATE guia_estudos
+        SET autor = ?,
+            titulo = ?,
+            conteudo = ?,
+            regras = ?,
+            arquivo = ?,
+            oficial = ?,
+            id_comite = ?,
+            atualizado_em = ?
+        WHERE id = ?
+    """;
 
         int rows = jdbcTemplate.update(
-            sqlGuia,
-            guia.getAutor(),
-            guia.getTitulo(),
-            guia.getConteudo(),
-            guia.getRegras(),
-            guia.getArquivo(),
-            guia.getOficial(),
-            guia.getIdComite(),
-            LocalDateTime.now(),
-            id
+                sqlGuia,
+                guia.getAutor(),
+                guia.getTitulo(),
+                guia.getConteudo(),
+                guia.getRegras(),
+                arquivoParaAtualizar,
+                guia.getOficial(),
+                guia.getIdComite(),
+                LocalDateTime.now(),
+                id
         );
 
         jdbcTemplate.update("UPDATE link_guia SET ativo = false WHERE id_guia = ?", id);
@@ -198,10 +201,10 @@ public class GuiaEstudosDAO {
 
         for (LinkGuia link : links) {
             jdbcTemplate.update(
-                sql,
-                idGuia,
-                link.getLink(),
-                link.getAtivo() != null ? link.getAtivo() : true
+                    sql,
+                    idGuia,
+                    link.getLink(),
+                    link.getAtivo() != null ? link.getAtivo() : true
             );
         }
     }

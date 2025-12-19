@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnArquivar = document.getElementById("btn-arquivar");
     const btnVisualizar = document.getElementById("btn-visualizar");
     const detalhesContainer = document.getElementById("detalhes-container");
+    const btnNovoGuia = document.getElementById("btn-novo-guia");
+    const btnVoltar = document.getElementById("btn-voltar");
 
     let guias = [];
     let usuarioIsSecretario = false;
@@ -15,6 +17,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!res.ok) throw new Error("Erro ao obter informações do usuário");
             const user = await res.json();
             usuarioIsSecretario = user.isSecretario;
+
+            // Mostrar/esconder botão "Novo Guia"
+            if (btnNovoGuia) btnNovoGuia.style.display = usuarioIsSecretario ? "inline-flex" : "none";
+
+            // Ajustar botão voltar
+            if (btnVoltar) btnVoltar.href = usuarioIsSecretario ? "/secretariado.html" : "/dashboard.html";
+
         } catch (err) {
             console.error(err);
         }
@@ -73,7 +82,21 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = `/guia_estudo.html?id=${guia.id}`;
         };
 
+        // Botão Editar só se secretário
+        let btnEditar = document.getElementById("btn-editar");
         if (usuarioIsSecretario) {
+            if (!btnEditar) {
+                btnEditar = document.createElement("button");
+                btnEditar.id = "btn-editar";
+                btnEditar.className = "w-full bg-green-600 text-white font-bold py-2 px-4 rounded-xl hover:bg-green-700 transition mb-2";
+                btnEditar.innerHTML = '<i class="fas fa-pen mr-2"></i> Editar Guia';
+                detalhesContainer.querySelector("#guia-detalhes").insertBefore(btnEditar, btnArquivar);
+            }
+            btnEditar.style.display = "block";
+            btnEditar.onclick = () => {
+                window.location.href = `/editar_guia_de_estudos.html?id=${guia.id}`;
+            };
+
             btnArquivar.style.display = "block";
             btnArquivar.onclick = async () => {
                 if (!confirm("Deseja realmente arquivar este guia?")) return;
@@ -89,6 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             };
         } else {
+            if (btnEditar) btnEditar.style.display = "none";
             btnArquivar.style.display = "none";
         }
     }
@@ -97,5 +121,4 @@ document.addEventListener("DOMContentLoaded", () => {
         await carregarUsuario();
         await carregarGuias();
     })();
-
 });

@@ -27,7 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!res.ok) throw new Error("Erro ao carregar guia");
 
             const guia = await res.json();
-
             if (!guia) {
                 alert("Guia não encontrado.");
                 return;
@@ -36,18 +35,24 @@ document.addEventListener("DOMContentLoaded", () => {
             guiaTitulo.textContent = guia.titulo || "";
             guiaComite.textContent = guia.comiteNome || "";
 
-            guiaRegras.innerHTML = guia.regras || "<p>Sem regras disponíveis</p>";
-            guiaConteudo.innerHTML = guia.conteudo || "<p>Sem conteúdo disponível</p>";
+            guiaRegras.innerHTML = guia.regras
+                ? guia.regras.replace(/\n/g, '<br>')
+                : "<p>Sem regras disponíveis</p>";
+
+            guiaConteudo.innerHTML = guia.conteudo
+                ? guia.conteudo.replace(/\n/g, '<br>')
+                : "<p>Sem conteúdo disponível</p>";
 
             guiaLinks.innerHTML = "";
             if (guia.links && guia.links.length > 0) {
                 guia.links.forEach(link => {
                     const li = document.createElement("li");
+                    li.className = "break-words max-w-full";
                     const a = document.createElement("a");
                     a.href = link.link;
                     a.textContent = link.link;
                     a.target = "_blank";
-                    a.className = "text-blue-600 hover:text-blue-800 hover:underline transition";
+                    a.className = "text-blue-600 hover:text-blue-800 hover:underline transition break-words";
                     li.appendChild(a);
                     guiaLinks.appendChild(li);
                 });
@@ -57,7 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (guia.arquivo) {
                 pdfContainer.style.display = "block";
-
                 guiaPdfIframe.src = `/guia-estudos/${id}/visualizar`;
 
                 if (guia.oficial) {
@@ -68,7 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     downloadBtn.style.display = "none";
                     guiaNaoOficial.style.display = "block";
                 }
-
             } else {
                 pdfContainer.style.display = "none";
                 guiaPdfIframe.src = "";

@@ -10,9 +10,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.mocs_on.domain.Documento;
+import com.mocs_on.domain.GuiaEstudos;
 import com.mocs_on.security.SecaoUsuario;
 import com.mocs_on.service.AvisoDAO;
+import com.mocs_on.service.ComiteDao;
 import com.mocs_on.service.DocumentoDAO;
+import com.mocs_on.service.GuiaEstudosDAO;
 import com.mocs_on.service.PreRegistrationService;
 import com.mocs_on.service.SecretariatDashboardService;
 import com.mocs_on.service.SecretariatDashboardService.DashboardMetrics;
@@ -31,6 +34,10 @@ public class HomeController {
     private PreRegistrationService preRegistrationService;
     @Autowired
     private SecretariatDashboardService secretariatDashboardService;
+    @Autowired
+    private GuiaEstudosDAO guiasService;
+    @Autowired
+    private ComiteDao comiteService;
 
     @GetMapping({"", "/"})
     public String index() {
@@ -76,7 +83,6 @@ public class HomeController {
         if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
             return "redirect:/login";
         }
-        // KPIs
         DashboardMetrics metrics = secretariatDashboardService.collectMetrics();
         model.addAttribute("dashboardMetrics", metrics);
         model.addAttribute("numAvisos", avisoDAO.quantidadeAvisos());
@@ -153,7 +159,21 @@ public class HomeController {
         populateUserAttributes(model);
         return "guia_de_estudos";
     }
-    
+
+    @GetMapping("/editar_guia_de_estudos.html")
+    public String editarGuiaDeEstudos(@RequestParam Long id, HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        GuiaEstudos guia = guiasService.recuperarPorId(id);
+        if (guia == null) {
+            return "redirect:/guias_de_estudos.html";
+        }
+        model.addAttribute("guia", guia);
+        model.addAttribute("comites", comiteService.informacoesComites());
+        populateUserAttributes(model);
+        return "editar_guia_de_estudos";
+    }
 
     private boolean isAuthenticated(HttpSession session) {
         return session != null && session.getAttribute(AuthController.SESSION_USER_ATTRIBUTE) != null;
