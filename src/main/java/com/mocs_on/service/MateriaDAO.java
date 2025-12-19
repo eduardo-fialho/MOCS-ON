@@ -81,7 +81,7 @@ public class MateriaDAO {
     }
 
     public List<Materia> listar() {
-        String sql = "SELECT * FROM materias ORDER BY data_criacao DESC";
+        String sql = "SELECT * FROM materias WHERE ativo != 0 ORDER BY data_criacao DESC";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             Materia m = new Materia();
@@ -141,6 +141,16 @@ public class MateriaDAO {
         """;
 
         return jdbcTemplate.update(sql, status.name(), id);
+    }
+
+    public int arquivar(Long id) {
+        String sql = """
+            UPDATE materias
+            SET ativo = ?
+            WHERE id = ?
+        """;
+
+        return jdbcTemplate.update(sql, 0, id);
     }
 
     public int atualizarRevisor(Long id, String revisor) {

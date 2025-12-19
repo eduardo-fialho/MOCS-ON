@@ -117,6 +117,13 @@ public class MateriaController {
         return "redirect:/materias";
     }
 
+    @PostMapping("/{id}/arquivar")
+    public String arquivar(@PathVariable Long id) {
+
+        materiaService.arquivar(id, usuarioLogado());
+        return "redirect:/materias";
+    }
+
 
     private String usuarioLogado() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

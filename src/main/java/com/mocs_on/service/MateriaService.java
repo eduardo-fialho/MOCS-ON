@@ -1,8 +1,6 @@
 package com.mocs_on.service;
 
 import com.mocs_on.domain.*;
-import com.mocs_on.service.MateriaDAO;
-import com.mocs_on.service.MateriaLogDAO;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,7 +67,13 @@ public class MateriaService {
     public void aprovar(Long id, String usuario) {
         materiaDAO.atualizarStatus(id, StatusMateria.APROVADA);
         materiaDAO.atualizarRevisor(id, usuario);
-        registrarLog(id, AcaoMateriaLog.APROVACAO, usuario, "Matéria aprovada");
+        registrarLog(id, AcaoMateriaLog.APROVACAO, usuario, "Matéria Aprovada");
+    }
+
+    public void arquivar(Long id, String usuario) {
+        materiaDAO.arquivar(id);
+        materiaDAO.atualizarStatus(id, StatusMateria.ARQUIVADA);
+        registrarLog(id, AcaoMateriaLog.ARQUIVACAO, usuario, "Matéria Arquivada");
     }
 
     public void rejeitar(Long id, String motivo, String usuario) {

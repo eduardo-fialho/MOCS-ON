@@ -4,5 +4,6 @@ public enum AcaoMateriaLog {
     CRIACAO,
     EDICAO,
     APROVACAO,
-    REJEICAO
+    REJEICAO,
+    ARQUIVACAO
 }

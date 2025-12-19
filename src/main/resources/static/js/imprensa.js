@@ -17,10 +17,6 @@ function timeAgo(dateString) {
     } catch (e) { return 'data inválida'; }
 }
 
-function toogleMateriaView(){
-
-}
-
 async function fetchMaterias() {
     try {
         const res = await fetch('/imprensa/materias', {
@@ -122,17 +118,24 @@ async function renderMateriaDetails(m) {
         </div>
 
         <p class="text-sm text-slate-500">
-            Autor: <strong>${m.autor}</strong>
+            Autor: <span class="text-mocs-blue"><strong>${m.autor}</strong></span>
         </p>
 
         <p class="text-sm text-slate-500">
             Criado em: ${timeAgo(m.createdAt)}
         </p>
 
-        ${m.reviewedAt ? `
+        ${m.reviewedAt && m.status == "APROVADA"? `
             <p class="text-sm text-slate-500">
-                Revisado por: <strong>${m.revisor}</strong><br>
-                Em: ${timeAgo(m.reviewedAt)}
+                Revisado por: <span class="text-mocs-blue"><strong>${m.revisor}</strong></span><br>
+                Há: ${timeAgo(m.reviewedAt)}
+            </p>
+        ` : ''}
+
+        ${m.reviewedAt && m.status != "APROVADA"? `
+            <p class="text-sm text-slate-500">
+                Anteriormente Revisado por: <span class="text-mocs-blue"><strong>${m.revisor}</strong></span><br>
+                Há: ${timeAgo(m.reviewedAt)}
             </p>
         ` : ''}
 
@@ -176,7 +179,7 @@ async function renderMateriaDetails(m) {
                     Editar
                 </button>
 
-                <button onclick=""
+                <button onclick="arquivar(${m.id})"
                         class="btn bg-orange-500
                         text-white px-5 py-2 rounded-lg font-medium 
            transition-all duration-200
@@ -249,6 +252,13 @@ function rejeitar(id) {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: `motivo=${encodeURIComponent(motivo)}`,
+        credentials: 'include'
+    }).then(() => location.reload());
+}
+
+function arquivar(id) {
+    fetch(`/materias/${id}/arquivar`, {
+        method: 'POST',
         credentials: 'include'
     }).then(() => location.reload());
 }
