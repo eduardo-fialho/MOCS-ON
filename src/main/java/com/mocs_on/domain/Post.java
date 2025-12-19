@@ -11,6 +11,8 @@ public class Post {
     private String autor;
     private TipoPost status;
     private LocalDateTime dataPublicacao;
+    private String comiteSigla;
+    private String aprovador; // email do diretor que aprovou, se aplicável
 
     private String myReaction;
 
@@ -20,6 +22,7 @@ public class Post {
     public enum TipoPost {
         PUBLICO,
         ANONIMO,
+        CONSULTA_INFORMAL,
         EXCLUIDO,
     }
 
@@ -78,6 +81,22 @@ public class Post {
 
     public void setData(LocalDateTime dataPublicacao) {
         this.dataPublicacao = dataPublicacao;
+    }
+
+    public String getComiteSigla() {
+        return comiteSigla;
+    }
+
+    public void setComiteSigla(String comiteSigla) {
+        this.comiteSigla = comiteSigla;
+    }
+
+    public String getAprovador() {
+        return aprovador;
+    }
+
+    public void setAprovador(String aprovador) {
+        this.aprovador = aprovador;
     }
 
     public Map<String, Integer> getReactions() {

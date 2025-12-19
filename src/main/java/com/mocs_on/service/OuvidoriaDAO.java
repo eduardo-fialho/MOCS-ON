@@ -16,15 +16,7 @@ public class OuvidoriaDAO {
     private JdbcTemplate jdbcTemplate;
 
     public Long inserirRelato(OuvidoriaRelato r) {
-        String sql = """
-            INSERT INTO ouvidoria_relatos (
-              identificacao, nome_relator, comite_relator,
-              categoria_relato,
-              comite_conducao, comite_respeito, comite_imparcialidade, comite_apoio, comite_mensagem,
-              secretariado_positivos, secretariado_negativos, secretariado_falta, secretariado_sugestoes,
-              outros_mensagem, status, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'novo', ?)
-        """;
+                String sql = "INSERT INTO ouvidoria_relatos (identificacao, nome_relator, comite_relator, categoria_relato, comite_conducao, comite_respeito, comite_imparcialidade, comite_apoio, comite_mensagem, secretariado_positivos, secretariado_negativos, secretariado_falta, secretariado_sugestoes, outros_mensagem, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'novo', ?)";
 
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
 
@@ -55,14 +47,7 @@ public class OuvidoriaDAO {
     }
 
     public java.util.List<OuvidoriaRelato> recuperarTodos() {
-        String sql = """
-            SELECT id, created_at, status, identificacao, nome_relator, comite_relator,
-                   categoria_relato, comite_conducao, comite_respeito, comite_imparcialidade, comite_apoio, comite_mensagem,
-                   secretariado_positivos, secretariado_negativos, secretariado_falta, secretariado_sugestoes,
-                   outros_mensagem
-            FROM ouvidoria_relatos
-            ORDER BY created_at DESC
-        """;
+        String sql = "SELECT id, created_at, status, identificacao, nome_relator, comite_relator, categoria_relato, comite_conducao, comite_respeito, comite_imparcialidade, comite_apoio, comite_mensagem, secretariado_positivos, secretariado_negativos, secretariado_falta, secretariado_sugestoes, outros_mensagem FROM ouvidoria_relatos ORDER BY created_at DESC";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             OuvidoriaRelato r = new OuvidoriaRelato();
@@ -89,14 +74,7 @@ public class OuvidoriaDAO {
     }
 
     public OuvidoriaRelato recuperarPorId(Long id) {
-        String sql = """
-            SELECT id, created_at, status, identificacao, nome_relator, comite_relator,
-                   categoria_relato, comite_conducao, comite_respeito, comite_imparcialidade, comite_apoio, comite_mensagem,
-                   secretariado_positivos, secretariado_negativos, secretariado_falta, secretariado_sugestoes,
-                   outros_mensagem
-            FROM ouvidoria_relatos
-            WHERE id = ?
-        """;
+        String sql = "SELECT id, created_at, status, identificacao, nome_relator, comite_relator, categoria_relato, comite_conducao, comite_respeito, comite_imparcialidade, comite_apoio, comite_mensagem, secretariado_positivos, secretariado_negativos, secretariado_falta, secretariado_sugestoes, outros_mensagem FROM ouvidoria_relatos WHERE id = ?";
 
         java.util.List<OuvidoriaRelato> list = jdbcTemplate.query(sql, (rs, rowNum) -> {
             OuvidoriaRelato r = new OuvidoriaRelato();

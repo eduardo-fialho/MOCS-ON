@@ -78,7 +78,9 @@
                             _loadingCurtidas: false,
                             _curtindo: false,
                             _curtidaCount: 0,
-                            _hasCurtido: false
+                            _hasCurtido: false,
+                            // determine allowed reactions per post
+                            _allowedEmojis: (p.status === 'CONSULTA_INFORMAL') ? ['SIM','NAO'] : this.emojis
                         }));
 
                     if (this.posts.length > 0) {
@@ -171,6 +173,15 @@
             async addReaction(post, emoji) {
                 if (!emoji || !post) return;
                 if (post._reacting) return;
+                // if consulta informal, only allow SIM/NAO
+                if (post.status === 'CONSULTA_INFORMAL') {
+                    const norm = (''+emoji).trim().toUpperCase();
+                    if (norm !== 'SIM' && norm !== 'NAO') {
+                        alert('Esta consulta aceita apenas respostas: SIM ou NÃO');
+                        return;
+                    }
+                    emoji = norm;
+                }
                 post._reacting = true;
                 const usuario = this.currentUserEmail || this.currentUser || 'anônimo';
                 const body = { usuario, emoji };
@@ -226,6 +237,8 @@
 
             async toggleComments(post) {
                 if (!post) return;
+                // comments disabled for Consulta Informal
+                if (post.status === 'CONSULTA_INFORMAL') return;
                 post._commentsOpen = !post._commentsOpen;
                 if (post._commentsOpen && (!post.comments || post.comments.length === 0)) {
                     await this.loadComments(post);

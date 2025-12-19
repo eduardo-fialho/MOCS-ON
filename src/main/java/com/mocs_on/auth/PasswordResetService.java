@@ -52,12 +52,11 @@ public class PasswordResetService {
         }
         Optional<UserAccountService.UserRecord> userOpt = userAccountService.findUserByEmail(email);
         if (userOpt.isEmpty()) {
-            log.info("Reset abortado: usuario não encontrado [{}]. Usuários cadastrados: {}",
-                    email,
-                    userAccountService.findAllUsers()
-                            .stream()
-                            .map(UserAccountService.UserRecord::email)
-                            .toList());
+                java.util.List<String> allEmails = userAccountService.findAllUsers()
+                    .stream()
+                    .map(UserAccountService.UserRecord::email)
+                    .collect(java.util.stream.Collectors.toList());
+                log.info("Reset abortado: usuario não encontrado [{}]. Usuários cadastrados: {}", email, allEmails);
             return RequestResetResult.invalid();
         }
 
@@ -204,13 +203,24 @@ public class PasswordResetService {
         UPDATE_FAILED
     }
 
-    public record RequestResetResult(boolean delivered, String resetLink) {
-        static RequestResetResult of(boolean delivered, String link) {
+    public static class RequestResetResult {
+        private final boolean delivered;
+        private final String resetLink;
+
+        private RequestResetResult(boolean delivered, String resetLink) {
+            this.delivered = delivered;
+            this.resetLink = resetLink;
+        }
+
+        public static RequestResetResult of(boolean delivered, String link) {
             return new RequestResetResult(delivered, link);
         }
 
-        static RequestResetResult invalid() {
+        public static RequestResetResult invalid() {
             return new RequestResetResult(false, null);
         }
+
+        public boolean delivered() { return delivered; }
+        public String resetLink() { return resetLink; }
     }
 }

@@ -59,14 +59,25 @@ CREATE TABLE IF NOT EXISTS `secretariado_profiles` (
 -- Ajuste registrado por Arthur Henrique: replicamos o contrato do mural (código do Samuel)
 -- para que ambientes manuais não precisem rodar ALTER TABLE de emergência.
 CREATE TABLE IF NOT EXISTS `posts` (
-  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `autor` VARCHAR(255) NOT NULL,
-  `mensagem` TEXT NOT NULL,
-  `data` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `status` VARCHAR(20) NOT NULL DEFAULT 'PUBLICO',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+
+  `autor` VARCHAR(255) NOT NULL,
+
+  `mensagem` TEXT NOT NULL,
+
+  `data` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+
+  `status` VARCHAR(20) NOT NULL DEFAULT 'PUBLICO',
+  `comite_sigla` VARCHAR(200) NULL,
+  `aprovador` VARCHAR(255) NULL,
+
+  PRIMARY KEY (`id`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
 CREATE TABLE post_reactions (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   post_id BIGINT NOT NULL,
@@ -76,6 +87,16 @@ CREATE TABLE post_reactions (
   FOREIGN KEY (post_id) REFERENCES posts(id),
   UNIQUE KEY ux_post_user_emoji (post_id, usuario, emoji)
 );
+
+CREATE TABLE IF NOT EXISTS `usuario_comites` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `usuario_id` BIGINT UNSIGNED NOT NULL,
+  `comite_id` BIGINT UNSIGNED NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY ux_usuario_comite (`usuario_id`, `comite_id`),
+  CONSTRAINT fk_usuario_comite_usuario FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  CONSTRAINT fk_usuario_comite_comite FOREIGN KEY (`comite_id`) REFERENCES `comites` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `avisos` (
     `id` bigint unsigned NOT NULL AUTO_INCREMENT,

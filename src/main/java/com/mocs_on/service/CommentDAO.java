@@ -18,6 +18,9 @@ public class CommentDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private com.mocs_on.service.PostDAO postDAO;
+
     public List<Comment> getCommentsForPost(Long postId, int limit, int offset) {
         String sql = "SELECT id, post_id, usuario, usuario_nome, mensagem, created_at, status FROM post_comments WHERE post_id = ? ORDER BY created_at ASC LIMIT ? OFFSET ?";
         return jdbcTemplate.query(sql, new Object[]{postId, limit, offset}, (rs, rowNum) -> {
@@ -39,6 +42,11 @@ public class CommentDAO {
     }
 
     public Long addCommentToPost(Long postId, String usuario, String usuarioNome, String mensagem) {
+        // Prevent comments on Consulta Informal posts
+        com.mocs_on.domain.Post post = postDAO.getPostById(postId);
+        if (post != null && post.getStatus() == com.mocs_on.domain.Post.TipoPost.CONSULTA_INFORMAL) {
+            return null; // disallow comments
+        }
         String sql = "INSERT INTO post_comments (post_id, usuario, usuario_nome, mensagem, created_at, status) VALUES (?, ?, ?, ?, ?, ?)";
         Timestamp ts = Timestamp.valueOf(LocalDateTime.now());
         int updated = jdbcTemplate.update(connection -> {

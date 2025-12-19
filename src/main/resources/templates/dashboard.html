@@ -123,7 +123,7 @@
 
 
                                             <div class="mt-3 flex items-center gap-2 text-sm">
-                                                <template x-for="emoji in emojis" :key="emoji">
+                                                <template x-for="emoji in post._allowedEmojis" :key="emoji">
                                                     <button
                                                         :class="{
                                                             'ring-2 ring-offset-1 ring-blue-300': post.myReaction === emoji,
@@ -139,10 +139,18 @@
                                                 </template>
                                             </div>
                                             <div class="mt-3">
-                                                <button class="text-sm text-gray-600" @click="toggleComments(post)">
-                                                    <span x-text="(post._commentsOpen ? 'Fechar' : 'Ver') + ' comentários'"></span>
-                                                </button>
-                                                <div x-show="post._commentsOpen" x-cloak class="mt-2 space-y-3">
+                                                <template x-if="post.status !== 'CONSULTA_INFORMAL'">
+                                                    <div>
+                                                        <button class="text-sm text-gray-600" @click="toggleComments(post)">
+                                                            <span x-text="(post._commentsOpen ? 'Fechar' : 'Ver') + ' comentários'"></span>
+                                                        </button>
+                                                        <div x-show="post._commentsOpen" x-cloak class="mt-2 space-y-3">
+                                                </div>
+                                                    </div>
+                                                </template>
+                                                <template x-if="post.status === 'CONSULTA_INFORMAL'">
+                                                    <div class="text-sm text-gray-500 mt-2">Consulta Informal — somente respostas SIM/NÃO.</div>
+                                                </template>
                                                     <div x-show="post._loadingComments" class="text-sm text-gray-500">Carregando comentários...</div>
                                                     <template x-for="comment in (post.comments || [])" :key="comment.id">
                                                         <div class="bg-gray-50 p-2 rounded">

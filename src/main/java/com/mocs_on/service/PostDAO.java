@@ -20,18 +20,24 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mocs_on.domain.Post;
+import com.mocs_on.domain.Usuario;
+import org.springframework.beans.factory.annotation.Qualifier;
+import com.mocs_on.service.LoginDAO;
 
 @Repository
 public class PostDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private LoginDAO loginDAO;
+
     public enum ReactionResult {
         CREATED, UPDATED, REMOVED, ERROR
     }
 
     public List<Post> recuperarTodos() {
-        String sql = "SELECT id, autor, mensagem, data, status FROM posts ORDER BY data DESC";
+        String sql = "SELECT id, autor, mensagem, data, status, comite_sigla, aprovador FROM posts ORDER BY data DESC";
 
         List<Post> posts = jdbcTemplate.query(sql, (resultado, linha) -> {
             Post post = new Post();
@@ -50,6 +56,8 @@ public class PostDAO {
 
             Timestamp data = resultado.getTimestamp("data");
             if (data != null) post.setData(data.toLocalDateTime());
+            post.setComiteSigla(resultado.getString("comite_sigla"));
+            post.setAprovador(resultado.getString("aprovador"));
             return post;
         });
 
@@ -66,7 +74,7 @@ public class PostDAO {
     }
 
     public List<Post> recuperarTodosParaUsuario(String usuario) {
-        String sql = "SELECT id, autor, mensagem, data, status FROM posts ORDER BY data DESC";
+        String sql = "SELECT id, autor, mensagem, data, status, comite_sigla, aprovador FROM posts ORDER BY data DESC";
 
         List<Post> posts = jdbcTemplate.query(sql, (resultado, linha) -> {
             Post post = new Post();
@@ -85,6 +93,8 @@ public class PostDAO {
 
             Timestamp data = resultado.getTimestamp("data");
             if (data != null) post.setData(data.toLocalDateTime());
+            post.setComiteSigla(resultado.getString("comite_sigla"));
+            post.setAprovador(resultado.getString("aprovador"));
             return post;
         });
 
@@ -114,7 +124,7 @@ public class PostDAO {
     }
 
     public Long inserirPost(Post post) {
-        String sql = "INSERT INTO posts (autor, mensagem, data, status) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO posts (autor, mensagem, data, status, comite_sigla, aprovador) VALUES (?, ?, ?, ?, ?, ?)";
         Timestamp ts = Timestamp.valueOf(post.getData());
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -124,6 +134,8 @@ public class PostDAO {
             ps.setString(2, post.getMensagem());
             ps.setTimestamp(3, ts);
             ps.setString(4, post.getStatus() == null ? Post.TipoPost.PUBLICO.name() : post.getStatus().name());
+            ps.setString(5, post.getComiteSigla());
+            ps.setString(6, post.getAprovador());
             return ps;
         }, keyHolder);
 
@@ -185,6 +197,33 @@ public class PostDAO {
         }
     }
 
+    public Post getPostById(Long postId) {
+        String sql = "SELECT id, autor, mensagem, data, status, comite_sigla, aprovador FROM posts WHERE id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, new Object[]{postId}, (rs, rowNum) -> {
+                Post post = new Post();
+                post.setId(rs.getLong("id"));
+                post.setAutor(rs.getString("autor"));
+                post.setMensagem(rs.getString("mensagem"));
+                String statusStr = rs.getString("status");
+                if (statusStr != null) {
+                    try {
+                        post.setStatus(Post.TipoPost.valueOf(statusStr));
+                    } catch (IllegalArgumentException ex) {
+                        post.setStatus(Post.TipoPost.PUBLICO);
+                    }
+                }
+                java.sql.Timestamp ts = rs.getTimestamp("data");
+                if (ts != null) post.setData(ts.toLocalDateTime());
+                post.setComiteSigla(rs.getString("comite_sigla"));
+                post.setAprovador(rs.getString("aprovador"));
+                return post;
+            });
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
+    }
+
     public int updateReactionForPost(Long postId, String usuario, String newEmoji) {
         String sql = "UPDATE post_reactions SET emoji = ? WHERE post_id = ? AND usuario = ?";
         return jdbcTemplate.update(sql, newEmoji, postId, usuario);
@@ -195,6 +234,39 @@ public class PostDAO {
     public ReactionResult reactToPost(Long postId, String usuario, String emoji) {
         if (postId == null || usuario == null || usuario.trim().isEmpty() || emoji == null) {
             return ReactionResult.ERROR;
+        }
+
+        // Enforce rules for Consulta Informal
+        Post post = getPostById(postId);
+        if (post == null) return ReactionResult.ERROR;
+        if (post.getStatus() == Post.TipoPost.CONSULTA_INFORMAL) {
+            // normalize emoji
+            String norm = emoji.trim().toUpperCase();
+            if (norm.equals("NÃO") || norm.equals("NÃO")) norm = "NAO";
+            if (!norm.equals("SIM") && !norm.equals("NAO") && !norm.equals("NÃO")) {
+                return ReactionResult.ERROR;
+            }
+
+            // validate user is delegado and belongs to committee
+            var userOpt = loginDAO.findByEmail(usuario);
+            if (userOpt.isEmpty()) return ReactionResult.ERROR;
+            Usuario u = userOpt.get();
+            if (u.getTipo() == null || !u.getTipo().name().equalsIgnoreCase("DELEGADO")) {
+                return ReactionResult.ERROR;
+            }
+
+            boolean belongs = false;
+            if (u.getComites() != null && post.getComiteSigla() != null) {
+                for (var c : u.getComites()) {
+                    if (c != null && post.getComiteSigla().equalsIgnoreCase(c.getSigla())) {
+                        belongs = true; break;
+                    }
+                }
+            }
+            if (!belongs) return ReactionResult.ERROR;
+
+            // map emoji to normalized values SIM/NAO
+            emoji = norm.equals("NÃO") ? "NAO" : norm;
         }
 
         String current = getUserReactionForPost(postId, usuario);

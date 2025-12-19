@@ -84,7 +84,8 @@ CREATE TABLE IF NOT EXISTS post_comments (
   usuario VARCHAR(255) NOT NULL,
   usuario_nome VARCHAR(255) NULL,
   mensagem TEXT NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `comite_sigla` VARCHAR(200) NULL,
+  `aprovador` VARCHAR(255) NULL,
   status VARCHAR(20) NULL,
   PRIMARY KEY (id),
   KEY idx_post_comments_post_id (post_id),
@@ -117,9 +118,10 @@ CREATE TABLE IF NOT EXISTS `documentos` (
     `nome` VARCHAR(255) NOT NULL,
     `autor` VARCHAR(255) NOT NULL,
     `arquivo` LONGBLOB NOT NULL,
-    `status` VARCHAR(50) NOT NULL DEFAULT 'EM ENVIO',
+  `status` VARCHAR(50) NOT NULL DEFAULT 'EM ENVIO',
     `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
     `data` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `comite_sigla` VARCHAR(200) NULL,
     `avaliacao` VARCHAR(1000) NOT NULL,
 
     PRIMARY KEY (`id`),
@@ -137,6 +139,15 @@ CREATE TABLE IF NOT EXISTS `comites` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+  CREATE TABLE IF NOT EXISTS `usuario_comites` (
+      `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+      `usuario_id` BIGINT UNSIGNED NOT NULL,
+      `comite_id` BIGINT UNSIGNED NOT NULL,
+      PRIMARY KEY (`id`),
+      UNIQUE KEY ux_usuario_comite (`usuario_id`, `comite_id`),
+      CONSTRAINT fk_usuario_comite_usuario FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+      CONSTRAINT fk_usuario_comite_comite FOREIGN KEY (`comite_id`) REFERENCES `comites` (`id`) ON DELETE CASCADE
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE IF NOT EXISTS agenda_diaria (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     titulo VARCHAR(255),

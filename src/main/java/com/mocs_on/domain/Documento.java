@@ -11,6 +11,7 @@ public class Documento {
     private StatusDocumento status;
     private byte[] arquivo;
     private LocalDateTime data;
+    private String comiteSigla;
     private String avaliacao;
 
     public LocalDateTime getData() {
@@ -75,5 +76,13 @@ public class Documento {
 
     public void setAvaliacao(String avaliacao) {
         this.avaliacao = avaliacao;
+    }
+
+    public String getComiteSigla() {
+        return comiteSigla;
+    }
+
+    public void setComiteSigla(String comiteSigla) {
+        this.comiteSigla = comiteSigla;
     }
 }
