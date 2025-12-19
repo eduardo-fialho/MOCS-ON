@@ -30,7 +30,11 @@
                     <span class="font-semibold text-gray-700 hidden sm:block">CSNU</span>
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" class="flex items-center space-x-2">
-                            <img src="https://placehold.co/40x40/cccccc/ffffff?text=U" alt="Avatar"
+                            <img :src="userAvatar"
+                                src="https://placehold.co/40x40/cccccc/ffffff?text=U"
+                                data-user-avatar
+                                @error="$event.target.src = defaultAvatar"
+                                alt="Avatar"
                                 class="h-9 w-9 rounded-full border-2 border-mocs-blue">
                             <span class="hidden md:block font-semibold text-gray-700"
                                 x-text="userName">Carregando...</span>
@@ -111,6 +115,9 @@
             </section>
         </main>
     </div>
+
+    <script th:src="@{/js/dashboard_config.js}"></script>
+    <script th:src="@{/js/profile_data.js}"></script>
 </body>
 
 </html>

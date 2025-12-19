@@ -418,7 +418,8 @@ public class ProfileController {
         UserAccountService.UserRecord user = userOpt.get();
         Post post = postOpt.get();
 
-        boolean canModerate = user.type() != null && user.type().equalsIgnoreCase("SECRETARIADO");
+        boolean canModerate = user.type() != null && (user.type().equalsIgnoreCase("SECRETARIADO")
+                || user.type().equalsIgnoreCase("SECRETARIO"));
         boolean isOwner = post.getAutorRaw() != null && user.name() != null
                 && user.name().equalsIgnoreCase(post.getAutorRaw());
         if (!canModerate && !isOwner) {
@@ -651,7 +652,6 @@ public class ProfileController {
         }
     }
 }
-
 
 
 
