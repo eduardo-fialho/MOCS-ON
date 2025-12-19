@@ -16,7 +16,7 @@ public class GuiaEstudos {
     private LocalDateTime atualizadoEm;
     private Boolean oficial;
     private Boolean ativo;
-    private Long id_comite;
+    private Long idComite;
 
     public Long getId() {
         return id;
@@ -98,12 +98,12 @@ public class GuiaEstudos {
         this.ativo = ativo;
     }
 
-    public Long getId_comite() {
-        return id_comite;
+    public Long getIdComite() {
+        return idComite;
     }
 
-    public void setId_comite(Long id_comite) {
-        this.id_comite = id_comite;
+    public void setIdComite(Long idComite) {
+        this.idComite = idComite;
     }
 
     public String getRegras() {

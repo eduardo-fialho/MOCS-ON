@@ -1,11 +1,13 @@
 package com.mocs_on.service;
 
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +23,7 @@ public class GuiaEstudosDAO {
     public List<GuiaEstudos> recuperarTodos() {
         String sql = """
             SELECT id, autor, titulo, conteudo, regras, arquivo,
-                   data, atualizado_em, oficial, ativo, id_comite
+                `data`, atualizado_em, oficial, ativo, id_comite
             FROM guia_estudos
             WHERE ativo = true
             ORDER BY data DESC
@@ -37,7 +39,7 @@ public class GuiaEstudosDAO {
     public GuiaEstudos recuperarPorId(Long id) {
         String sql = """
             SELECT id, autor, titulo, conteudo, regras, arquivo,
-                   data, atualizado_em, oficial, ativo, id_comite
+                `data`, atualizado_em, oficial, ativo, id_comite
             FROM guia_estudos
             WHERE id = ? AND ativo = true
         """;
@@ -69,26 +71,29 @@ public class GuiaEstudosDAO {
     public Long criarGuia(GuiaEstudos guia) {
         String sqlGuia = """
             INSERT INTO guia_estudos
-            (autor, titulo, conteudo, regras, arquivo, data,
+            (autor, titulo, conteudo, regras, arquivo, `data`,
              atualizado_em, oficial, ativo, id_comite)
             VALUES (?, ?, ?, ?, ?, ?,
                     ?, ?, true, ?)
-            RETURNING id
         """;
 
-        Long idGuia = jdbcTemplate.queryForObject(
-            sqlGuia,
-            Long.class,
-            guia.getAutor(),
-            guia.getTitulo(),
-            guia.getConteudo(),
-            guia.getRegras(),
-            guia.getArquivo(),
-            LocalDateTime.now(),
-            LocalDateTime.now(),
-            guia.getOficial(),
-            guia.getId_comite()
-        );
+        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            java.sql.PreparedStatement ps = connection.prepareStatement(sqlGuia, new String[]{"id"});
+            ps.setString(1, guia.getAutor());
+            ps.setString(2, guia.getTitulo());
+            ps.setString(3, guia.getConteudo());
+            ps.setString(4, guia.getRegras());
+            ps.setBytes(5, guia.getArquivo());
+            ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
+            ps.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
+            ps.setBoolean(8, guia.getOficial() != null && guia.getOficial());
+            ps.setObject(9, guia.getIdComite(), Types.BIGINT);
+            return ps;
+        }, keyHolder);
+
+        Long idGuia = keyHolder.getKey().longValue();
 
         if (guia.getLinks() != null && !guia.getLinks().isEmpty()) {
             inserirLinks(idGuia, guia.getLinks());
@@ -120,7 +125,7 @@ public class GuiaEstudosDAO {
             guia.getRegras(),
             guia.getArquivo(),
             guia.getOficial(),
-            guia.getId_comite(),
+            guia.getIdComite(),
             LocalDateTime.now(),
             id
         );
@@ -156,7 +161,7 @@ public class GuiaEstudosDAO {
         guia.setArquivo(rs.getBytes("arquivo"));
         guia.setOficial(rs.getBoolean("oficial"));
         guia.setAtivo(rs.getBoolean("ativo"));
-        guia.setId_comite(rs.getLong("id_comite"));
+        guia.setIdComite(rs.getObject("id_comite") != null ? rs.getLong("id_comite") : null);
 
         Timestamp dataTs = rs.getTimestamp("data");
         guia.setData(dataTs != null ? dataTs.toLocalDateTime() : null);

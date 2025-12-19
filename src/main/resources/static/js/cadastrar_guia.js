@@ -1,58 +1,114 @@
-function cadastroGuia() {
-    return {
-        isSubmitting: false,
-        form: {
-            titulo: '',
-            comite: '',
-            regras: '',
-            conteudo: '',
-            pdfFile: null,
-            links: [],
-        },
-        addLink() {
-            this.form.links.push({ nome: '', url: '' });
-        },
-        removeLink(index) {
-            this.form.links.splice(index, 1);
-        },
-        handleFileUpload(event) {
-            this.form.pdfFile = event.target.files[0];
-        },
-        async submitGuia() {
-            this.isSubmitting = true;
-            // Lógica de envio:
+document.addEventListener('DOMContentLoaded', () => {
 
-            // 1. Criar FormData para enviar dados e o arquivo
-            const formData = new FormData();
-            formData.append('titulo', this.form.titulo);
-            formData.append('comite', this.form.comite);
-            formData.append('regras', this.form.regras);
-            formData.append('conteudo', this.form.conteudo);
-            if (this.form.pdfFile) {
-                formData.append('pdfFile', this.form.pdfFile);
-            }
-            formData.append('links', JSON.stringify(this.form.links)); // Links como JSON string
+    const form = document.getElementById('guiaForm');
+    const addLinkBtn = document.getElementById('addLinkBtn');
+    const linksContainer = document.getElementById('linksContainer');
+    const noLinksText = document.getElementById('noLinksText');
+    const submitBtn = document.getElementById('submitBtn');
+    const selectComite = document.getElementById('id_comite');
 
-            try {
-                // Substituir pelo seu endpoint de API real
-                const response = await fetch('http://localhost:8082/guias_estudo/submeter', {
-                    method: 'POST',
-                    body: formData, // Envio via FormData para incluir o arquivo
-                });
+    function atualizarTextoLinks() {
+        noLinksText.style.display = linksContainer.children.length === 0 ? 'block' : 'none';
+    }
 
-                if (!response.ok) {
-                    throw new Error('Erro ao submeter o guia. Verifique os dados.');
-                }
+    function criarCampoLink() {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'flex gap-2 mb-2';
 
-                alert('Guia de Estudo submetido com sucesso! Será encaminhado para avaliação.');
-                window.location.href = '/guias_estudo.html'; // Redireciona para a lista
+        const input = document.createElement('input');
+        input.type = 'url';
+        input.required = true;
+        input.placeholder = 'URL completa';
+        input.className = 'flex-1 px-3 py-2 border rounded-lg';
 
-            } catch (error) {
-                console.error('Erro de submissão:', error);
-                alert(`Falha na submissão: ${error.message}`);
-            } finally {
-                this.isSubmitting = false;
-            }
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        removeBtn.className = 'text-red-500';
+
+        removeBtn.addEventListener('click', () => {
+            wrapper.remove();
+            atualizarTextoLinks();
+        });
+
+        wrapper.appendChild(input);
+        wrapper.appendChild(removeBtn);
+        linksContainer.appendChild(wrapper);
+
+        atualizarTextoLinks();
+    }
+
+    addLinkBtn.addEventListener('click', criarCampoLink);
+
+    async function carregarComites() {
+        try {
+            const response = await fetch('/comite/informacoes');
+            if (!response.ok) throw new Error('Erro ao carregar comitês');
+
+            const comites = await response.json();
+
+            comites.forEach(comite => {
+                const option = document.createElement('option');
+                option.value = comite.id; 
+                option.textContent = `${comite.nome} (${comite.sigla})`;
+                selectComite.appendChild(option);
+            });
+
+        } catch (err) {
+            console.error(err);
+            alert('Não foi possível carregar os comitês.');
         }
     }
-}
+
+    carregarComites();
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const comiteId = selectComite.value;
+        if (!comiteId) {
+            alert('Selecione um comitê antes de enviar.');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Enviando...';
+
+        try {
+            const formData = new FormData();
+            formData.append('autor', document.getElementById('autor').value);
+            formData.append('titulo', document.getElementById('titulo').value);
+            formData.append('conteudo', document.getElementById('conteudo').value);
+            formData.append('regras', document.getElementById('regras').value);
+            formData.append('id_comite', comiteId); 
+
+            linksContainer.querySelectorAll('input[type="url"]').forEach(input => {
+                formData.append('links', input.value);
+            });
+
+            const fileInput = document.getElementById('arquivo');
+            if (fileInput.files.length > 0) {
+                formData.append('arquivo', fileInput.files[0]);
+            }
+
+            const response = await fetch('/guia-estudos', {
+                method: 'POST',
+                body: formData
+            });
+
+            const text = await response.text();
+            if (!response.ok) throw new Error(text);
+
+            alert('Guia de estudo criado com sucesso!');
+            window.location.href = '/guias_de_estudos.html';
+
+        } catch (err) {
+            console.error(err);
+            alert(err.message || 'Erro ao enviar guia');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-upload mr-2"></i> Submeter Guia';
+        }
+    });
+
+});

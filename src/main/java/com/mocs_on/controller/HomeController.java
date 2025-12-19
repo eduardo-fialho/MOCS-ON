@@ -32,7 +32,7 @@ public class HomeController {
     @Autowired
     private SecretariatDashboardService secretariatDashboardService;
 
-    @GetMapping("/")
+    @GetMapping({"", "/"})
     public String index() {
         return "index";
     }
@@ -95,6 +95,15 @@ public class HomeController {
         return "documentos";
     }
 
+    @GetMapping("/guias_de_estudos.html")
+    public String guiaEstudos(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        populateUserAttributes(model);
+        return "painel_guia_de_estudos";
+    }
+
     @GetMapping("/avaliar_documentos.html")
     public String avaliar(@RequestParam(required = false) Long docId, HttpSession session, Model model) {
         if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
@@ -116,6 +125,35 @@ public class HomeController {
         populateUserAttributes(model);
         return "submissao_documentos";
     }
+
+    @GetMapping("/cadastrar_guia.html")
+    public String cadastrarGuiaDeEstudos(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        populateUserAttributes(model);
+        return "cadastrar_guia";
+    }
+
+    @GetMapping("/editar_guia.html")
+    public String editarGuiaDeEstudos(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        populateUserAttributes(model);
+        return "editar_guia_de_estudos";
+    }
+
+    @GetMapping("/guia_estudo.html")
+    public String visualizarGuia(@RequestParam Long id, HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        model.addAttribute("id", id);
+        populateUserAttributes(model);
+        return "guia_de_estudos";
+    }
+    
 
     private boolean isAuthenticated(HttpSession session) {
         return session != null && session.getAttribute(AuthController.SESSION_USER_ATTRIBUTE) != null;

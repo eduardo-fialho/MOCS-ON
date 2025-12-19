@@ -1,25 +1,86 @@
-function guiaData() {
-    return {
-        guiaId: null,
-        guiaTitle: 'Guia de Estudo Padrão - 2025',
-        guiaComite: 'CSNU - Conselho de Segurança das Nações Unidas',
-        guiaStatus: 'APROVADO',
-        guiaRegras: 'As regras de submissão e debate seguem o ROP 5.2. O documento de posição deve ter no máximo 1500 palavras, formatado em Times New Roman, tamanho 12.',
-        guiaConteudo: 'O tema principal é a "Reforma do Conselho de Segurança". Os tópicos a serem abordados incluem: composição, poder de veto e mecanismos de resposta rápida a crises.',
-        guiaPdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', // Link de exemplo
-        guiaLinks: [
-            { nome: 'Site Oficial da ONU', url: 'https://www.un.org/' },
-            { nome: 'Estatuto de Roma', url: 'https://www.icc-cpi.int/rome-statute' },
-        ],
-        loadGuiaDetails() {
-            // Simulação: buscar ID da URL e carregar dados via fetch (como em documentos.js)
-            const urlParams = new URLSearchParams(window.location.search);
-            this.guiaId = urlParams.get('guiaId') || 1;
+document.addEventListener("DOMContentLoaded", () => {
 
-            // Em uma aplicação real, você faria um FETCH aqui:
-            // fetch(`/api/guias/${this.guiaId}`)
-            // .then(res => res.json())
-            // .then(data => { /* atribuir data às propriedades */ });
+    const guiaTitulo = document.getElementById("guia-titulo");
+    const guiaComite = document.getElementById("guia-comite");
+    const guiaRegras = document.getElementById("guia-regras");
+    const guiaConteudo = document.getElementById("guia-conteudo");
+    const guiaLinks = document.getElementById("guia-links");
+    const pdfContainer = document.getElementById("pdf-container");
+    const guiaPdfIframe = document.getElementById("guia-pdf");
+    const downloadBtn = document.getElementById("download-btn");
+    const guiaNaoOficial = document.getElementById("guia-nao-oficial");
+
+    function getGuiaId() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get("id");
+    }
+
+    async function carregarGuia() {
+        const id = getGuiaId();
+        if (!id) {
+            alert("ID do guia não fornecido.");
+            return;
+        }
+
+        try {
+            const res = await fetch(`/guia-estudos/${id}`);
+            if (!res.ok) throw new Error("Erro ao carregar guia");
+
+            const guia = await res.json();
+
+            if (!guia) {
+                alert("Guia não encontrado.");
+                return;
+            }
+
+            guiaTitulo.textContent = guia.titulo || "";
+            guiaComite.textContent = guia.comiteNome || "";
+
+            guiaRegras.innerHTML = guia.regras || "<p>Sem regras disponíveis</p>";
+            guiaConteudo.innerHTML = guia.conteudo || "<p>Sem conteúdo disponível</p>";
+
+            guiaLinks.innerHTML = "";
+            if (guia.links && guia.links.length > 0) {
+                guia.links.forEach(link => {
+                    const li = document.createElement("li");
+                    const a = document.createElement("a");
+                    a.href = link.link;
+                    a.textContent = link.link;
+                    a.target = "_blank";
+                    a.className = "text-blue-600 hover:text-blue-800 hover:underline transition";
+                    li.appendChild(a);
+                    guiaLinks.appendChild(li);
+                });
+            } else {
+                guiaLinks.innerHTML = "<li>Nenhum link externo fornecido.</li>";
+            }
+
+            if (guia.arquivo) {
+                pdfContainer.style.display = "block";
+
+                guiaPdfIframe.src = `/guia-estudos/${id}/visualizar`;
+
+                if (guia.oficial) {
+                    downloadBtn.style.display = "flex";
+                    downloadBtn.href = `/guia-estudos/${id}/arquivo`;
+                    guiaNaoOficial.style.display = "none";
+                } else {
+                    downloadBtn.style.display = "none";
+                    guiaNaoOficial.style.display = "block";
+                }
+
+            } else {
+                pdfContainer.style.display = "none";
+                guiaPdfIframe.src = "";
+                downloadBtn.style.display = "none";
+                guiaNaoOficial.style.display = "none";
+            }
+
+        } catch (err) {
+            console.error(err);
+            alert("Não foi possível carregar os dados do guia.");
         }
     }
-}
+
+    carregarGuia();
+});
