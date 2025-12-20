@@ -25,7 +25,7 @@ public class MateriaDAO {
     public Long salvar(Materia materia) {
         String sql = """
             INSERT INTO materias
-            (titulo, lead, texto, autor, comite_id, status, ativo, imagem)
+            (titulo, `lead`, texto, autor, comite_id, status, ativo, imagem)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
@@ -118,7 +118,7 @@ public class MateriaDAO {
     public int atualizar(Materia materia) {
         String sql = """
             UPDATE materias
-            SET titulo = ?, lead = ?, texto = ?, imagem = ?, ativo = ?, data_edicao = NOW()
+            SET titulo = ?, `lead` = ?, texto = ?, imagem = ?, ativo = ?, data_edicao = NOW()
             WHERE id = ?
         """;
 

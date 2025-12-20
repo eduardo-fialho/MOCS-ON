@@ -132,13 +132,6 @@ async function renderMateriaDetails(m) {
             </p>
         ` : ''}
 
-        ${m.reviewedAt && m.status != "APROVADA"? `
-            <p class="text-sm text-slate-500">
-                Anteriormente Revisado por: <span class="text-mocs-blue"><strong>${m.revisor}</strong></span><br>
-                Há: ${timeAgo(m.reviewedAt)}
-            </p>
-        ` : ''}
-
         ${m.imagem ? `
             <img src="/imprensa/materias/${m.id}/imagem"
                  class="rounded-xl mt-4 border">
