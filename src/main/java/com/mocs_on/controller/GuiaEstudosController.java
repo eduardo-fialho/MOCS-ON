@@ -8,7 +8,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.mocs_on.domain.GuiaEstudos;
@@ -70,9 +75,22 @@ public class GuiaEstudosController {
             @RequestParam String titulo,
             @RequestParam String conteudo,
             @RequestParam String regras,
-            @RequestParam List<String> links,
+            @RequestParam(required = false) List<String> links,
             @RequestParam(required = false) MultipartFile arquivo,
             @RequestParam Long id_comite) {
+
+        if (arquivo != null && !arquivo.isEmpty()) {
+            String contentType = arquivo.getContentType();
+            String originalName = arquivo.getOriginalFilename();
+            boolean isPdf = "application/pdf".equalsIgnoreCase(contentType)
+                    || (originalName != null && originalName.toLowerCase().endsWith(".pdf"));
+
+            if (!isPdf) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body("Arquivo inválido. Apenas PDF é permitido.");
+            }
+        }
 
         GuiaEstudos guia = new GuiaEstudos();
         guia.setAutor(autor);
@@ -81,15 +99,19 @@ public class GuiaEstudosController {
         guia.setRegras(regras);
 
         List<LinkGuia> linksGuia = new ArrayList<>();
-        for (String link : links) {
-            linksGuia.add(new LinkGuia(link));
+        if (links != null) {
+            for (String link : links) {
+                linksGuia.add(new LinkGuia(link));
+            }
+            guia.setLinks(linksGuia);
         }
-        guia.setLinks(linksGuia);
 
         try {
             guia.setArquivo(arquivo != null ? arquivo.getBytes() : null);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao processar arquivo");
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao processar o arquivo");
         }
 
         guia.setData(LocalDateTime.now());
@@ -100,9 +122,13 @@ public class GuiaEstudosController {
 
         Long idGuia = guiasService.criarGuia(guia);
         if (idGuia != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body("Guia criado com sucesso");
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body("Guia criado com sucesso");
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar guia");
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Erro ao criar guia");
     }
 
     @PostMapping("/{id}/atualizar")
@@ -112,9 +138,22 @@ public class GuiaEstudosController {
             @RequestParam String titulo,
             @RequestParam String conteudo,
             @RequestParam String regras,
-            @RequestParam List<String> links,
+            @RequestParam(required = false) List<String> links,
             @RequestParam(required = false) MultipartFile arquivo,
             @RequestParam Long id_comite) {
+
+        if (arquivo != null && !arquivo.isEmpty()) {
+            String contentType = arquivo.getContentType();
+            String originalName = arquivo.getOriginalFilename();
+            boolean isPdf = "application/pdf".equalsIgnoreCase(contentType)
+                    || (originalName != null && originalName.toLowerCase().endsWith(".pdf"));
+
+            if (!isPdf) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body("Arquivo inválido. Apenas PDF é permitido.");
+            }
+        }
 
         GuiaEstudos guia = new GuiaEstudos();
         guia.setAutor(autor);
@@ -123,18 +162,23 @@ public class GuiaEstudosController {
         guia.setRegras(regras);
 
         List<LinkGuia> linksGuia = new ArrayList<>();
-        for (String link : links) {
-            linksGuia.add(new LinkGuia(id, link));
+        if (links != null) {
+            for (String link : links) {
+                linksGuia.add(new LinkGuia(id, link));
+            }
+            guia.setLinks(linksGuia);
         }
-        guia.setLinks(linksGuia);
 
         try {
-            guia.setArquivo(arquivo != null ? arquivo.getBytes() : null);
+            if (arquivo != null) {
+                guia.setArquivo(arquivo.getBytes());
+            }
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao processar arquivo");
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao processar arquivo");
         }
 
-        guia.setData(LocalDateTime.now());
         guia.setAtualizadoEm(LocalDateTime.now());
         guia.setOficial(true);
         guia.setAtivo(true);
@@ -144,7 +188,10 @@ public class GuiaEstudosController {
         if (linhas == 1) {
             return ResponseEntity.ok("Guia atualizado com sucesso");
         }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar guia");
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Erro ao atualizar guia");
     }
 
     @GetMapping("/{id}/deletar")

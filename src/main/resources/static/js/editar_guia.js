@@ -7,12 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('submitBtn');
     const selectComite = document.getElementById('id_comite');
     const arquivoAtual = document.getElementById('arquivoAtual');
+    const fileInput = document.getElementById('arquivo');
 
     const guiaId = new URLSearchParams(window.location.search).get('id');
     document.getElementById('guiaId').value = guiaId;
 
     function atualizarTextoLinks() {
-        noLinksText.style.display = linksContainer.children.length === 0 ? 'block' : 'none';
+        noLinksText.style.display =
+            linksContainer.children.length === 0 ? 'block' : 'none';
     }
 
     function criarCampoLink(valor = '') {
@@ -43,19 +45,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     addLinkBtn.addEventListener('click', () => criarCampoLink());
 
+    fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const isPdf =
+            file.type === 'application/pdf' ||
+            file.name.toLowerCase().endsWith('.pdf');
+
+        if (!isPdf) {
+            alert('Apenas arquivos PDF são permitidos.');
+            fileInput.value = '';
+        }
+    });
+
     async function carregarComites() {
         try {
             const res = await fetch('/comite/informacoes');
-            if (!res.ok) throw new Error('Erro ao carregar comitês');
+            if (!res.ok) throw new Error();
             const comites = await res.json();
+
             comites.forEach(c => {
                 const option = document.createElement('option');
                 option.value = c.id;
                 option.textContent = `${c.nome} (${c.sigla})`;
                 selectComite.appendChild(option);
             });
-        } catch (err) {
-            console.error(err);
+        } catch {
             alert('Não foi possível carregar os comitês.');
         }
     }
@@ -63,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function carregarGuia() {
         try {
             const res = await fetch(`/guia-estudos/${guiaId}`);
-            if (!res.ok) throw new Error('Erro ao carregar guia');
+            if (!res.ok) throw new Error();
             const guia = await res.json();
 
             document.getElementById('titulo').value = guia.titulo;
@@ -72,15 +88,15 @@ document.addEventListener('DOMContentLoaded', () => {
             selectComite.value = guia.idComite;
 
             if (guia.arquivo) {
-                arquivoAtual.textContent = "PDF já anexado. Você pode substituir selecionando outro arquivo.";
+                arquivoAtual.textContent =
+                    'PDF já anexado. Você pode substituí-lo selecionando outro arquivo.';
             }
 
-            if (guia.links && guia.links.length > 0) {
-                guia.links.forEach(link => criarCampoLink(link.link));
+            if (guia.links?.length) {
+                guia.links.forEach(l => criarCampoLink(l.link));
             }
 
-        } catch (err) {
-            console.error(err);
+        } catch {
             alert('Não foi possível carregar o guia.');
         }
     }
@@ -88,30 +104,42 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const comiteId = selectComite.value;
-        if (!comiteId) {
+        if (!selectComite.value) {
             alert('Selecione um comitê antes de enviar.');
             return;
         }
 
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const isPdf =
+                file.type === 'application/pdf' ||
+                file.name.toLowerCase().endsWith('.pdf');
+
+            if (!isPdf) {
+                alert('Somente arquivos PDF podem ser enviados.');
+                return;
+            }
+        }
+
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Enviando...';
+        submitBtn.innerHTML =
+            '<i class="fas fa-spinner fa-spin mr-2"></i> Enviando...';
 
         try {
             const formData = new FormData();
-            formData.append('autor', 'Secretariado'); // Pode ajustar dinamicamente
+
+            formData.append('autor', 'Secretariado');
             formData.append('titulo', document.getElementById('titulo').value);
             formData.append('conteudo', document.getElementById('conteudo').value);
             formData.append('regras', document.getElementById('regras').value);
-            formData.append('id_comite', comiteId);
+            formData.append('id_comite', selectComite.value);
 
-            linksContainer.querySelectorAll('input[type="url"]').forEach(input => {
-                formData.append('links', input.value);
-            });
+            linksContainer
+                .querySelectorAll('input[type="url"]')
+                .forEach(i => formData.append('links', i.value));
 
-            const arquivoInput = document.getElementById('arquivo');
-            if (arquivoInput.files.length > 0) {
-                formData.append('arquivo', arquivoInput.files[0]);
+            if (fileInput.files.length > 0) {
+                formData.append('arquivo', fileInput.files[0]);
             }
 
             const res = await fetch(`/guia-estudos/${guiaId}/atualizar`, {
@@ -126,11 +154,11 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = '/guias_de_estudos.html';
 
         } catch (err) {
-            console.error(err);
             alert(err.message || 'Erro ao atualizar guia');
         } finally {
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-save mr-2"></i> Salvar Alterações';
+            submitBtn.innerHTML =
+                '<i class="fas fa-save mr-2"></i> Salvar Alterações';
         }
     });
 

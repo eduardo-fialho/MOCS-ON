@@ -6,9 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const noLinksText = document.getElementById('noLinksText');
     const submitBtn = document.getElementById('submitBtn');
     const selectComite = document.getElementById('id_comite');
+    const fileInput = document.getElementById('arquivo');
 
+    // -----------------------------
+    // Links dinâmicos
+    // -----------------------------
     function atualizarTextoLinks() {
-        noLinksText.style.display = linksContainer.children.length === 0 ? 'block' : 'none';
+        noLinksText.style.display =
+            linksContainer.children.length === 0 ? 'block' : 'none';
     }
 
     function criarCampoLink() {
@@ -40,16 +45,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     addLinkBtn.addEventListener('click', criarCampoLink);
 
+    fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const isPdf =
+            file.type === 'application/pdf' ||
+            file.name.toLowerCase().endsWith('.pdf');
+
+        if (!isPdf) {
+            alert('Apenas arquivos PDF são permitidos.');
+            fileInput.value = '';
+        }
+    });
+
     async function carregarComites() {
         try {
             const response = await fetch('/comite/informacoes');
-            if (!response.ok) throw new Error('Erro ao carregar comitês');
+            if (!response.ok) {
+                throw new Error('Erro ao carregar comitês');
+            }
 
             const comites = await response.json();
 
             comites.forEach(comite => {
                 const option = document.createElement('option');
-                option.value = comite.id; 
+                option.value = comite.id;
                 option.textContent = `${comite.nome} (${comite.sigla})`;
                 selectComite.appendChild(option);
             });
@@ -71,8 +92,22 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+
+            const isPdf =
+                file.type === 'application/pdf' ||
+                file.name.toLowerCase().endsWith('.pdf');
+
+            if (!isPdf) {
+                alert('Somente arquivos PDF podem ser enviados.');
+                return;
+            }
+        }
+
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Enviando...';
+        submitBtn.innerHTML =
+            '<i class="fas fa-spinner fa-spin mr-2"></i> Enviando...';
 
         try {
             const formData = new FormData();
@@ -80,13 +115,14 @@ document.addEventListener('DOMContentLoaded', () => {
             formData.append('titulo', document.getElementById('titulo').value);
             formData.append('conteudo', document.getElementById('conteudo').value);
             formData.append('regras', document.getElementById('regras').value);
-            formData.append('id_comite', comiteId); 
+            formData.append('id_comite', comiteId);
 
-            linksContainer.querySelectorAll('input[type="url"]').forEach(input => {
-                formData.append('links', input.value);
-            });
+            linksContainer
+                .querySelectorAll('input[type="url"]')
+                .forEach(input => {
+                    formData.append('links', input.value);
+                });
 
-            const fileInput = document.getElementById('arquivo');
             if (fileInput.files.length > 0) {
                 formData.append('arquivo', fileInput.files[0]);
             }
@@ -97,7 +133,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             const text = await response.text();
-            if (!response.ok) throw new Error(text);
+            if (!response.ok) {
+                throw new Error(text);
+            }
 
             alert('Guia de estudo criado com sucesso!');
             window.location.href = '/guias_de_estudos.html';
@@ -105,9 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             console.error(err);
             alert(err.message || 'Erro ao enviar guia');
+
         } finally {
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-upload mr-2"></i> Submeter Guia';
+            submitBtn.innerHTML =
+                '<i class="fas fa-upload mr-2"></i> Submeter Guia';
         }
     });
 
