@@ -201,6 +201,60 @@ CREATE TABLE IF NOT EXISTS `comites` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `materias` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+
+    `titulo` VARCHAR(255) NOT NULL,
+    `lead` VARCHAR(500) NOT NULL,
+    `texto` TEXT NOT NULL,
+
+    `imagem` LONGBLOB NULL,
+
+    `autor` VARCHAR(255) NOT NULL,
+    `revisor` VARCHAR(255) NULL,
+
+    `comite_id` BIGINT UNSIGNED NULL,
+
+    `status` VARCHAR(20) NOT NULL DEFAULT 'PENDENTE',
+    `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+
+    `data_criacao` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `data_edicao` DATETIME NULL,
+    `data_aprovacao` DATETIME NULL,
+
+    PRIMARY KEY (`id`),
+
+    KEY `idx_materias_status` (`status`),
+    KEY `idx_materias_autor` (`autor`),
+    KEY `idx_materias_comite` (`comite_id`),
+    KEY `idx_materias_ativo` (`ativo`),
+
+    CONSTRAINT `fk_materia_comite`
+        FOREIGN KEY (`comite_id`)
+        REFERENCES `comites` (`id`)
+        ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `materia_logs` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+
+    `materia_id` BIGINT UNSIGNED NOT NULL,
+    `acao` VARCHAR(50) NOT NULL,
+
+    `usuario` VARCHAR(255) NOT NULL,
+    `descricao` VARCHAR(1000) NULL,
+
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (`id`),
+    KEY `idx_materia_log_materia` (`materia_id`),
+
+    CONSTRAINT `fk_materia_log_materia`
+        FOREIGN KEY (`materia_id`)
+        REFERENCES `materias` (`id`)
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS `guia_estudos` (
   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `autor` VARCHAR(255) NOT NULL,
@@ -275,3 +329,4 @@ CREATE TABLE IF NOT EXISTS `link_guia` (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

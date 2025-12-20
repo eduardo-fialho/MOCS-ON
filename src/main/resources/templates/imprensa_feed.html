@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOCS ON - Imprensa</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet" th:href="@{/css/imprensa_feed.css}">
+</head>
+
+<body class="feed-bg min-h-screen bg-slate-50 text-slate-900 font-[Inter]">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-6">
+
+        <header class="bg-white border border-slate-200 rounded-2xl px-6 py-4 shadow-md flex flex-col md:flex-row md:items-center gap-4"
+                x-data="() => profileData()" x-init="loadUserInfo()">
+            <div class="flex items-center gap-3">
+                <a th:href="@{/dashboard}" class="inline-flex items-center text-blue-700 hover:underline">
+                    <i class="fas fa-arrow-left mr-2"></i> Voltar
+                </a>
+                <span class="hidden md:inline-flex text-slate-300">|</span>
+            </div>
+            <div class="text-center md:text-left">
+                <h1 class="text-2xl font-extrabold text-slate-900">Bem Vindo a Imprensa</h1>
+            </div>
+        </header>
+
+        <main class="gap-6">
+             
+            <section class="gap-6">
+                <div class="md:col-span-2 bg-white p-6 rounded-xl shadow-sm border mb-4"
+                    id="detalhes-materia">
+                    <p class="text-slate-500 text-center">
+                        Selecione uma matéria para visualizar
+                    </p>
+                </div>
+            </section>
+
+            <section class="liquid-glass w-full p-4 rounded-lg focus:ring-2 focus:ring-mocs-blue focus:border-mocs-blue text-gray-700 mb-4">
+                            
+                <p class="text-xs font-semibold text-gray-600 tracking-widest uppercase mb-4">Explorar Matérias MOCS ON</p>
+                <input
+                    id="filtro-titulo"
+                    type="text"
+                    placeholder="Buscar por título..."
+                    class="liquid-glass-input pl-10 pr-4 py-2.5 rounded-lg focus:ring-2 focus:ring-mocs-blue focus:border-mocs-blue text-gray-700"
+                >
+
+                <input
+                    id="filtro-data"
+                    type="date"
+                    class="liquid-glass-input pl-10 pr-4 py-2.5 rounded-lg focus:ring-2 focus:ring-mocs-blue focus:border-mocs-blue text-gray-700"
+                >
+
+                <button
+                    onclick="aplicarFiltros()"
+                    class="bg-mocs-blue text-white px-6 py-3 rounded-lg font-semibold"
+                >
+                    Buscar
+                </button>
+            </section>
+
+            <section class="bg-white p-4 rounded-xl shadow-sm border mb-6 gap-2">
+                <h2 class="text-2xl font-bold text-mocs-blue mb-4">Matérias:</h2>
+                <div class="md:col-span-1 space-y-4"
+                    id="lista-materias">
+                </div>
+            </section>
+        </main>
+    </div>
+
+
+    <script th:src="@{/js/dashboard_config.js}"></script>
+    <script th:src="@{/js/imprensa_feed.js}"></script>
+
+</body>
+
+</html>

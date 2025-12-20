@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <title>Meu Perfil</title>
@@ -17,37 +16,27 @@
             background-position: center;
             background-attachment: fixed;
         }
-
-        .bg-mocs-blue {
-            background-color: #205395;
-        }
-
-        .glass-card {
-            background-color: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(8px);
-        }
-
+        .bg-mocs-blue { background-color: #205395; }
+        .glass-card { background-color: rgba(255,255,255,0.95); backdrop-filter: blur(8px); }
         .liquid-danger {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.65));
-            border: 1px solid rgba(255, 255, 255, 0.7);
+            background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.65));
+            border: 1px solid rgba(255,255,255,0.7);
             border-radius: 999px;
             padding: 0.9rem 2.5rem;
             color: #c53030;
             font-weight: 600;
             backdrop-filter: blur(18px);
-            box-shadow: 0 18px 32px rgba(197, 48, 48, 0.18);
+            box-shadow: 0 18px 32px rgba(197,48,48,0.18);
             transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
         }
-
         .liquid-danger:hover {
-            background: linear-gradient(135deg, rgba(231, 38, 38, 0.9), rgba(190, 6, 6, 0.8));
+            background: linear-gradient(135deg, rgba(231,38,38,0.9), rgba(190,6,6,0.8));
             color: #fff;
             transform: translateY(-2px);
-            box-shadow: 0 20px 35px rgba(197, 48, 48, 0.3);
+            box-shadow: 0 20px 35px rgba(197,48,48,0.3);
         }
-
         .glass-confirm-backdrop {
-            background: rgba(0, 0, 0, 0.35);
+            background: rgba(0,0,0,0.35);
             backdrop-filter: blur(6px);
             opacity: 0;
             pointer-events: none;
@@ -60,34 +49,29 @@
             z-index: 60;
             transition: opacity 0.25s ease;
         }
-
         .glass-confirm-backdrop.active {
             opacity: 1;
             pointer-events: auto;
         }
-
         .glass-confirm-card {
-            background: rgba(255, 255, 255, 0.82);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            background: rgba(255,255,255,0.82);
+            border: 1px solid rgba(255,255,255,0.6);
             border-radius: 24px;
-            box-shadow: 0 18px 48px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 18px 48px rgba(0,0,0,0.25);
             backdrop-filter: blur(18px);
             transform: translateY(20px) scale(0.97);
             opacity: 0;
             transition: transform 0.35s ease, opacity 0.35s ease;
         }
-
         .glass-confirm-backdrop.active .glass-confirm-card {
             transform: translateY(0) scale(1);
             opacity: 1;
         }
-
         .profile-header-label,
         .profile-header-title,
         .profile-header-subtitle {
             color: #0a1b3f;
         }
-
         .back-to-dashboard {
             display: inline-flex;
             align-items: center;
@@ -96,18 +80,16 @@
             border-radius: 999px;
             font-weight: 600;
             color: #205395;
-            border: 1px solid rgba(32, 83, 149, 0.25);
-            background: rgba(255, 255, 255, 0.85);
-            box-shadow: 0 6px 18px rgba(32, 83, 149, 0.12);
+            border: 1px solid rgba(32,83,149,0.25);
+            background: rgba(255,255,255,0.85);
+            box-shadow: 0 6px 18px rgba(32,83,149,0.12);
             transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
         }
-
         .back-to-dashboard:hover {
             color: #12345f;
             transform: translateY(-1px);
-            box-shadow: 0 12px 24px rgba(32, 83, 149, 0.2);
+            box-shadow: 0 12px 24px rgba(32,83,149,0.2);
         }
-
         .heart-pop {
             position: absolute;
             color: #ff4b6e;
@@ -115,33 +97,22 @@
             animation: floatUp 1s ease-out forwards;
             opacity: 0.9;
         }
-
         @keyframes floatUp {
-            0% {
-                transform: translateY(0) scale(1);
-                opacity: 1;
-            }
-
-            100% {
-                transform: translateY(-60px) scale(1.6);
-                opacity: 0;
-            }
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-60px) scale(1.6); opacity: 0; }
         }
-
-        /* High-contrast text for glass modal */
-        .glass-confirm-card,
-        .glass-confirm-card h3,
-        .glass-confirm-card p,
-        .glass-confirm-card .text-slate-500,
-        .glass-confirm-card .text-slate-700 {
-            color: #e2e8ff !important;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-        }
-
-        .glass-confirm-card .text-slate-500 {
-            color: #cbd5ff !important;
-        }
-    </style>
+    /* High-contrast text for glass modal */
+.glass-confirm-card,
+.glass-confirm-card h3,
+.glass-confirm-card p,
+.glass-confirm-card .text-slate-500,
+.glass-confirm-card .text-slate-700 {
+    color: #e2e8ff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+}
+.glass-confirm-card .text-slate-500 {
+    color: #cbd5ff !important;
+}</style>
 </head>
 
 <body class="min-h-screen" th:attr="data-user-name=${user.name()},data-user-type=${user.type()}" data-user-name=""
@@ -149,8 +120,8 @@
     <header class="bg-white/90 shadow">
         <div class="max-w-5xl mx-auto px-4 py-5 flex flex-wrap gap-4 justify-between items-center">
             <div>
-                <h1 class="text-3xl font-bold profile-header-title mt-1">Este � seu perfil!</h1>
-                <p class="text-sm profile-header-subtitle">Seu cart�o postal digital dentro do MOCS ON.</p>
+                <h1 class="text-3xl font-bold profile-header-title mt-1">Este � seu perfil!</h1>
+                <p class="text-sm profile-header-subtitle">Seu cart�o postal digital dentro do MOCS ON.</p>
             </div>
             <a href="/dashboard.html" class="back-to-dashboard">
                 <i class="fa fa-arrow-left text-sm opacity-80"></i>
@@ -160,7 +131,7 @@
     </header>
 
     <main class="max-w-5xl mx-auto px-4 py-8 space-y-8">
-        <!-- cart�o visual -->
+        <!-- cart�o visual -->
         <section class="glass-card rounded-2xl shadow-xl p-6">
             <div class="flex flex-col md:flex-row items-center gap-6">
                 <div class="relative">
@@ -183,7 +154,7 @@
                         <a th:href="@{/profile/settings}"
                             class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-mocs-blue text-mocs-blue font-semibold transition-all duration-300 text-sm hover:bg-white/80 hover:-translate-y-0.5 hover:shadow-lg">
                             <i class="fa-solid fa-sliders"></i>
-                            Abrir configura��es
+                            Abrir configura��es
                         </a>
                     </div>
                 </div>
@@ -194,7 +165,7 @@
         <section id="galleryTools" class="glass-card rounded-2xl shadow-xl p-6 space-y-6">
             <div class="flex flex-col gap-2">
                 <h3 class="text-xl font-semibold text-gray-800">Minha galeria</h3>
-                <p class="text-sm text-gray-500">Use esta �rea para contar hist�rias e publicar novas fotos!</p>
+                <p class="text-sm text-gray-500">Use esta �rea para contar hist�rias e publicar novas fotos!</p>
             </div>
 
             <div class="space-y-3">
@@ -220,7 +191,7 @@
                     <label class="inline-flex items-center gap-2 text-sm text-gray-600">
                         <input type="checkbox" name="anonymous" value="true"
                             class="rounded border-gray-300 text-mocs-blue focus:ring-mocs-blue">
-                        Publicar como an�nimo
+                        Publicar como an�nimo
                     </label>
                     <button type="submit"
                         class="w-full px-4 py-2 rounded bg-mocs-blue text-white font-semibold hover:bg-opacity-90 transition">
@@ -229,26 +200,26 @@
                 </form>
 
                 <div class="rounded-2xl bg-white/85 border border-white/50 p-4 shadow-sm space-y-3">
-                    <p class="text-sm font-medium text-gray-700">Capturar direto da c�mera</p>
+                    <p class="text-sm font-medium text-gray-700">Capturar direto da c�mera</p>
                     <textarea id="galleryCaptureCaption" rows="2" maxlength="280"
                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-mocs-blue"
                         placeholder="Legenda para a foto capturada"></textarea>
                     <label class="inline-flex items-center gap-2 text-sm text-gray-600">
                         <input type="checkbox" id="galleryCaptureAnon"
                             class="rounded border-gray-300 text-mocs-blue focus:ring-mocs-blue">
-                        Publicar como an�nimo
+                        Publicar como an�nimo
                     </label>
-                    <video id="galleryc�meraPreview" class="w-full rounded-lg bg-black/10 hidden" autoplay muted
+                    <video id="galleryc�meraPreview" class="w-full rounded-lg bg-black/10 hidden" autoplay muted
                         playsinline></video>
-                    <canvas id="galleryc�meraCanvas" class="hidden"></canvas>
+                    <canvas id="galleryc�meraCanvas" class="hidden"></canvas>
                     <div class="flex flex-wrap gap-3">
-                        <button type="button" id="galleryStartc�meraBtn"
+                        <button type="button" id="galleryStartc�meraBtn"
                             class="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-100 transition text-sm">Abrir
-                            c�mera</button>
+                            c�mera</button>
                         <button type="button" id="galleryCaptureBtn" disabled
                             class="px-4 py-2 rounded bg-mocs-blue text-white font-semibold opacity-60 disabled:cursor-not-allowed transition text-sm">Capturar
                             e publicar</button>
-                        <button type="button" id="galleryClosec�meraBtn" disabled
+                        <button type="button" id="galleryClosec�meraBtn" disabled
                             class="px-4 py-2 rounded border border-red-200 text-red-600 bg-red-50 opacity-60 disabled:cursor-not-allowed transition text-sm">Fechar</button>
                     </div>
                     <form id="galleryCaptureForm" th:action="@{/profile/gallery/capture}" method="post" class="hidden">
@@ -344,27 +315,265 @@
             Sair da conta
         </a>
     </div>
+</header>
 
-    <!-- Modal de confirmacao -->
-    <div id="logoutModal" class="glass-confirm-backdrop hidden">
-        <div class="glass-confirm-card max-w-md w-full p-6 space-y-4">
-            <div class="relative z-10 space-y-3 text-slate-900">
-                <p class="text-xs uppercase tracking-[0.28em] text-slate-500">Logout</p>
-                <h3 class="text-lg font-semibold">Tem certeza?</h3>
-                <p class="text-sm text-slate-700">Vamos sentir sua falta! Deseja realmente sair do portal?</p>
-                <div class="flex flex-col sm:flex-row gap-2 pt-2">
-                    <button id="cancelLogout"
-                        class="flex-1 px-4 py-2 rounded-full border border-white/60 text-slate-700 font-semibold hover:bg-white/40 transition">Continuar
-                        aqui</button>
-                    <a id="confirmLogout" href="/auth/logout"
-                        class="flex-1 px-4 py-2 rounded-full bg-red-500 text-white font-semibold text-center hover:bg-red-600 transition">Sim,
-                        quero sair</a>
+<main class="max-w-5xl mx-auto px-4 py-8 space-y-8">
+    <!-- cartão visual -->
+    <section class="glass-card rounded-2xl shadow-xl p-6">
+        <div class="flex flex-col md:flex-row items-center gap-6">
+            <div class="relative">
+                <img th:src="@{/profile/photo(ts=${#dates.createNow().time})}"
+                     src="https://placehold.co/180x180?text=Sem+foto"
+                     onerror="this.src='https://placehold.co/180x180?text=Sem+foto';"
+                     alt="Foto do perfil"
+                     class="w-40 h-40 rounded-full object-cover border-4 border-white shadow-lg bg-white">
+                <span class="absolute inset-0 rounded-full border border-white/40 pointer-events-none"></span>
+            </div>
+            <div class="flex-1 text-center md:text-left space-y-2">
+                <p class="text-xs uppercase tracking-[0.4em] text-gray-400">@mocs</p>
+                <h2 class="text-3xl font-bold text-gray-800" th:text="${user.name()}">Delegado</h2>
+                <p class="text-sm text-gray-500" th:text="${user.email()}">delegado@mocs.com</p>
+                <div class="flex flex-wrap justify-center md:justify-start gap-2 pt-2">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-mocs-blue/10 text-mocs-blue uppercase" th:text="${user.type()}">DELEGADO</span>
+                </div>
+                <div class="pt-4">
+                    <a th:href="@{/profile/settings}"
+                       class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-mocs-blue text-mocs-blue font-semibold transition-all duration-300 text-sm hover:bg-white/80 hover:-translate-y-0.5 hover:shadow-lg">
+                        <i class="fa-solid fa-sliders"></i>
+                        Abrir configurações
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Galeria do usuario -->
+    <section id="galleryTools" class="glass-card rounded-2xl shadow-xl p-6 space-y-6">
+        <div class="flex flex-col gap-2">
+            <h3 class="text-xl font-semibold text-gray-800">Minha galeria</h3>
+            <p class="text-sm text-gray-500">Use esta área para contar histórias e publicar novas fotos!</p>
+        </div>
+
+        <div class="space-y-3">
+            <div th:if="${gallerySuccess}" class="px-4 py-3 rounded bg-green-50 border border-green-200 text-green-700" th:text="${gallerySuccess}"></div>
+            <div th:if="${galleryError}" class="px-4 py-3 rounded bg-red-50 border border-red-200 text-red-700" th:text="${galleryError}"></div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <form th:action="@{/profile/gallery/upload}" method="post" enctype="multipart/form-data" class="space-y-3 rounded-2xl bg-white/85 border border-white/50 p-4 shadow-sm">
+                <label class="text-sm font-medium text-gray-700 block">Enviar do computador</label>
+                <input type="file" name="photoFile" accept="image/*"
+                       class="w-full border border-dashed border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-mocs-blue">
+                <div>
+                    <label class="text-sm font-medium text-gray-700 mb-1 block">Legenda</label>
+                    <textarea name="caption" rows="2" maxlength="280"
+                              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-mocs-blue"
+                              placeholder="Conte como foi o momento..."></textarea>
+                </div>
+                <label class="inline-flex items-center gap-2 text-sm text-gray-600">
+                    <input type="checkbox" name="anonymous" value="true" class="rounded border-gray-300 text-mocs-blue focus:ring-mocs-blue">
+                    Publicar como anônimo
+                </label>
+                <button type="submit" class="w-full px-4 py-2 rounded bg-mocs-blue text-white font-semibold hover:bg-opacity-90 transition">
+                    Publicar na galeria
+                </button>
+            </form>
+
+            <div class="rounded-2xl bg-white/85 border border-white/50 p-4 shadow-sm space-y-3">
+                <p class="text-sm font-medium text-gray-700">Capturar direto da câmera</p>
+                <textarea id="galleryCaptureCaption" rows="2" maxlength="280"
+                          class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-mocs-blue"
+                          placeholder="Legenda para a foto capturada"></textarea>
+                <label class="inline-flex items-center gap-2 text-sm text-gray-600">
+                    <input type="checkbox" id="galleryCaptureAnon" class="rounded border-gray-300 text-mocs-blue focus:ring-mocs-blue">
+                    Publicar como anônimo
+                </label>
+                <video id="gallerycâmeraPreview" class="w-full rounded-lg bg-black/10 hidden" autoplay muted playsinline></video>
+                <canvas id="gallerycâmeraCanvas" class="hidden"></canvas>
+                <div class="flex flex-wrap gap-3">
+                    <button type="button" id="galleryStartcâmeraBtn"
+                            class="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-100 transition text-sm">Abrir câmera</button>
+                    <button type="button" id="galleryCaptureBtn" disabled
+                            class="px-4 py-2 rounded bg-mocs-blue text-white font-semibold opacity-60 disabled:cursor-not-allowed transition text-sm">Capturar e publicar</button>
+                    <button type="button" id="galleryClosecâmeraBtn" disabled
+                            class="px-4 py-2 rounded border border-red-200 text-red-600 bg-red-50 opacity-60 disabled:cursor-not-allowed transition text-sm">Fechar</button>
+                </div>
+                <form id="galleryCaptureForm" th:action="@{/profile/gallery/capture}" method="post" class="hidden">
+                    <input type="hidden" name="capturedImage" id="galleryCapturedImageInput">
+                    <input type="hidden" name="caption" id="galleryCaptureCaptionInput">
+                    <input type="hidden" name="anonymous" id="galleryCaptureAnonInput">
+                </form>
+            </div>
+        </div>
+
+        <div class="border-t border-dashed border-white/40 pt-6">
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="text-lg font-semibold text-gray-800">Meus posts</h4>
+                <span class="text-xs uppercase tracking-[0.4em] text-gray-400">Atualiza automaticamente</span>
+            </div>
+            <div id="userGalleryGrid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <p class="col-span-full text-sm text-gray-400 text-center">Carregando sua galeria...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal de galeria (estilo dashboard) -->
+<div id="galleryModal" class="fixed inset-0 z-40 px-4 hidden">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" id="galleryModalOverlay"></div>
+    <div class="relative w-full h-full flex items-center justify-center">
+        <button type="button" class="absolute top-6 right-6 text-white/80 hover:text-white text-2xl z-50" id="galleryModalClose">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="flex items-center gap-4">
+            <div class="flex items-center justify-center overflow-hidden">
+                <img id="galleryModalImg"
+                     alt="Galeria"
+                     class="object-contain rounded-2xl max-h-[85vh] max-w-[70vw] bg-black">
+            </div>
+            <div class="w-[22rem] lg:w-[24rem] apple-glass p-5 flex flex-col gap-4 max-h-[85vh] overflow-y-auto text-white">
+                <div class="flex items-center gap-3">
+                    <div class="h-12 w-12 rounded-full bg-white/20 text-white flex items-center justify-center font-bold text-lg">
+                        <span id="galleryInitials">MO</span>
+                    </div>
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.35em] text-white/70" id="galleryLabel"></p>
+                        <p class="text-lg font-semibold text-white" id="galleryAuthor">Delegado</p>
+                        <p class="text-xs text-white/70" id="galleryMeta"></p>
+                    </div>
+                </div>
+                <p class="text-sm text-white/85" id="galleryCaption"></p>
+
+                <div class="flex items-center gap-3">
+                    <button type="button"
+                            id="galleryLikeBtn"
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-full border transition text-sm border-mocs-blue text-white hover:bg-mocs-blue hover:border-mocs-blue">
+                        <i class="fas fa-heart text-red-400"></i>
+                        <span id="galleryLikeCount">0</span>
+                    </button>
+                    <span class="text-xs text-gray-200">Curtidas</span>
+                    <button type="button"
+                            id="galleryDeleteBtn"
+                            class="hidden ml-auto inline-flex items-center gap-2 px-3 py-2 rounded-full bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition">
+                        <i class="fas fa-trash"></i> Apagar
+                    </button>
+                </div>
+
+                <div class="flex-1 apple-glass p-4 text-white rounded-3xl comment-wrapper">
+                    <div id="galleryComments" class="comment-scroll custom-scrollbar space-y-3 bg-transparent w-full">
+                        <div class="text-center text-white/80 text-sm">Carregando comentarios...</div>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <form id="galleryCommentForm" class="space-y-2">
+                        <textarea id="galleryCommentInput"
+                                  class="w-full border border-gray-300 rounded-2xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-mocs-blue text-gray-800"
+                                  rows="2"
+                                  placeholder="Escreva um comentario..."></textarea>
+                        <div class="flex justify-end items-center gap-2">
+                            <button type="submit"
+                                    class="px-4 py-2 rounded-full bg-mocs-blue text-white text-sm font-semibold hover:bg-opacity-90 transition">
+                                Publicar
+                            </button>
+                        </div>
+                    </form>
+                    <div id="galleryCommentError" class="text-xs text-red-200"></div>
                 </div>
             </div>
         </div>
     </div>
+</div></main>
 
-    <script>
+<div class="max-w-5xl mx-auto px-4 pb-12 flex justify-center">
+    <a href="/auth/logout" id="logoutButton" data-logout-url="/auth/logout" class="liquid-danger inline-flex items-center gap-3">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        Sair da conta
+    </a>
+</div>
+
+<!-- Modal de confirmacao -->
+    <div id="logoutModal" class="glass-confirm-backdrop hidden">
+        <div class="glass-confirm-card max-w-md w-full p-6 space-y-4">
+            <div class="relative z-10 space-y-3 text-slate-900">
+            <p class="text-xs uppercase tracking-[0.28em] text-slate-500">Logout</p>
+            <h3 class="text-lg font-semibold">Tem certeza?</h3>
+            <p class="text-sm text-slate-700">Vamos sentir sua falta! Deseja realmente sair do portal?</p>
+            <div class="flex flex-col sm:flex-row gap-2 pt-2">
+                <button id="cancelLogout" class="flex-1 px-4 py-2 rounded-full border border-white/60 text-slate-700 font-semibold hover:bg-white/40 transition">Continuar aqui</button>
+                <a id="confirmLogout" href="/auth/logout" class="flex-1 px-4 py-2 rounded-full bg-red-500 text-white font-semibold text-center hover:bg-red-600 transition">Sim, quero sair</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function setupcâmeraControls(options) {
+        const startBtn = document.getElementById(options.startBtnId);
+        const captureBtn = document.getElementById(options.captureBtnId);
+        const closeBtn = document.getElementById(options.closeBtnId);
+        const video = document.getElementById(options.videoId);
+        const canvas = document.getElementById(options.canvasId);
+        const hiddenInput = document.getElementById(options.hiddenInputId);
+        const form = document.getElementById(options.formId);
+        if (!startBtn || !captureBtn || !closeBtn || !video || !canvas || !hiddenInput || !form) {
+            return;
+        }
+        let mediaStream = null;
+
+        async function startcâmera() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('A câmera nao esta disponivel neste dispositivo.');
+                return;
+            }
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                video.srcObject = mediaStream;
+                video.classList.remove('hidden');
+                captureBtn.disabled = false;
+                closeBtn.disabled = false;
+                captureBtn.classList.remove('opacity-60');
+                closeBtn.classList.remove('opacity-60');
+            } catch (err) {
+                console.error('Erro ao acessar a câmera', err);
+                alert('Nao foi possivel acessar a câmera.');
+            }
+        }
+
+        function stopcâmera() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+            video.classList.add('hidden');
+            captureBtn.disabled = true;
+            closeBtn.disabled = true;
+            captureBtn.classList.add('opacity-60');
+            closeBtn.classList.add('opacity-60');
+        }
+
+        function capturePhoto() {
+            if (!mediaStream) {
+                alert('Abra a câmera primeiro.');
+                return;
+            }
+            const trackSettings = mediaStream.getVideoTracks()[0].getSettings();
+            canvas.width = trackSettings.width || 640;
+            canvas.height = trackSettings.height || 480;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            hiddenInput.value = canvas.toDataURL('image/png');
+            stopcâmera();
+            if (typeof options.beforeSubmit === 'function') {
+                options.beforeSubmit();
+            }
+            form.submit();
+        }
+
+        startBtn.addEventListener('click', startcâmera);
+        captureBtn.addEventListener('click', capturePhoto);
+        closeBtn.addEventListener('click', stopcâmera);
+        window.addEventListener('beforeunload', stopcâmera);
+    }
+
         document.addEventListener('DOMContentLoaded', () => {
             function setupCameraControls(options) {
                 const startBtn = document.getElementById(options.startBtnId);
@@ -387,7 +596,7 @@
                         captureBtn.disabled = false;
                         closeBtn.disabled = false;
                     } catch {
-                        alert('N�o foi poss�vel acessar a c�mera.');
+                        alert('N�o foi poss�vel acessar a c�mera.');
                     }
                 }
 
@@ -402,7 +611,7 @@
                 }
 
                 function capturePhoto() {
-                    if (!mediaStream) return alert('Abra a c�mera primeiro.');
+                    if (!mediaStream) return alert('Abra a c�mera primeiro.');
                     canvas.width = video.videoWidth || 640;
                     canvas.height = video.videoHeight || 480;
                     canvas.getContext('2d').drawImage(video, 0, 0);
@@ -416,60 +625,51 @@
                 captureBtn.onclick = capturePhoto;
                 closeBtn.onclick = stopCamera;
                 window.addEventListener('beforeunload', stopCamera);
+
             }
+        });
 
-            setupCameraControls({
-                startBtnId: 'galleryStartCameraBtn',
-                captureBtnId: 'galleryCaptureBtn',
-                closeBtnId: 'galleryCloseCameraBtn',
-                videoId: 'galleryCameraPreview',
-                canvasId: 'galleryCameraCanvas',
-                hiddenInputId: 'galleryCapturedImageInput',
-                formId: 'galleryCaptureForm',
-                beforeSubmit: () => {
-                    document.getElementById('galleryCaptureCaptionInput').value =
-                        document.getElementById('galleryCaptureCaption').value;
-                    document.getElementById('galleryCaptureAnonInput').value =
-                        document.getElementById('galleryCaptureAnon').checked;
-                }
-            });
+        const grid = document.getElementById('userGalleryGrid');
+        const author = document.body.getAttribute('data-user-name');
+        const userType = (document.body.getAttribute('data-user-type') || '').toUpperCase();
+        const canModerate = userType === 'SECRETARIADO';
+        const modal = document.getElementById('galleryModal');
+        const modalImg = document.getElementById('galleryModalImg');
+        const modalCaption = document.getElementById('galleryModalCaption');
+        const modalMeta = document.getElementById('galleryModalMeta');
+        const modalClose = document.getElementById('galleryModalClose');
+        const likeBtn = document.getElementById('galleryLikeBtn');
+        const likeCount = document.getElementById('galleryLikeCount');
+        const commentsBox = document.getElementById('galleryComments');
+        const commentForm = document.getElementById('galleryCommentForm');
+        const commentInput = document.getElementById('galleryCommentInput');
+        const heartShower = document.getElementById('heartShower');
+        let currentPostId = null;
 
-            const grid = document.getElementById('userGalleryGrid');
-            const author = (document.body.dataset.userName || '').trim();
-            const authorNormalized = author.toLowerCase();
-            const userType = (document.body.dataset.userType || '').toUpperCase();
-            const canModerate = userType === 'SECRETARIADO' || userType === 'SECRETARIO';
-            const heartEmoji = '\u2764\uFE0F';
-            let currentUserEmail = null;
-            let currentUserName = author || 'Usuario';
+        const closeGalleryModal = () => {
+            if (!modal) return;
+            modal.classList.remove('active');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        };
 
-            const modal = document.getElementById('galleryModal');
-            const modalImg = document.getElementById('galleryModalImg');
-            const modalCaption = document.getElementById('galleryModalCaption');
-            const modalMeta = document.getElementById('galleryModalMeta');
-            const modalLabel = document.getElementById('galleryLabel');
-            const modalAuthor = document.getElementById('galleryAuthor');
-            const modalInitials = document.getElementById('galleryInitials');
-            const modalClose = document.getElementById('galleryModalClose');
-            const likeBtn = document.getElementById('galleryLikeBtn');
-            const likeCount = document.getElementById('galleryLikeCount');
-            const commentsBox = document.getElementById('galleryComments');
-            const deleteBtn = document.getElementById('galleryDeleteBtn');
-            const commentForm = document.getElementById('galleryCommentForm');
-            const commentInput = document.getElementById('galleryCommentInput');
-            const commentError = document.getElementById('galleryCommentError');
-
-            let currentPostId = null;
-            let currentPostOwner = null;
-
-            function closeModal() {
-                modal.classList.remove('active');
-                currentPostId = null;
-                currentPostOwner = null;
-                setDeleteState(false);
-                setTimeout(() => modal.classList.add('hidden'), 200);
+        const openGalleryModal = (src, caption, date, postId, reactions) => {
+            if (!modal || !modalImg || !modalCaption || !modalMeta) return;
+            modalImg.src = src;
+            modalImg.alt = caption || 'Foto da galeria';
+            modalCaption.textContent = caption || 'Publicação da galeria';
+            modalMeta.textContent = date ? new Date(date).toLocaleString('pt-BR') : '';
+            modal.classList.remove('hidden');
+            requestAnimationFrame(() => modal.classList.add('active'));
+            currentPostId = postId || null;
+            const likes = reactions && reactions['❤️'] ? reactions['❤️'] : 0;
+            if (likeCount) {
+                likeCount.textContent = `${likes} curtida${likes === 1 ? '' : 's'}`;
             }
-
+            if (commentsBox) {
+                commentsBox.innerHTML = '<p class="text-xs text-gray-400">Carregando Comentários...</p>';
+                loadComments(postId);
+            }
+            
             function initialsFromName(name) {
                 if (!name) {
                     return 'MO';
@@ -642,11 +842,41 @@
                     grid.innerHTML = '<p class="col-span-full text-sm text-red-400 text-center">Nao foi possivel carregar sua galeria.</p>';
                 }
             }
+        };
 
-            modalClose?.addEventListener('click', closeModal);
-            modal?.addEventListener('click', e => e.target === modal && closeModal());
-            document.addEventListener('keyup', e => e.key === 'Escape' && closeModal());
+        if (modalClose) modalClose.addEventListener('click', closeGalleryModal);
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeGalleryModal();
+            });
+        }
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'Escape') closeGalleryModal();
+        });
 
+        function splashHearts(x, y) {
+            if (!heartShower) return;
+            heartShower.classList.remove('hidden');
+            for (let i = 0; i < 10; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart-pop';
+                heart.textContent = '❤️';
+                const offsetX = (Math.random() - 0.5) * 80;
+                const offsetY = (Math.random() - 0.3) * 40;
+                heart.style.left = `${x + offsetX}px`;
+                heart.style.top = `${y + offsetY}px`;
+                heartShower.appendChild(heart);
+                setTimeout(() => {
+                    heart.remove();
+                    if (!heartShower.children.length) {
+                        heartShower.classList.add('hidden');
+                    }
+                }, 1200);
+            }
+        }
+
+        async function sendLike(postId) {
+            
             likeBtn?.addEventListener('click', async () => {
                 if (!currentPostId || !likeCount) return;
                 const usuario = currentUserEmail || currentUserName || author || 'Usuario';
@@ -715,28 +945,97 @@
                 }
             });
 
-            async function loadComments(postId) {
-                if (!postId || !commentsBox) return;
-                commentsBox.innerHTML = '<p class="text-xs text-gray-400">Carregando...</p>';
-                try {
-                    const res = await fetch(`/post/${postId}/comments`);
-                    if (!res.ok) throw new Error('status ' + res.status);
-                    const data = await res.json();
-                    const visible = (data || []).filter(c => (c.status || c.estado || null) !== 'EXCLUIDO');
-                    if (!visible.length) {
-                        commentsBox.innerHTML = '<p class="text-xs text-gray-400">Sem comentarios.</p>';
-                        return;
-                    }
-                    commentsBox.innerHTML = visible.map(c => {
-                        const name = escapeHtml(c.usuarioNome || c.usuario || c.autor || 'Usuario');
-                        const msg = escapeHtml(c.mensagem || '');
-                        return `<div class="bg-gray-50 p-2 rounded"><b>${name}</b><p>${msg}</p></div>`;
-                    }).join('');
-                } catch (err) {
-                    commentsBox.innerHTML = '<p class="text-xs text-red-400">Erro ao carregar.</p>';
+        }
+
+        if (likeBtn) {
+            likeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const rect = likeBtn.getBoundingClientRect();
+                splashHearts(rect.left + rect.width / 2, rect.top);
+                sendLike(currentPostId);
+            });
+        }
+
+        async function loadComments(postId) {
+            if (!postId || !commentsBox) return;
+            try {
+                const res = await fetch(`/post/${postId}/comments`);
+                if (!res.ok) {
+                    commentsBox.innerHTML = '<p class="text-xs text-gray-400">não foi possivel carregar os Comentários.</p>';
+                    return;
                 }
+                const data = await res.json();
+                if (!Array.isArray(data) || data.length === 0) {
+                    commentsBox.innerHTML = '<p class="text-xs text-gray-400">Sem Comentários ainda.</p>';
+                    return;
+                }
+                commentsBox.innerHTML = '';
+                data.forEach(c => {
+                    const item = document.createElement('div');
+                    item.className = 'rounded-lg bg-gray-50 border border-gray-100 px-3 py-2';
+                    const dateStr = c.createdAt ? new Date(c.createdAt).toLocaleString('pt-BR') : '';
+                    item.innerHTML = `<p class="text-sm font-semibold text-gray-800">${c.autor || 'Delegado'}</p><p class="text-sm text-gray-700">${c.mensagem || ''}</p><span class="text-[11px] text-gray-400">${dateStr}</span>`;
+                    commentsBox.appendChild(item);
+                });
+            } catch (err) {
+                commentsBox.innerHTML = '<p class="text-xs text-red-400">Erro ao carregar Comentários.</p>';
+            }
+        }
+
+        if (commentForm && commentInput) {
+            commentForm.addEventListener('submit', async (evt) => {
+                evt.preventDefault();
+                const msg = commentInput.value.trim();
+                if (!msg || !currentPostId) return;
+                try {
+                    const res = await fetch(`/post/${currentPostId}/comments`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ autor: author || 'Delegado', mensagem: msg })
+                    });
+                    if (res.ok) {
+                        commentInput.value = '';
+                        loadComments(currentPostId);
+                    }
+                } catch (err) {
+                    console.warn('Erro ao comentar', err);
+                }
+            });
+        }
+
+        if (!grid) return;
+        grid.addEventListener('click', (evt) => {
+            const deleteBtn = evt.target.closest('[data-delete-id]');
+            if (deleteBtn) {
+                evt.preventDefault();
+                const postId = deleteBtn.dataset.deleteId;
+                const card = deleteBtn.closest('[data-media-src]');
+                if (postId) {
+                    const confirmed = window.confirm('Deseja excluir esta foto?');
+                    if (!confirmed) return;
+                    fetch(`/profile/gallery/${postId}/delete`, { method: 'POST' })
+                        .then(res => {
+                            if (res.ok) {
+                                if (card) card.remove();
+                            } else if (res.status === 403) {
+                                alert('Você não tem permissão para excluir esta foto.');
+                            } else {
+                                alert('não foi possivel excluir a foto.');
+                            }
+                        })
+                        .catch(() => alert('não foi possivel excluir a foto.'));
+                }
+                return;
             }
 
+            const target = evt.target;
+            const card = target.closest('[data-media-src]');
+            if (!card) return;
+            let reactions = null;
+            if (card.dataset.reactions) {
+                try { reactions = JSON.parse(card.dataset.reactions); } catch (e) { reactions = null; }
+            }
+            openGalleryModal(card.dataset.mediaSrc, card.dataset.caption, card.dataset.publishedAt, card.dataset.postId, reactions);
             loadCurrentUserInfo();
             loadUserGallery();
 
@@ -775,81 +1074,366 @@
             confirmLogout?.addEventListener('click', () => location.href = '/auth/logout');
 
         });
-    </script>
-    <style>
-        .glass-confirm-backdrop {
-            background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.08), transparent 35%),
-                radial-gradient(circle at 80% 10%, rgba(255, 255, 255, 0.12), transparent 38%),
-                rgba(10, 16, 35, 0.45);
-            backdrop-filter: blur(12px);
-            position: fixed;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-            z-index: 60;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s ease;
+
+        if (!author) return;
+        fetch(`${window.location.origin}/post/gallery`)
+            .then(res => res.ok ? res.json() : [])
+            .then(data => {
+                const mine = (data || []).filter(post => {
+                    const isDeleted = ((post.status || post.state || '').toUpperCase() === 'EXCLUIDO');
+                    if (isDeleted) return false;
+                    const rawAuthor = (post.autorRaw || post.autor || '').trim().toLowerCase();
+                    return rawAuthor === (author || '').trim().toLowerCase();
+                });
+                grid.innerHTML = '';
+                if (!mine.length) {
+                    grid.innerHTML = '<p class="col-span-full text-sm text-gray-400 text-center">Voc? ainda n?o publicou nada na galeria.</p>';
+                    return;
+                }
+                   
+                mine.forEach(post => {
+                    const parts = (post.mensagem || '').split('|');
+                    const filename = parts[1];
+                    const caption = parts.slice(2).join('|') || author;
+                    const mediaSrc = `/profile/gallery/media/${filename}`;
+                    const publishedAt = post.data;
+                    const reactions = post.reactions || {};
+                    const rawAuthor = (post.autorRaw || post.autor || '').trim();
+                    const card = document.createElement('div');
+                    card.className = 'group relative rounded-2xl overflow-hidden shadow-sm border border-white/60 cursor-pointer';
+                    card.dataset.mediaSrc = mediaSrc;
+                    card.dataset.caption = caption;
+                    card.dataset.publishedAt = publishedAt || '';
+                    card.dataset.postId = post.id || '';
+                    card.dataset.reactions = JSON.stringify(reactions || {});
+                    const showDelete = canModerate || (author && rawAuthor && author.trim().toLowerCase() === rawAuthor.toLowerCase());
+                    card.innerHTML = `
+                        <img src="${mediaSrc}" alt="${caption}" class="w-full h-40 object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition flex flex-col justify-end p-3 text-white">
+                            <p class="text-sm font-semibold line-clamp-2">${caption}</p>
+                            <span class="text-xs text-white/70">${new Date(post.data).toLocaleDateString('pt-BR')}</span>
+                        </div>
+                        ${showDelete ? '<button type="button" data-delete-id="'+(post.id||'')+'" class="absolute top-2 right-2 bg-white/90 text-red-600 rounded-full p-2 shadow hover:bg-white transition"><i class="fa-solid fa-trash"></i></button>' : ''}
+                    `;
+                    card.addEventListener('click', () => openGalleryModal(mediaSrc, caption, publishedAt));
+                    grid.appendChild(card);
+                });
+            })
+            .catch(() => {
+                grid.innerHTML = '<p class="col-span-full text-sm text-red-400 text-center">não foi possivel carregar suas mídias.</p>';
+            });
+</script>
+<script>
+    function setupCameraControls(options) {
+        const startBtn = document.getElementById(options.startBtnId);
+        const captureBtn = document.getElementById(options.captureBtnId);
+        const closeBtn = document.getElementById(options.closeBtnId);
+        const video = document.getElementById(options.videoId);
+        const canvas = document.getElementById(options.canvasId);
+        const hiddenInput = document.getElementById(options.hiddenInputId);
+        const form = document.getElementById(options.formId);
+        if (!startBtn || !captureBtn || !closeBtn || !video || !canvas || !hiddenInput || !form) return;
+        let mediaStream = null;
+
+        async function startCamera() {
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                video.srcObject = mediaStream;
+                video.classList.remove('hidden');
+                captureBtn.disabled = false;
+                closeBtn.disabled = false;
+            } catch (err) {
+                alert('Nao foi possivel acessar a camera.');
+            }
+        }
+        function stopCamera() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(t => t.stop());
+                mediaStream = null;
+            }
+            video.classList.add('hidden');
+            captureBtn.disabled = true;
+            closeBtn.disabled = true;
+        }
+        function capturePhoto() {
+            if (!mediaStream) { alert('Abra a camera primeiro.'); return; }
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            hiddenInput.value = canvas.toDataURL('image/png');
+            if (typeof options.beforeSubmit === 'function') options.beforeSubmit();
+            form.submit();
+            stopCamera();
+        }
+        startBtn.addEventListener('click', startCamera);
+        captureBtn.addEventListener('click', capturePhoto);
+        closeBtn.addEventListener('click', stopCamera);
+        window.addEventListener('beforeunload', stopCamera);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        setupCameraControls({
+            startBtnId: 'galleryStartcameraBtn',
+            captureBtnId: 'galleryCaptureBtn',
+            closeBtnId: 'galleryClosecameraBtn',
+            videoId: 'gallerycameraPreview',
+            canvasId: 'gallerycameraCanvas',
+            hiddenInputId: 'galleryCapturedImageInput',
+            formId: 'galleryCaptureForm',
+            beforeSubmit: () => {
+                document.getElementById('galleryCaptureCaptionInput').value = document.getElementById('galleryCaptureCaption').value;
+                document.getElementById('galleryCaptureAnonInput').value = document.getElementById('galleryCaptureAnon').checked;
+            }
+        });
+
+        const grid = document.getElementById('userGalleryGrid');
+        const author = document.body.getAttribute('data-user-name');
+        const userType = (document.body.getAttribute('data-user-type') || '').toUpperCase();
+        const canModerate = userType === 'SECRETARIADO';
+        const modal = document.getElementById('galleryModal');
+        const modalImg = document.getElementById('galleryModalImg');
+        const modalCaption = document.getElementById('galleryCaption');
+        const modalMeta = document.getElementById('galleryMeta');
+        const labelEl = document.getElementById('galleryLabel');
+        const authorEl = document.getElementById('galleryAuthor');
+        const initialsEl = document.getElementById('galleryInitials');
+        const modalClose = document.getElementById('galleryModalClose');
+        const likeBtn = document.getElementById('galleryLikeBtn');
+        const likeCount = document.getElementById('galleryLikeCount');
+        const commentsBox = document.getElementById('galleryComments');
+        const commentForm = document.getElementById('galleryCommentForm');
+        const commentInput = document.getElementById('galleryCommentInput');
+        const commentError = document.getElementById('galleryCommentError');
+        const deleteBtn = document.getElementById('galleryDeleteBtn');
+        let currentPostId = null;
+        let currentReactions = {};
+
+        const closeGalleryModal = () => {
+            if (!modal) return;
+            modal.classList.add('hidden');
+        };
+
+        const openGalleryModal = (src, caption, date, postId, reactions, metaExtra = {}) => {
+            if (!modal || !modalImg || !modalCaption || !modalMeta) return;
+            modalImg.src = src;
+            modalCaption.textContent = caption || '';
+            modalMeta.textContent = date ? new Date(date).toLocaleString('pt-BR') : '';
+            labelEl.textContent = metaExtra.label || '';
+            authorEl.textContent = metaExtra.author || 'Delegado';
+            initialsEl.textContent = metaExtra.initials || 'MO';
+            modal.classList.remove('hidden');
+            currentPostId = postId || null;
+            currentReactions = reactions || {};
+            const likes = currentReactions['❤'] || 0;
+            if (likeCount) likeCount.textContent = `${likes}`;
+            if (deleteBtn) deleteBtn.classList.toggle('hidden', !canModerate);
+            if (commentsBox) {
+                commentsBox.innerHTML = '<div class="text-center text-white/80 text-sm">Carregando comentarios...</div>';
+                loadComments(postId);
+            }
+        };
+
+        if (modalClose) modalClose.addEventListener('click', closeGalleryModal);
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal || e.target === document.getElementById('galleryModalOverlay')) closeGalleryModal();
+            });
+        }
+        document.addEventListener('keyup', (e) => { if (e.key === 'Escape') closeGalleryModal(); });
+
+        async function loadComments(postId) {
+            if (!postId || !commentsBox) return;
+            try {
+                const res = await fetch(`/post/${postId}/comments`);
+                if (!res.ok) throw new Error('Erro ao carregar comentarios');
+                const list = await res.json();
+                commentsBox.innerHTML = '';
+                if (!list.length) {
+                    commentsBox.innerHTML = '<div class="text-center text-white/80 text-sm">Sem comentarios ainda.</div>';
+                    return;
+                }
+                list.forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = 'rounded-xl bg-white/90 shadow px-3 py-2 border border-white/60';
+                    div.innerHTML = `<div class="flex justify-between text-xs text-gray-700"><span class="font-semibold text-gray-900">${c.autor}</span><span class="text-gray-500">${c.tempo}</span></div><p class="text-sm text-gray-900">${c.mensagem}</p>`;
+                    commentsBox.appendChild(div);
+                });
+            } catch (err) {
+                commentsBox.innerHTML = '<div class="text-center text-red-300 text-xs">Erro ao carregar comentarios.</div>';
+            }
         }
 
-        .glass-confirm-backdrop.active {
-            opacity: 1;
-            pointer-events: auto;
+        if (likeBtn) {
+            likeBtn.addEventListener('click', async () => {
+                if (!currentPostId) return;
+                try {
+                    await fetch(`/post/${currentPostId}/reaction`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ usuario: author || 'Usuario', emoji: '❤' })
+                    });
+                    currentReactions['❤'] = (currentReactions['❤'] || 0) + 1;
+                    if (likeCount) likeCount.textContent = `${currentReactions['❤']}`;
+                } catch (err) {
+                    alert('Nao foi possivel registrar sua reacao.');
+                }
+            });
         }
 
-        .glass-confirm-card {
-            position: relative;
-            overflow: hidden;
-            background: linear-gradient(145deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.14));
-            border: 1px solid rgba(255, 255, 255, 0.55);
-            border-radius: 28px;
-            box-shadow: 0 22px 55px rgba(8, 15, 35, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(22px);
-            color: #fff;
-            transform: translateY(20px) scale(0.97);
-            opacity: 0;
-            transition: transform 0.35s ease, opacity 0.35s ease;
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', async () => {
+                if (!currentPostId || !canModerate) return;
+                if (!confirm('Apagar esta foto?')) return;
+                try {
+                    await fetch(`/profile/gallery/${currentPostId}/delete`, { method: 'POST' });
+                    const card = document.querySelector(`[data-post-id="${currentPostId}"]`);
+                    if (card) card.remove();
+                    closeGalleryModal();
+                } catch (err) {
+                    alert('Nao foi possivel apagar a foto.');
+                }
+            });
         }
 
-        .glass-confirm-backdrop.active .glass-confirm-card {
-            transform: translateY(0) scale(1);
-            opacity: 1;
+        if (commentForm) {
+            commentForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!currentPostId) return;
+                const message = (commentInput.value || '').trim();
+                if (!message) return;
+                try {
+                    const res = await fetch(`/post/${currentPostId}/comments`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ autor: author || 'Usuario', mensagem: message })
+                    });
+                    if (!res.ok) throw new Error('Erro ao enviar comentario');
+                    commentInput.value = '';
+                    loadComments(currentPostId);
+                } catch (err) {
+                    if (commentError) commentError.textContent = 'Falha ao enviar comentario.';
+                }
+            });
         }
 
-        .glass-confirm-card::before,
-        .glass-confirm-card::after {
-            content: "";
-            position: absolute;
-            inset: -30%;
-            background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.55), transparent 45%),
-                radial-gradient(circle at 80% 10%, rgba(111, 192, 255, 0.3), transparent 40%);
-            filter: blur(22px);
-            opacity: 0.75;
-            pointer-events: none;
+        if (grid) {
+            grid.querySelectorAll('[data-post-id]').forEach(card => {
+                card.addEventListener('click', () => {
+                    const mediaSrc = card.dataset.mediaSrc;
+                    const caption = card.dataset.caption || '';
+                    const publishedAt = card.dataset.publishedAt || '';
+                    const postId = card.dataset.postId;
+                    const authorName = card.dataset.author || 'Delegado';
+                    const label = card.dataset.label || '';
+                    const initials = (authorName || 'MO').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+                    const reactions = { '❤': parseInt(card.dataset.likes || '0', 10) || 0 };
+                    openGalleryModal(mediaSrc, caption, publishedAt, postId, reactions, { author: authorName, label, initials });
+                });
+            });
         }
+    });
+</script>
+<script>
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        const trigger = document.getElementById('logoutButton');
+        const modal = document.getElementById('logoutModal');
+        const cancelBtn = document.getElementById('cancelLogout');
+        const confirmBtn = document.getElementById('confirmLogout');
+        if (!trigger || !modal || !cancelBtn || !confirmBtn) return;
 
-        .glass-confirm-card::after {
-            inset: -25%;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.0) 55%);
-            filter: blur(14px);
-            opacity: 0.6;
-        }
+        const open = () => {
+            modal.classList.remove('hidden');
+            requestAnimationFrame(() => modal.classList.add('active'));
+        };
+        const close = () => {
+            modal.classList.remove('active');
+            setTimeout(() => modal.classList.add('hidden'), 180);
+        };
 
-        .glass-confirm-card,
-        .glass-confirm-card h3,
-        .glass-confirm-card p,
-        .glass-confirm-card .text-slate-500,
-        .glass-confirm-card .text-slate-700 {
-            color: #e2e8ff !important;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-        }
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            open();
+        });
+        cancelBtn.addEventListener('click', (e) => { e.preventDefault(); close(); });
+        confirmBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = confirmBtn.getAttribute('href') || '/auth/logout';
+            close();
+            setTimeout(() => { window.location.href = target; }, 150);
+        });
+        modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+        document.addEventListener('keyup', (e) => { if (e.key === 'Escape') close(); });
+    });
+</script>
+<style>
 
-        .glass-confirm-card .text-slate-500 {
-            color: #cbd5ff !important;
-        }
-    </style>
+.glass-confirm-backdrop {
+    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08), transparent 35%),
+                radial-gradient(circle at 80% 10%, rgba(255,255,255,0.12), transparent 38%),
+                rgba(10,16,35,0.45);
+    backdrop-filter: blur(12px);
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 60;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+.glass-confirm-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+.glass-confirm-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, rgba(255,255,255,0.24), rgba(255,255,255,0.14));
+    border: 1px solid rgba(255,255,255,0.55);
+    border-radius: 28px;
+    box-shadow: 0 22px 55px rgba(8,15,35,0.28), inset 0 1px 0 rgba(255,255,255,0.5);
+    backdrop-filter: blur(22px);
+    color: #fff; 
+    transform: translateY(20px) scale(0.97);
+    opacity: 0;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+}
+.glass-confirm-backdrop.active .glass-confirm-card {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+.glass-confirm-card::before,
+.glass-confirm-card::after {
+    content: "";
+    position: absolute;
+    inset: -30%;
+    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.55), transparent 45%),
+                radial-gradient(circle at 80% 10%, rgba(111,192,255,0.3), transparent 40%);
+    filter: blur(22px);
+    opacity: 0.75;
+    pointer-events: none;
+}
+.glass-confirm-card::after {
+    inset: -25%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.0) 55%);
+    filter: blur(14px);
+    opacity: 0.6;
+}
+/* High-contrast text for glass modal */
+.glass-confirm-card,
+.glass-confirm-card h3,
+.glass-confirm-card p,
+.glass-confirm-card .text-slate-500,
+.glass-confirm-card .text-slate-700 {
+    color: #e2e8ff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+}
+.glass-confirm-card .text-slate-500 {
+    color: #cbd5ff !important;
+}</style>
 </body>
-
 </html>
