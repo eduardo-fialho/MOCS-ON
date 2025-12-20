@@ -6,12 +6,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import com.mocs_on.domain.Comite;
 import com.mocs_on.domain.Comite.StatusComite;
+import com.mocs_on.domain.GuiaEstudos;
 import com.mocs_on.domain.Usuario;
+import com.mocs_on.dto.InformacoesComiteDTO;
 
+@Repository
 public class ComiteDao {
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     private final static String getsql = "SELECT * FROM comites  WHERE id = ?";
     private final static String listsql = "SELECT * FROM comites";
     private final static String insertsql = "INSERT INTO comites (sigla, nome, status, num_delegados, descricao) VALUES( ?, ?, ?, ?, ?) ";
@@ -20,8 +32,9 @@ public class ComiteDao {
 
     private static void closeResource(Statement ps) {
         try {
-            if (ps != null)
+            if (ps != null) {
                 ps.close();
+            }
         } catch (Exception e) {
             ps = null;
         }
@@ -29,14 +42,16 @@ public class ComiteDao {
 
     private static void closeResource(Statement ps, ResultSet rs) {
         try {
-            if (rs != null)
+            if (rs != null) {
                 rs.close();
+            }
         } catch (Exception e) {
             rs = null;
         }
         try {
-            if (ps != null)
+            if (ps != null) {
                 ps.close();
+            }
         } catch (Exception e) {
             ps = null;
         }
@@ -50,7 +65,7 @@ public class ComiteDao {
         vo.setNumeroDelegados(rs.getInt("num_delegados"));
         vo.setSigla(rs.getString("sigla"));
         vo.setStatus(StatusComite.valueOf(rs.getString("status")));
-        
+
         return vo;
     }
 
@@ -71,14 +86,13 @@ public class ComiteDao {
                 int numeroDelegados = rs.getInt("num_delegados");
                 StatusComite status = StatusComite.valueOf(rs.getString("status"));
                 long id = rs.getLong("id");
-                
+
                 Comite comite = new Comite(id, sigla, nome, status, numeroDelegados, descricao);
-                
+
                 list.add(comite);
 
-            } 
-            while (rs.next());
-            
+            } while (rs.next());
+
             return list;
         } catch (SQLException e) {
             throw e;
@@ -196,4 +210,37 @@ public class ComiteDao {
             rs = null;
         }
     }
+
+    public List<InformacoesComiteDTO> informacoesComites() {
+        String sql = """
+            SELECT id, nome, sigla
+            FROM comites
+            WHERE status = 'EM_ANDAMENTO'
+            ORDER BY id
+        """;
+
+        List<InformacoesComiteDTO> comites = jdbcTemplate.query(sql, (rs, rowNum) -> {
+            InformacoesComiteDTO informacoes = new InformacoesComiteDTO(rs.getLong("id"), rs.getString("nome"), rs.getString("sigla"));
+            return informacoes;
+        });
+
+        return comites;
+    }
+
+    public InformacoesComiteDTO informacoesComitePorId(Long id) {
+        String sql = """
+        SELECT nome, sigla
+        FROM comites
+        WHERE id = ? 
+    """;
+
+        List<InformacoesComiteDTO> lista = jdbcTemplate.query(
+                sql,
+                (rs, rowNum) -> new InformacoesComiteDTO(id, rs.getString("nome"), rs.getString("sigla")),
+                id
+        );
+
+        return lista.isEmpty() ? null : lista.get(0);
+    }
+
 }

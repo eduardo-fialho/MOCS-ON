@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOCS ON - Submeter Guia de Estudo</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body class="min-h-screen bg-slate-50 text-slate-900">
+    <div class="max-w-4xl mx-auto px-4 md:px-8 py-10 space-y-6">
+
+        <header
+            class="bg-white border border-slate-200 rounded-2xl px-6 py-4 shadow-md flex justify-between items-center">
+            <a th:href="@{/guias_de_estudos.html}" class="text-blue-700 hover:underline">
+                <i class="fas fa-arrow-left mr-2"></i> Voltar
+            </a>
+            <h1 class="text-2xl font-extrabold">Submeter Guia de Estudo</h1>
+        </header>
+
+        <main class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xl">
+            <form id="guiaForm" class="space-y-6">
+
+                <input type="hidden" id="autor" value="Secretariado">
+
+                <section class="space-y-4 border-b pb-6">
+                    <h2 class="text-xl font-bold">Informações Essenciais</h2>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Título do Guia</label>
+                        <input id="titulo" type="text" required class="w-full px-4 py-3 rounded-xl border bg-slate-50">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Comitê</label>
+                        <select id="id_comite" required class="w-full px-4 py-3 rounded-xl border bg-slate-50">
+                            <option value="">Selecione um comitê</option>
+                        </select>
+                    </div>
+                </section>
+
+                <section class="space-y-4 border-b pb-6">
+                    <h2 class="text-xl font-bold">Corpo do Guia</h2>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Regras</label>
+                        <textarea id="regras" rows="5" required
+                            class="w-full px-4 py-3 rounded-xl border bg-slate-50"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Conteúdo</label>
+                        <textarea id="conteudo" rows="8" required
+                            class="w-full px-4 py-3 rounded-xl border bg-slate-50"></textarea>
+                    </div>
+                </section>
+
+                <section class="space-y-4">
+                    <h2 class="text-xl font-bold">Anexos e Referências</h2>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-1">PDF (opcional)</label>
+                        <input id="arquivo" type="file" accept=".pdf">
+                    </div>
+
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-semibold">Links de Referência</h3>
+                        <button type="button" id="addLinkBtn" class="text-blue-600">
+                            <i class="fas fa-plus"></i> Adicionar
+                        </button>
+                    </div>
+
+                    <div id="linksContainer"></div>
+
+                    <p id="noLinksText" class="text-sm italic text-slate-500">
+                        Nenhum link adicionado.
+                    </p>
+                </section>
+
+                <button type="submit" id="submitBtn"
+                    class="w-full bg-amber-500 text-white font-bold py-3 rounded-xl hover:bg-amber-600">
+                    <i class="fas fa-upload mr-2"></i> Submeter Guia
+                </button>
+
+            </form>
+        </main>
+    </div>
+
+    <script src="/js/cadastrar_guia.js"></script>
+</body>
+
+</html>
