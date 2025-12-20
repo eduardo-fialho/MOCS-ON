@@ -45,9 +45,13 @@ public class UserController {
             Object nameAttr = session.getAttribute(AuthController.SESSION_USER_NAME);
             Object emailAttr = session.getAttribute(AuthController.SESSION_USER_ATTRIBUTE);
             Object roleAttr = session.getAttribute(AuthController.SESSION_USER_ROLE);
+
             if (nameAttr != null) {
-                boolean isSecretariado = roleAttr != null && "SECRETARIADO".equalsIgnoreCase(roleAttr.toString());
-                return new InformacoesUsuarioDTO(nameAttr.toString(), isSecretariado, emailAttr.toString());
+
+                boolean isSecretariado = isSecretariatRole(roleAttr != null ? roleAttr.toString() : null);
+                String email = emailAttr != null ? emailAttr.toString() : null;
+                return new InformacoesUsuarioDTO(nameAttr.toString(), isSecretariado, email);
+
             }
         }
 
@@ -119,6 +123,14 @@ public class UserController {
                 .cacheControl(CacheControl.noCache())
                 .contentType(mediaType)
                 .body(resource);
+    }
+
+    private boolean isSecretariatRole(String role) {
+        if (role == null) {
+            return false;
+        }
+        String normalized = role.trim().toUpperCase();
+        return normalized.equals("SECRETARIADO") || normalized.equals("SECRETARIO");
     }
 
     private String truncateSnippet(String mensagem) {
