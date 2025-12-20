@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOCS ON - Visualizar Guia de Estudo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body class="min-h-screen bg-slate-50 text-slate-900">
+
+    <div class="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-6">
+
+        <header
+            class="bg-white border border-slate-200 rounded-2xl px-6 py-4 shadow-md flex items-center justify-between gap-4">
+            <a href="/guias_de_estudos.html" class="inline-flex items-center text-blue-700 hover:underline">
+                <i class="fas fa-arrow-left mr-2"></i> Voltar à Lista
+            </a>
+            <div class="text-center">
+                <h1 id="guia-titulo" class="text-2xl font-extrabold text-slate-900">Carregando título...</h1>
+                <p id="guia-comite" class="text-sm text-slate-500">Carregando comitê...</p>
+            </div>
+            <span class="text-lg font-bold tracking-tight text-blue-700">MOCS ON</span>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <section class="lg:col-span-2 space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <h2 class="text-xl font-bold text-amber-600 mb-4 flex items-center">
+                        <i class="fas fa-gavel mr-2"></i> Regras e Instruções
+                    </h2>
+                    <div id="guia-regras" class="text-slate-700 space-y-3">
+                        Carregando regras...
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <h2 class="text-xl font-bold text-blue-700 mb-4 flex items-center">
+                        <i class="fas fa-book-open mr-2"></i> Tópicos e Conteúdo
+                    </h2>
+                    <div id="guia-conteudo" class="text-slate-700 space-y-3">
+                        Carregando conteúdo...
+                    </div>
+                </div>
+            </section>
+
+            <aside class="lg:col-span-1 space-y-6">
+
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <h2 class="text-lg font-bold text-green-600 mb-4 flex items-center">
+                        <i class="fas fa-link mr-2"></i> Links Relacionados
+                    </h2>
+                    <ul id="guia-links" class="list-disc pl-5 break-words max-w-full">
+                        <li>Carregando links...</li>
+                    </ul>
+                </div>
+
+                <div id="pdf-container" class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm"
+                    style="display:none;">
+                    <h2 class="text-lg font-bold text-red-600 mb-4 flex items-center">
+                        <i class="fas fa-file-pdf mr-2"></i> Documento Anexado
+                    </h2>
+                    <iframe id="guia-pdf" class="w-full h-[450px] border border-slate-300 rounded-lg"></iframe>
+                    <a id="download-btn"
+                        class="w-full bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg hover:bg-blue-800 transition mt-4 flex items-center justify-center"
+                        style="display:none;">
+                        <i class="fas fa-download mr-2"></i> Baixar Versão Oficial (PDF)
+                    </a>
+                    <p id="guia-nao-oficial" class="text-center text-slate-500 italic mt-2" style="display:none;">
+                        Este guia não está liberado para download oficial ainda.
+                    </p>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <script src="/js/guia_estudos.js"></script>
+</body>
+</html>
