@@ -183,10 +183,11 @@ CREATE TABLE IF NOT EXISTS `ouvidoria_relatos` (
 
 CREATE TABLE IF NOT EXISTS `agenda_diaria` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
-    `titulo` VARCHAR(255),
-    `descricao` VARCHAR(255),
-    `data_evento` DATE,
-    `hora_evento` TIME,
+    `titulo` VARCHAR(255) NOT NULL,
+    `descricao` VARCHAR(255) NOT NULL,
+    `data_evento` DATE NOT NULL,
+    `hora_evento` TIME NOT NULL,
+    `tipo` VARCHAR(255) DEFAULT 'GERAL',
     `visivel` BOOLEAN DEFAULT TRUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -223,6 +224,39 @@ CREATE TABLE IF NOT EXISTS `guia_estudos` (
     FOREIGN KEY (`id_comite`)
     REFERENCES `comites` (`id`)
     ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `presenca_listas` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `comite_id` BIGINT UNSIGNED NULL,
+    `titulo` VARCHAR(255) NOT NULL,
+    `data_sessao` DATE NOT NULL,
+    `hora_inicio` TIME NULL,
+    `hora_fim` TIME NULL,
+    `observacao` VARCHAR(500) NULL,
+    `criado_por` VARCHAR(255) NULL,
+    `criado_em` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_presenca_comite` (`comite_id`),
+    KEY `idx_presenca_data` (`data_sessao`),
+    CONSTRAINT `fk_presenca_comite` FOREIGN KEY (`comite_id`) REFERENCES `comites` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `presenca_registros` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `lista_id` BIGINT UNSIGNED NOT NULL,
+    `usuario_id` INT UNSIGNED NULL,
+    `usuario_nome` VARCHAR(255) NOT NULL,
+    `usuario_email` VARCHAR(255) NULL,
+    `status` VARCHAR(20) NOT NULL DEFAULT 'AUSENTE',
+    `observacao` VARCHAR(500) NULL,
+    `registrado_em` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `atualizado_em` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `ux_presenca_lista_usuario` (`lista_id`, `usuario_id`),
+    KEY `idx_presenca_lista` (`lista_id`),
+    CONSTRAINT `fk_presenca_lista` FOREIGN KEY (`lista_id`) REFERENCES `presenca_listas` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_presenca_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `link_guia` (

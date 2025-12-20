@@ -5,6 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -110,6 +111,18 @@ public class HomeController {
         return "painel_guia_de_estudos";
     }
 
+    @GetMapping("/presencas.html")
+    public String presencas(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        if (!hasPresenceRole(session)) {
+            return "redirect:/dashboard.html";
+        }
+        populateUserAttributes(model);
+        return "presencas";
+    }
+
     @GetMapping("/avaliar_documentos.html")
     public String avaliar(@RequestParam(required = false) Long docId, HttpSession session, Model model) {
         if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
@@ -182,6 +195,30 @@ public class HomeController {
     private boolean isAuthenticatedSecurity() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication != null && authentication.getPrincipal() instanceof SecaoUsuario;
+    }
+
+    private boolean hasPresenceRole(HttpSession session) {
+        String role = null;
+        if (session != null) {
+            Object roleAttr = session.getAttribute(AuthController.SESSION_USER_ROLE);
+            if (roleAttr != null) {
+                role = roleAttr.toString();
+            }
+        }
+        if (!StringUtils.hasText(role)) {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.getPrincipal() instanceof SecaoUsuario user) {
+                role = user.getCargo().name();
+            }
+        }
+        if (!StringUtils.hasText(role)) {
+            return false;
+        }
+        String normalized = role.trim().toUpperCase();
+        return normalized.equals("SECRETARIADO")
+                || normalized.equals("SECRETARIO")
+                || normalized.equals("EQUIPE")
+                || normalized.equals("DIRETOR");
     }
 
     private void populateUserAttributes(Model model) {

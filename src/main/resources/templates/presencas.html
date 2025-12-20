@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOCS ON - Presenca</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-6">
+
+        <header class="bg-white border border-slate-200 rounded-2xl px-6 py-4 shadow-md flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+                x-data="() => profileData()" x-init="loadUserInfo()">
+            <div class="flex items-center gap-3">
+                <a th:href="@{/secretariado.html}" class="inline-flex items-center text-blue-700 hover:underline">
+                    <i class="fas fa-arrow-left mr-2"></i> Voltar
+                </a>
+                <span class="hidden md:inline-flex text-slate-300">|</span>
+                <span class="text-lg font-bold tracking-tight text-blue-700">MOCS ON</span>
+            </div>
+            <div class="text-center md:text-left">
+                <h1 class="text-2xl font-extrabold text-slate-900">Lista de presenca</h1>
+                <p class="text-sm text-slate-500">Registro rapido de presenca por sessao.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="hidden sm:block text-slate-600 font-semibold" x-text="userCargo">VISITANTE</span>
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-full px-3 py-2">
+                        <img :src="userAvatar"
+                             src="https://placehold.co/40x40/94a3b8/ffffff?text=U"
+                             data-user-avatar
+                             @error="$event.target.src = defaultAvatar"
+                             alt="Avatar" class="h-9 w-9 rounded-full border border-slate-200">
+                        <span class="hidden md:block font-semibold text-slate-900" x-text="userName">Carregando...</span>
+                        <i class="fas fa-chevron-down text-xs text-slate-400"></i>
+                    </button>
+                    <div x-show="open" @click.away="open = false"
+                         class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-xl py-2 z-20"
+                         style="display: none;">
+                        <a href="/profile" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"><i class="fas fa-user mr-2"></i> Meu perfil</a>
+                        <template x-if="isSecretario">
+                            <a href="/secretariado.html" class="block px-4 py-2 text-sm text-blue-700 font-semibold hover:bg-slate-50">
+                                <i class="fas fa-user-tie mr-2"></i> Area do Secretariado
+                            </a>
+                        </template>
+                        <a href="/auth/logout" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Sair</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <section class="lg:col-span-4 space-y-6">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <h2 id="presenca-form-title" class="text-lg font-bold text-slate-900 mb-4">Nova lista</h2>
+                    <form id="form-presenca" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-600 mb-1" for="presenca-titulo">Titulo</label>
+                            <input id="presenca-titulo" type="text" class="w-full px-3 py-2 border border-slate-200 rounded-xl" placeholder="Ex: Sessao da manha" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-600 mb-1" for="presenca-comite">Comite</label>
+                            <select id="presenca-comite" class="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white">
+                                <option value="">Sem comite</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-600 mb-1" for="presenca-data">Data</label>
+                                <input id="presenca-data" type="date" class="w-full px-3 py-2 border border-slate-200 rounded-xl" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-600 mb-1" for="presenca-hora-inicio">Hora inicio</label>
+                                <input id="presenca-hora-inicio" type="time" class="w-full px-3 py-2 border border-slate-200 rounded-xl">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-600 mb-1" for="presenca-hora-fim">Hora fim</label>
+                            <input id="presenca-hora-fim" type="time" class="w-full px-3 py-2 border border-slate-200 rounded-xl">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-600 mb-1" for="presenca-observacao">Observacao</label>
+                            <textarea id="presenca-observacao" rows="3" class="w-full px-3 py-2 border border-slate-200 rounded-xl" placeholder="Observacoes da sessao"></textarea>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <button id="presenca-submit" type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 rounded-xl hover:bg-blue-700 transition">
+                                Criar lista
+                            </button>
+                            <button id="presenca-cancelar" type="button" class="hidden w-full border border-slate-200 text-slate-700 font-semibold py-2 rounded-xl hover:bg-slate-50 transition">
+                                Cancelar edicao
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold text-slate-900">Listas recentes</h2>
+                        <button id="recarregar-listas" class="text-sm text-blue-700 hover:underline">
+                            Atualizar
+                        </button>
+                    </div>
+                    <div id="lista-presencas" class="space-y-3 text-sm text-slate-600">
+                        Carregando listas...
+                    </div>
+                </div>
+            </section>
+
+            <section class="lg:col-span-8 space-y-6">
+                <div id="alert-presenca" class="hidden rounded-xl px-4 py-3 text-sm font-semibold"></div>
+
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div>
+                            <h2 id="presenca-detalhe-titulo" class="text-xl font-bold text-slate-900">Selecione uma lista</h2>
+                            <p id="presenca-detalhe-info" class="text-sm text-slate-500">Escolha uma lista para registrar presenca.</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button id="editar-lista" class="px-3 py-2 rounded-xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-50 transition disabled:opacity-60 disabled:cursor-not-allowed" disabled>
+                                Editar lista
+                            </button>
+                            <button id="apagar-lista" class="px-3 py-2 rounded-xl bg-rose-500 text-white font-semibold hover:bg-rose-600 transition disabled:opacity-60 disabled:cursor-not-allowed" disabled>
+                                Apagar lista
+                            </button>
+                            <button id="salvar-presenca" class="px-4 py-2 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition disabled:opacity-60 disabled:cursor-not-allowed" disabled>
+                                Salvar lista
+                            </button>
+                        </div>
+                    </div>
+                    <div id="presenca-resumo" class="mt-4 flex flex-wrap gap-2 text-sm"></div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div class="flex flex-col md:flex-row md:items-center gap-3">
+                        <input id="presenca-busca" type="text" placeholder="Buscar por nome ou e-mail..."
+                               class="w-full md:flex-1 px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900">
+                        <select id="presenca-filtro-status" class="w-full md:w-56 px-3 py-2 rounded-xl border border-slate-200 bg-white">
+                            <option value="">Todos os status</option>
+                            <option value="PRESENTE">Presente</option>
+                            <option value="AUSENTE">Ausente</option>
+                            <option value="JUSTIFICADO">Justificado</option>
+                            <option value="ATRASO">Atraso</option>
+                        </select>
+                    </div>
+                    <div id="presenca-registros" class="mt-4 text-sm text-slate-600">
+                        Nenhuma lista selecionada.
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script th:src="@{/js/dashboard_config.js}"></script>
+    <script th:src="@{/js/profile_data.js}"></script>
+    <script th:src="@{/js/presencas.js}"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</body>
+</html>
