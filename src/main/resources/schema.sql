@@ -330,3 +330,18 @@ CREATE TABLE IF NOT EXISTS `link_guia` (
         ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `user_profiles` (
+    `user_id` INT UNSIGNED NOT NULL,
+    `instituicao` VARCHAR(255) NULL,
+    `telefone` VARCHAR(100) NULL,
+    `comite_preferido` VARCHAR(255) NULL,
+    `observacoes` TEXT NULL,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (`user_id`),
+
+    CONSTRAINT `fk_user_profiles_user` 
+      FOREIGN KEY (`user_id`) 
+      REFERENCES `usuarios` (`id`) 
+      ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

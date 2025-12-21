@@ -14,8 +14,6 @@ import org.springframework.stereotype.Repository;
 
 import com.mocs_on.domain.Comite;
 import com.mocs_on.domain.Comite.StatusComite;
-import com.mocs_on.domain.GuiaEstudos;
-import com.mocs_on.domain.Usuario;
 import com.mocs_on.dto.InformacoesComiteDTO;
 
 @Repository
@@ -174,7 +172,6 @@ public class ComiteDao {
             if (count == 0) {
                 throw new Exception("Object not found [" + vo.getId() + "] .");
             }
-            // SEM COMMIT
         } catch (SQLException e) {
             try {
                 conn.rollback();
@@ -243,4 +240,9 @@ public class ComiteDao {
         return lista.isEmpty() ? null : lista.get(0);
     }
 
+    public Long quantidadeComites() {
+        String sql = "SELECT COUNT(*) FROM comites WHERE status = 'EM_ANDAMENTO'";
+        Long total = jdbcTemplate.queryForObject(sql, Long.class);
+        return total != null ? total : 0l;
+    }
 }

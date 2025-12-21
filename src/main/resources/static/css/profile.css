@@ -1,8 +1,152 @@
 body {
     font-family: "Inter", sans-serif;
-    background-color: #f8fafc;
+    background-image: url("/images/dashboard-wallpaper-aura3.jpg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
 }
 
 .bg-mocs-blue {
     background-color: #205395;
+}
+
+.glass-card {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+}
+
+.liquid-danger {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.65));
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 999px;
+    padding: 0.9rem 2.5rem;
+    color: #c53030;
+    font-weight: 600;
+    backdrop-filter: blur(18px);
+    box-shadow: 0 18px 32px rgba(197, 48, 48, 0.18);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.liquid-danger:hover {
+    background: linear-gradient(135deg, rgba(231, 38, 38, 0.9), rgba(190, 6, 6, 0.8));
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 20px 35px rgba(197, 48, 48, 0.3);
+}
+
+.glass-confirm-backdrop {
+    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08), transparent 35%),
+                radial-gradient(circle at 80% 10%, rgba(255,255,255,0.12), transparent 38%),
+                rgba(10,16,35,0.45);
+    backdrop-filter: blur(12px);
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 60;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.glass-confirm-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.glass-confirm-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, rgba(255,255,255,0.24), rgba(255,255,255,0.14));
+    border: 1px solid rgba(255,255,255,0.55);
+    border-radius: 28px;
+    box-shadow: 0 22px 55px rgba(8,15,35,0.28), inset 0 1px 0 rgba(255,255,255,0.5);
+    backdrop-filter: blur(22px);
+    color: #e2e8ff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+    transform: translateY(20px) scale(0.97);
+    opacity: 0;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+.glass-confirm-backdrop.active .glass-confirm-card {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+.glass-confirm-card::before,
+.glass-confirm-card::after {
+    content: "";
+    position: absolute;
+    inset: -30%;
+    background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.55), transparent 45%),
+                radial-gradient(circle at 80% 10%, rgba(111,192,255,0.3), transparent 40%);
+    filter: blur(22px);
+    opacity: 0.75;
+    pointer-events: none;
+}
+
+.glass-confirm-card::after {
+    inset: -25%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0) 55%);
+    filter: blur(14px);
+    opacity: 0.6;
+}
+
+.profile-header-label,
+.profile-header-title,
+.profile-header-subtitle {
+    color: #0a1b3f;
+}
+
+.back-to-dashboard {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.65rem 1.4rem;
+    border-radius: 999px;
+    font-weight: 600;
+    color: #205395;
+    border: 1px solid rgba(32, 83, 149, 0.25);
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 6px 18px rgba(32, 83, 149, 0.12);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+.back-to-dashboard:hover {
+    color: #12345f;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px rgba(32, 83, 149, 0.2);
+}
+
+.heart-pop {
+    position: absolute;
+    color: #ff4b6e;
+    font-size: 20px;
+    animation: floatUp 1s ease-out forwards;
+    opacity: 0.9;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-60px) scale(1.6);
+        opacity: 0;
+    }
+}
+
+.glass-confirm-card h3,
+.glass-confirm-card p,
+.glass-confirm-card .text-slate-500,
+.glass-confirm-card .text-slate-700 {
+    text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+}
+
+.glass-confirm-card .text-slate-500 {
+    color: #cbd5ff !important;
 }

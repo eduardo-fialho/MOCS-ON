@@ -33,3 +33,26 @@ document.addEventListener("DOMContentLoaded", function () {
     tipo.addEventListener("change", atualizarSecao)
     secretariadoFuncao.addEventListener("change", atualizarTextoFuncao)
 })
+
+function handleDeleteUser() {
+    const modal = document.getElementById('deleteUserModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+}
+
+function cancelDeleteUser() {
+    const modal = document.getElementById('deleteUserModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+}
+
+function confirmDeleteUser() {
+    const form = document.getElementById('deleteUserForm');
+    if (form) {
+        form.submit();
+    }
+}

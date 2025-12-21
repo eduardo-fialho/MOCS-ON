@@ -8,29 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        body { font-family: "Inter", sans-serif; background: radial-gradient(circle at top, #f0f4ff, #e3e8f2 55%, #dfe3ec); }
-        .bg-mocs-blue { background-color: #205395; }
-        .glass-card { background-color: rgba(255,255,255,0.95); backdrop-filter: blur(8px); }
-        .cropper-backdrop { background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); }
-        .cropper-box {
-            width: 320px;
-            height: 320px;
-            position: relative;
-            overflow: hidden;
-            border-radius: 22px;
-            background: #0f172a;
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
-        }
-        .cropper-box img {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform-origin: center center;
-            user-select: none;
-            -webkit-user-drag: none;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/profile_settings.css}">
 </head>
 <body class="min-h-screen">
 <header class="bg-white/90 shadow">
@@ -197,83 +175,6 @@
     </section>
 </main>
 
-<script>
-    function setupCameraControls(options) {
-        const startBtn = document.getElementById(options.startBtnId);
-        const captureBtn = document.getElementById(options.captureBtnId);
-        const closeBtn = document.getElementById(options.closeBtnId);
-        const video = document.getElementById(options.videoId);
-        const canvas = document.getElementById(options.canvasId);
-        const hiddenInput = document.getElementById(options.hiddenInputId);
-        const form = document.getElementById(options.formId);
-        if (!startBtn || !captureBtn || !closeBtn || !video || !canvas || !hiddenInput || !form) {
-            return;
-        }
-        let mediaStream = null;
-
-        async function startCamera() {
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                alert('A câmera não está disponível neste dispositivo.');
-                return;
-            }
-            try {
-                mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                video.srcObject = mediaStream;
-                video.classList.remove('hidden');
-                captureBtn.disabled = false;
-                closeBtn.disabled = false;
-                captureBtn.classList.remove('opacity-60');
-                closeBtn.classList.remove('opacity-60');
-            } catch (err) {
-                console.error('Erro ao acessar a câmera', err);
-                alert('Não foi possível acessar a câmera.');
-            }
-        }
-
-        function stopCamera() {
-            if (mediaStream) {
-                mediaStream.getTracks().forEach(track => track.stop());
-                mediaStream = null;
-            }
-            video.classList.add('hidden');
-            captureBtn.disabled = true;
-            closeBtn.disabled = true;
-            captureBtn.classList.add('opacity-60');
-            closeBtn.classList.add('opacity-60');
-        }
-
-        function capturePhoto() {
-            if (!mediaStream) {
-                alert('Abra a câmera primeiro.');
-                return;
-            }
-            const trackSettings = mediaStream.getVideoTracks()[0].getSettings();
-            canvas.width = trackSettings.width || 640;
-            canvas.height = trackSettings.height || 480;
-            const context = canvas.getContext('2d');
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            hiddenInput.value = canvas.toDataURL('image/png');
-            stopCamera();
-            form.submit();
-        }
-
-        startBtn.addEventListener('click', startCamera);
-        captureBtn.addEventListener('click', capturePhoto);
-        closeBtn.addEventListener('click', stopCamera);
-        window.addEventListener('beforeunload', stopCamera);
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        setupCameraControls({
-            startBtnId: 'avatarStartCameraBtn',
-            captureBtnId: 'avatarCaptureBtn',
-            closeBtnId: 'avatarCloseCameraBtn',
-            videoId: 'avatarCameraPreview',
-            canvasId: 'avatarCameraCanvas',
-            hiddenInputId: 'avatarCapturedImageInput',
-            formId: 'avatarCaptureForm'
-        });
-    });
-</script>
+<script th:src="@{/js/profile_settings.js}"></script>
 </body>
 </html>

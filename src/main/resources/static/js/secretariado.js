@@ -187,3 +187,78 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+(() => {
+    const layer = document.getElementById('toast-layer');
+    if (!layer) return;
+
+    function showGlassToast(title, desc, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `glass-toast ${type}`;
+        toast.innerHTML = `
+                <div class="title">${title || 'Aviso'}</div>
+                <div class="desc">${desc || ''}</div>
+            `;
+        const ripple = document.createElement('span');
+        ripple.className = 'glass-ripple';
+        ripple.style.left = '50%';
+        ripple.style.top = '50%';
+        toast.appendChild(ripple);
+        layer.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.add('show'));
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 400);
+        }, 2800);
+    }
+    window.showGlassToast = showGlassToast;
+    window.toastSuccess = (title, desc) => showGlassToast(title || 'Tudo certo', desc || '', 'success');
+    window.toastError = (title, desc) => showGlassToast(title || 'Algo deu errado', desc || '', 'error');
+
+    window.confirmGlass = function (message, title = 'Confirmacao') {
+        return new Promise((resolve) => {
+            const backdrop = document.createElement('div');
+            backdrop.className = 'glass-confirm-backdrop';
+            const card = document.createElement('div');
+            card.className = 'glass-confirm-card';
+            card.innerHTML = `
+                    <div class="relative z-10 space-y-3 text-slate-900">
+                        <p class="text-xs uppercase tracking-[0.28em] text-slate-500">${title}</p>
+                        <h3 class="text-lg font-semibold">Tem certeza?</h3>
+                        <p class="text-sm text-slate-700">${message || ''}</p>
+                        <div class="flex gap-2 pt-2">
+                            <button id="gc-cancel" class="flex-1 px-4 py-2 rounded-full border border-white/60 text-slate-700 font-semibold hover:bg-white/40 transition">Cancelar</button>
+                            <button id="gc-ok" class="flex-1 px-4 py-2 rounded-full bg-red-500 text-white font-semibold hover:bg-red-600 transition">Sim</button>
+                        </div>
+                    </div>
+                `;
+            backdrop.appendChild(card);
+            document.body.appendChild(backdrop);
+            requestAnimationFrame(() => card.classList.add('show'));
+            const clean = (val) => {
+                card.classList.remove('show');
+                setTimeout(() => backdrop.remove(), 200);
+                resolve(val);
+            };
+            backdrop.addEventListener('click', (e) => { if (e.target === backdrop) clean(false); });
+            card.querySelector('#gc-cancel').addEventListener('click', () => clean(false));
+            card.querySelector('#gc-ok').addEventListener('click', () => clean(true));
+        });
+    };
+
+    const logoutLink = document.getElementById('logoutLink');
+    if (logoutLink) {
+        logoutLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const ok = await window.confirmGlass('Deseja realmente sair da conta?', 'Logout');
+            if (ok) window.location.href = logoutLink.getAttribute('href');
+        });
+    }
+
+    const anuncioForm = document.getElementById('form-anuncio-modal');
+    if (anuncioForm) {
+        anuncioForm.addEventListener('submit', () => {
+            toastSuccess('Anúncio enviado!', 'Seu anúncio foi postado com sucesso.');
+        });
+    }
+})();

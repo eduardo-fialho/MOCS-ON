@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.mocs_on.domain.Documento;
 import com.mocs_on.domain.GuiaEstudos;
 import com.mocs_on.security.SecaoUsuario;
-import com.mocs_on.service.AvisoDAO;
 import com.mocs_on.service.ComiteDao;
 import com.mocs_on.service.DocumentoDAO;
 import com.mocs_on.service.GuiaEstudosDAO;
@@ -29,8 +28,6 @@ public class HomeController {
 
     @Autowired
     private DocumentoDAO documentoDAO;
-    @Autowired
-    private AvisoDAO avisoDAO;
     @Autowired
     private PreRegistrationService preRegistrationService;
     @Autowired
@@ -86,9 +83,10 @@ public class HomeController {
         }
         DashboardMetrics metrics = secretariatDashboardService.collectMetrics();
         model.addAttribute("dashboardMetrics", metrics);
-        model.addAttribute("numAvisos", avisoDAO.quantidadeAvisos());
-        model.addAttribute("numDocumentos", documentoDAO.quantidadeDocumentos());
+        model.addAttribute("numAvisos", metrics.announcementsPublished());
+        model.addAttribute("numDocumentos", metrics.documentsSent());
         model.addAttribute("pendingPreCount", preRegistrationService.countPending());
+        model.addAttribute("numComites", metrics.activeCommittees());
         populateUserAttributes(model);
         return "secretariado";
     }

@@ -114,9 +114,9 @@ public class DocumentoDAO {
         );
     }
 
-    public int quantidadeDocumentos() {
+    public Long quantidadeDocumentos() {
         String sql = "SELECT COUNT(*) FROM documentos WHERE ativo = true";
-        return jdbcTemplate.queryForObject(sql, Integer.class);
+        return jdbcTemplate.queryForObject(sql, Long.class);
     }
 
     public static StatusDocumento fromString(String status) {

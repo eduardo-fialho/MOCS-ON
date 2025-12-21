@@ -1,14 +1,13 @@
-
 document.addEventListener("DOMContentLoaded", function () {
+
     const tipo = document.getElementById("tipo");
     const secretariadoSection = document.getElementById("secretariadoSection");
     const secretariadoFuncao = document.getElementById("secretariadoFuncao");
-
     const textoPadrao = document.getElementById("textoPadrao");
     const textoDocente = document.getElementById("textoDocente");
     const textoTecnico = document.getElementById("textoTecnico");
 
-    function atualizarSecao() {
+    function toggleSecretariado() {
         if (tipo.value === "SECRETARIADO") {
             secretariadoSection.classList.remove("hidden");
         } else {
@@ -17,7 +16,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function atualizarTextoFuncao() {
-
         textoPadrao.classList.add("hidden");
         textoDocente.classList.add("hidden");
         textoTecnico.classList.add("hidden");
@@ -31,9 +29,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    atualizarSecao();
+    toggleSecretariado();
     atualizarTextoFuncao();
 
-    tipo.addEventListener("change", atualizarSecao);
+    tipo.addEventListener("change", toggleSecretariado);
     secretariadoFuncao.addEventListener("change", atualizarTextoFuncao);
 });

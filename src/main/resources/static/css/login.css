@@ -22,21 +22,20 @@ body {
     border-color: #205395;
 }
 
-.background-pattern {
-    background-color: #000000;
-}
-
 .login-bg {
     min-height: 100vh;
-    background: url("/images/dashboard-wallpaper-aura3.jpg") center/cover no-repeat;
+    background-image: url("/images/dashboard-wallpaper-aura3.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
 }
 
 .social-link {
     color: #fff;
-    transition: transform .3s ease, text-shadow .3s ease;
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
 }
 
 .social-link:hover {
     transform: scale(1.15);
-    text-shadow: 0 0 12px rgba(255,255,255,.9);
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
 }
