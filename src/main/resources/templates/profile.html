@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ï»¿<!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 
 <head>
@@ -149,8 +149,8 @@
     <header class="bg-white/90 shadow">
         <div class="max-w-5xl mx-auto px-4 py-5 flex flex-wrap gap-4 justify-between items-center">
             <div>
-                <h1 class="text-3xl font-bold profile-header-title mt-1">Este é seu perfil!</h1>
-                <p class="text-sm profile-header-subtitle">Seu cartão postal digital dentro do MOCS ON.</p>
+                <h1 class="text-3xl font-bold profile-header-title mt-1">Este Ã© seu perfil!</h1>
+                <p class="text-sm profile-header-subtitle">Seu cartÃ£o postal digital dentro do MOCS ON.</p>
             </div>
             <a href="/dashboard.html" class="back-to-dashboard">
                 <i class="fa fa-arrow-left text-sm opacity-80"></i>
@@ -160,7 +160,7 @@
     </header>
 
     <main class="max-w-5xl mx-auto px-4 py-8 space-y-8">
-        <!-- cartão visual -->
+        <!-- cartÃ£o visual -->
         <section class="glass-card rounded-2xl shadow-xl p-6">
             <div class="flex flex-col md:flex-row items-center gap-6">
                 <div class="relative">
@@ -183,7 +183,7 @@
                         <a th:href="@{/profile/settings}"
                             class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-mocs-blue text-mocs-blue font-semibold transition-all duration-300 text-sm hover:bg-white/80 hover:-translate-y-0.5 hover:shadow-lg">
                             <i class="fa-solid fa-sliders"></i>
-                            Abrir configurações
+                            Abrir configuraÃ§Ãµes
                         </a>
                     </div>
                 </div>
@@ -194,7 +194,7 @@
         <section id="galleryTools" class="glass-card rounded-2xl shadow-xl p-6 space-y-6">
             <div class="flex flex-col gap-2">
                 <h3 class="text-xl font-semibold text-gray-800">Minha galeria</h3>
-                <p class="text-sm text-gray-500">Use esta área para contar histórias e publicar novas fotos!</p>
+                <p class="text-sm text-gray-500">Use esta Ã¡rea para contar histÃ³rias e publicar novas fotos!</p>
             </div>
 
             <div class="space-y-3">
@@ -220,7 +220,7 @@
                     <label class="inline-flex items-center gap-2 text-sm text-gray-600">
                         <input type="checkbox" name="anonymous" value="true"
                             class="rounded border-gray-300 text-mocs-blue focus:ring-mocs-blue">
-                        Publicar como anônimo
+                        Publicar como anÃ´nimo
                     </label>
                     <button type="submit"
                         class="w-full px-4 py-2 rounded bg-mocs-blue text-white font-semibold hover:bg-opacity-90 transition">
@@ -229,26 +229,25 @@
                 </form>
 
                 <div class="rounded-2xl bg-white/85 border border-white/50 p-4 shadow-sm space-y-3">
-                    <p class="text-sm font-medium text-gray-700">Capturar direto da câmera</p>
+                    <p class="text-sm font-medium text-gray-700">Capturar direto da camera</p>
                     <textarea id="galleryCaptureCaption" rows="2" maxlength="280"
                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-mocs-blue"
                         placeholder="Legenda para a foto capturada"></textarea>
                     <label class="inline-flex items-center gap-2 text-sm text-gray-600">
                         <input type="checkbox" id="galleryCaptureAnon"
                             class="rounded border-gray-300 text-mocs-blue focus:ring-mocs-blue">
-                        Publicar como anônimo
+                        Publicar como anÃ´nimo
                     </label>
-                    <video id="gallerycâmeraPreview" class="w-full rounded-lg bg-black/10 hidden" autoplay muted
+                    <video id="galleryCameraPreview" class="w-full rounded-lg bg-black/10 hidden" autoplay muted
                         playsinline></video>
-                    <canvas id="gallerycâmeraCanvas" class="hidden"></canvas>
+                    <canvas id="galleryCameraCanvas" class="hidden"></canvas>
                     <div class="flex flex-wrap gap-3">
-                        <button type="button" id="galleryStartcâmeraBtn"
-                            class="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-100 transition text-sm">Abrir
-                            câmera</button>
+                        <button type="button" id="galleryStartCameraBtn"
+                            class="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-100 transition text-sm">Abrir camera</button>
                         <button type="button" id="galleryCaptureBtn" disabled
                             class="px-4 py-2 rounded bg-mocs-blue text-white font-semibold opacity-60 disabled:cursor-not-allowed transition text-sm">Capturar
                             e publicar</button>
-                        <button type="button" id="galleryClosecâmeraBtn" disabled
+                        <button type="button" id="galleryCloseCameraBtn" disabled
                             class="px-4 py-2 rounded border border-red-200 text-red-600 bg-red-50 opacity-60 disabled:cursor-not-allowed transition text-sm">Fechar</button>
                     </div>
                     <form id="galleryCaptureForm" th:action="@{/profile/gallery/capture}" method="post" class="hidden">
@@ -387,7 +386,7 @@
                         captureBtn.disabled = false;
                         closeBtn.disabled = false;
                     } catch {
-                        alert('Não foi possível acessar a câmera.');
+                        alert('Nao foi possivel acessar a camera.');
                     }
                 }
 
@@ -402,7 +401,7 @@
                 }
 
                 function capturePhoto() {
-                    if (!mediaStream) return alert('Abra a câmera primeiro.');
+                    if (!mediaStream) return alert('Abra a camera primeiro.');
                     canvas.width = video.videoWidth || 640;
                     canvas.height = video.videoHeight || 480;
                     canvas.getContext('2d').drawImage(video, 0, 0);
@@ -853,3 +852,17 @@
 </body>
 
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

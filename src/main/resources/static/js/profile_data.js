@@ -1,6 +1,7 @@
 function profileData() {
     return {
         menuOpen: false,
+        academicOpen: false,
         userName: 'Carregando...',
         userCargo: 'CSNU',
         isSecretario: false,
@@ -13,6 +14,14 @@ function profileData() {
 
         toggleMenu() {
             this.menuOpen = !this.menuOpen;
+        },
+
+        openAcademic() {
+            this.academicOpen = true;
+        },
+
+        closeAcademic() {
+            this.academicOpen = false;
         },
 
         async loadUserInfo() {

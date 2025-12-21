@@ -1,7 +1,7 @@
-function galeriaPreview() {
+﻿function galeriaPreview() {
     return {
-        filters: ['Meu comitê', 'Secretariado', 'Global'],
-        activeFilter: 'Meu comitê',
+        filters: ['Meu comite', 'Secretariado', 'Global'],
+        activeFilter: 'Meu comite',
         searchQuery: '',
         searchResults: [],
         searchLoading: false,
@@ -79,23 +79,27 @@ function galeriaPreview() {
                 console.error('Erro ao carregar galeria:', error);
                 this.posts = [];
                 this.media = [];
-                this.feedError = 'Não foi possível carregar a galeria agora.';
+                this.feedError = 'No foi possíel carregar a galeria agora.';
             } finally {
                 this.feedLoading = false;
             }
         },
         enrichPost(raw, index) {
-            if (!raw || !raw.mensagem || !raw.mensagem.startsWith('PHOTO|')) {
+            if (!raw || !raw.mensagem) {
+                return null;
+            }
+            const message = raw.mensagem.trim();
+            if (!message.startsWith('PHOTO|')) {
                 return null;
             }
             const author = (raw.autor || 'Delegado').trim();
-            const parts = raw.mensagem.split('|');
+            const parts = message.split('|');
             if (parts.length < 2) {
                 return null;
             }
             const filename = parts[1];
             const caption = parts.slice(2).join('|').trim();
-            const segment = /secret/i.test(author) ? 'Secretariado' : 'Meu comitê';
+            const segment = raw.autorTipo && /secret/i.test(raw.autorTipo) ? 'Secretariado' : 'Meu comite';
             const tag = raw.status === 'ANONIMO' ? '#Spotted' : `#${segment.replace(' ', '')}`;
             const initials = author.split(/\s+/).slice(0, 2).map(part => part.charAt(0)).join('').toUpperCase() || 'DL';
             const reactions = raw.reactions || {};
@@ -107,12 +111,14 @@ function galeriaPreview() {
                 segment,
                 tag,
                 time: this.formatRelativeTime(raw.data),
-                excerpt: this.summarize(caption || author),
-                rawMessage: caption || author,
+                excerpt: this.summarize(caption || ''),
+                rawMessage: caption || '',
                 url: `/profile/gallery/media/${filename}`,
-                caption: caption || author,
-                meta: `${author} · ${this.formatRelativeTime(raw.data)}`,
-                label: segment,
+                caption: caption || '',
+                meta: this.formatRelativeTime(raw.data),
+                label: raw.comiteSigla && raw.comiteNome
+                    ? `${raw.comiteSigla} - ${raw.comiteNome}`
+                    : (raw.comiteSigla || raw.comiteNome || (segment === 'Secretariado' ? 'Secretariado' : 'Sem comite')),
                 likes,
                 avatar: DEFAULT_AVATAR_URL
             };
@@ -122,18 +128,18 @@ function galeriaPreview() {
             return text.length > limit ? `${text.slice(0, limit - 3)}...` : text;
         },
         formatRelativeTime(value) {
-            if (!value) return 'agora mesmo';
+            if (!value) return "agora mesmo";
             const date = new Date(value);
-            if (Number.isNaN(date.getTime())) return 'agora mesmo';
+            if (Number.isNaN(date.getTime())) return "agora mesmo";
             const diffSeconds = Math.max(1, Math.floor((Date.now() - date.getTime()) / 1000));
-            if (diffSeconds < 60) return `há ${diffSeconds}s`;
+            if (diffSeconds < 60) return `ha ${diffSeconds}s`;
             const minutes = Math.floor(diffSeconds / 60);
-            if (minutes < 60) return `há ${minutes} min`;
+            if (minutes < 60) return `ha ${minutes} min`;
             const hours = Math.floor(minutes / 60);
-            if (hours < 24) return `há ${hours} h`;
+            if (hours < 24) return `ha ${hours} h`;
             const days = Math.floor(hours / 24);
-            if (days < 7) return `há ${days} d`;
-            return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+            if (days < 7) return `ha ${days} d`;
+            return date.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" });
         },
         handleSearchInput() {
             clearTimeout(this.searchDebounce);
@@ -267,7 +273,7 @@ function galeriaPreview() {
         async toggleLike() {
             if (!this.selectedMedia || this.likeLoading) return;
             if (!this.selectedMedia.id) {
-                alert('N?o foi poss?vel identificar o post para curtir.');
+                alert('Não foi possível identificar o post para curtir.');
                 return;
             }
             this.likeLoading = true;
@@ -293,8 +299,8 @@ function galeriaPreview() {
                         this.decrementLikes(this.selectedMedia.id, 1);
                         this.selectedMedia.liked = false;
                     } else {
-                        console.error('Erro ao remover rea??o:', res.status, await res.text());
-                        alert('N?o foi poss?vel remover sua rea??o. Status: ' + res.status);
+                        console.error('Erro ao remover reação:', res.status, await res.text());
+                        alert('Não foi possível remover sua reação. Status: ' + res.status);
                     }
                 } else {
                     if (res.status === 201 || res.status === 200) {
@@ -306,7 +312,7 @@ function galeriaPreview() {
                         this.selectedMedia.liked = false;
                     } else {
                         console.error('Erro ao reagir:', res.status, await res.text());
-                        alert('N?o foi poss?vel registrar sua rea??o. Status: ' + res.status);
+                        alert('Não foi possível registrar sua reação. Status: ' + res.status);
                     }
                 }
             } catch (err) {
@@ -388,3 +394,5 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.classList.remove('hidden');
     });
 });
+
+

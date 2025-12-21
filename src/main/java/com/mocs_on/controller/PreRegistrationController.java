@@ -2,6 +2,7 @@ package com.mocs_on.controller;
 
 import com.mocs_on.domain.PreRegistration;
 import com.mocs_on.service.PreRegistrationService;
+import com.mocs_on.service.UsuarioComiteDao;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -18,10 +19,13 @@ import java.util.regex.Pattern;
 public class PreRegistrationController {
 
     private final PreRegistrationService preRegistrationService;
+    private final UsuarioComiteDao usuarioComiteDao;
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
 
-    public PreRegistrationController(PreRegistrationService preRegistrationService) {
+    public PreRegistrationController(PreRegistrationService preRegistrationService,
+                                     UsuarioComiteDao usuarioComiteDao) {
         this.preRegistrationService = preRegistrationService;
+        this.usuarioComiteDao = usuarioComiteDao;
     }
 
     @GetMapping("/preinscricao")
@@ -29,6 +33,7 @@ public class PreRegistrationController {
         if (!model.containsAttribute("form")) {
             model.addAttribute("form", new PreRegistrationForm());
         }
+        model.addAttribute("comites", usuarioComiteDao.listarComites());
         return "pre_registration_form";
     }
 

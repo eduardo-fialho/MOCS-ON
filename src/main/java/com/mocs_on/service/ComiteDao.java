@@ -121,7 +121,6 @@ public class ComiteDao {
             ps.setInt(4, vo.getNumeroDelegados());
             ps.setString(5, vo.getDescricao());
             ps.executeUpdate();
-            conn.commit();
             rs = ps.getGeneratedKeys();
             if (rs.next()) {
                 long id = rs.getLong(1);

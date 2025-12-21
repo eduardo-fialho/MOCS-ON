@@ -3,6 +3,7 @@ package com.mocs_on.controller;
 import com.mocs_on.auth.EmailService;
 import com.mocs_on.auth.UserAccountService;
 import com.mocs_on.domain.PreRegistration;
+import com.mocs_on.service.UsuarioComiteDao;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -33,15 +35,18 @@ public class UserManagementController {
     private final EmailService emailService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final PreRegistrationService preRegistrationService;
+    private final UsuarioComiteDao usuarioComiteDao;
 
     public UserManagementController(UserAccountService userAccountService,
                                     EmailService emailService,
                                     BCryptPasswordEncoder passwordEncoder,
-                                    PreRegistrationService preRegistrationService) {
+                                    PreRegistrationService preRegistrationService,
+                                    UsuarioComiteDao usuarioComiteDao) {
         this.userAccountService = userAccountService;
         this.emailService = emailService;
         this.passwordEncoder = passwordEncoder;
         this.preRegistrationService = preRegistrationService;
+        this.usuarioComiteDao = usuarioComiteDao;
     }
 
     @PostMapping("/pre-registrations/{id}/deny")
@@ -175,6 +180,7 @@ public class UserManagementController {
         }
         model.addAttribute("roleOptions", ROLE_OPTIONS);
         model.addAttribute("secretariadofuncaoOptions", SECRETARIADO_FUNCOES);
+        addComiteOptions(model);
         return "admin_user_create";
     }
 
@@ -191,6 +197,7 @@ public class UserManagementController {
 
         model.addAttribute("roleOptions", ROLE_OPTIONS);
         model.addAttribute("secretariadofuncaoOptions", SECRETARIADO_FUNCOES);
+        addComiteOptions(model);
 
         String name = form.getName() == null ? "" : form.getName().trim();
         String email = userAccountService.normalizeEmail(form.getEmail());
@@ -198,6 +205,10 @@ public class UserManagementController {
         String telefone = trimToNull(form.getTelefone());
         String comitePreferido = trimToNull(form.getcomitePreferido());
         String observacoes = trimToNull(form.getObservacoes());
+        String tipo = form.getTipo() == null || form.getTipo().isBlank() ? "DELEGADO" : form.getTipo().trim();
+        boolean isSecretariado = "SECRETARIADO".equalsIgnoreCase(tipo);
+        List<Long> comiteIds = normalizeComiteIds(form.getComiteIds());
+        List<Long> comitesSelecionados = isSecretariado ? List.of() : comiteIds;
 
         if (name.isBlank()) {
             model.addAttribute("error", "Informe o nome completo do usuário.");
@@ -224,7 +235,6 @@ public class UserManagementController {
             return "admin_user_create";
         }
 
-        String tipo = form.getTipo() == null || form.getTipo().isBlank() ? "DELEGADO" : form.getTipo().trim();
         if ("SECRETARIADO".equalsIgnoreCase(tipo)) {
             if (form.getSecretariadoFuncao() == null || form.getSecretariadoFuncao().isBlank()
                     || form.getSecretariadoDepartamento() == null || form.getSecretariadoDepartamento().isBlank()
@@ -262,6 +272,7 @@ public class UserManagementController {
                             comitePreferido,
                             observacoes
                     ));
+            usuarioComiteDao.substituirComites(created.id(), comitesSelecionados);
         });
 
         sendWelcomeEmail(name, email, tipo, form.getPassword());
@@ -307,6 +318,7 @@ public class UserManagementController {
             form.setcomitePreferido(details.comitePreferido());
             form.setObservacoes(details.observacoes());
         });
+        form.setComiteIds(usuarioComiteDao.listarComiteIds(user.id()));
 
         if ("SECRETARIADO".equalsIgnoreCase(user.type())) {
             userAccountService.findSecretariadoProfile(user.id()).ifPresent(profile -> {
@@ -323,6 +335,7 @@ public class UserManagementController {
         model.addAttribute("form", form);
         model.addAttribute("roleOptions", ROLE_OPTIONS);
         model.addAttribute("secretariadofuncaoOptions", SECRETARIADO_FUNCOES);
+        addComiteOptions(model);
         return "admin_user_edit";
     }
 
@@ -360,6 +373,9 @@ public class UserManagementController {
         String telefone = trimToNull(form.getTelefone());
         String comitePreferido = trimToNull(form.getcomitePreferido());
         String observacoes = trimToNull(form.getObservacoes());
+        boolean isSecretariado = "SECRETARIADO".equalsIgnoreCase(tipo);
+        List<Long> comiteIds = normalizeComiteIds(form.getComiteIds());
+        List<Long> comitesSelecionados = isSecretariado ? List.of() : comiteIds;
         if ("SECRETARIADO".equalsIgnoreCase(tipo)) {
             if (form.getSecretariadoFuncao() == null || form.getSecretariadoFuncao().isBlank()
                     || form.getSecretariadoDepartamento() == null || form.getSecretariadoDepartamento().isBlank()
@@ -418,6 +434,7 @@ public class UserManagementController {
                             comitePreferido,
                             observacoes
                     ));
+            usuarioComiteDao.substituirComites(updated.id(), comitesSelecionados);
             sendProfileUpdateEmail(existing, updated, passwordReset ? form.getNewPassword() : null);
         }
 
@@ -505,6 +522,26 @@ public class UserManagementController {
         return role != null && "SECRETARIADO".equalsIgnoreCase(role.toString());
     }
 
+    private void addComiteOptions(Model model) {
+        model.addAttribute("comites", usuarioComiteDao.listarComites());
+    }
+
+    private List<Long> normalizeComiteIds(List<Long> comiteIds) {
+        if (comiteIds == null || comiteIds.isEmpty()) {
+            return List.of();
+        }
+        List<Long> normalized = new ArrayList<>();
+        for (Long id : comiteIds) {
+            if (id == null || id <= 0) {
+                continue;
+            }
+            if (!normalized.contains(id)) {
+                normalized.add(id);
+            }
+        }
+        return normalized;
+    }
+
     private String safe(String value) {
         return value == null ? "" : value;
     }
@@ -533,6 +570,7 @@ public class UserManagementController {
         private String Instituicao;
         private String telefone;
         private String comitePreferido;
+        private List<Long> comiteIds;
         private String observacoes;
         private String password;
         private String confirmPassword;
@@ -583,6 +621,14 @@ public class UserManagementController {
 
         public void setcomitePreferido(String comitePreferido) {
             this.comitePreferido = comitePreferido;
+        }
+
+        public List<Long> getComiteIds() {
+            return comiteIds;
+        }
+
+        public void setComiteIds(List<Long> comiteIds) {
+            this.comiteIds = comiteIds;
         }
 
         public String getObservacoes() {
@@ -681,6 +727,7 @@ public class UserManagementController {
         private String Instituicao;
         private String telefone;
         private String comitePreferido;
+        private List<Long> comiteIds;
         private String observacoes;
         private String newPassword;
         private String secretariadoFuncao;
@@ -736,6 +783,14 @@ public class UserManagementController {
 
         public void setcomitePreferido(String comitePreferido) {
             this.comitePreferido = comitePreferido;
+        }
+
+        public List<Long> getComiteIds() {
+            return comiteIds;
+        }
+
+        public void setComiteIds(List<Long> comiteIds) {
+            this.comiteIds = comiteIds;
         }
 
         public String getObservacoes() {

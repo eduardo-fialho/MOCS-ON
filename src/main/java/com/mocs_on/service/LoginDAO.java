@@ -1,6 +1,7 @@
 package com.mocs_on.service;
 
 import com.mocs_on.domain.Comite;
+import com.mocs_on.domain.Comite.StatusComite;
 import com.mocs_on.domain.Login;
 import com.mocs_on.domain.Usuario;
 import com.mocs_on.security.CargoEnum;
@@ -133,6 +134,41 @@ public class LoginDAO {
     }
 
     private List<Comite> findComitesByUsuarioId(Long usuarioId) {
-        return List.of();
+        if (usuarioId == null) {
+            return List.of();
+        }
+        String sql = """
+                SELECT c.id,
+                       c.sigla,
+                       c.nome,
+                       c.status,
+                       c.num_delegados,
+                       c.descricao
+                FROM usuario_comite uc
+                JOIN comites c ON c.id = uc.comite_id
+                WHERE uc.usuario_id = ?
+                ORDER BY c.nome
+                """;
+        return jdbcTemplate.query(sql, this::mapRowToComite, usuarioId);
+    }
+
+    private Comite mapRowToComite(ResultSet rs, int rowNum) throws SQLException {
+        Comite comite = new Comite();
+        comite.setId(rs.getLong("id"));
+        comite.setSigla(rs.getString("sigla"));
+        comite.setNome(rs.getString("nome"));
+        comite.setDescricao(rs.getString("descricao"));
+        comite.setNumeroDelegados(rs.getInt("num_delegados"));
+        String status = rs.getString("status");
+        if (status != null) {
+            try {
+                comite.setStatus(StatusComite.valueOf(status));
+            } catch (IllegalArgumentException ex) {
+                comite.setStatus(StatusComite.NAO_INICIADO);
+            }
+        } else {
+            comite.setStatus(StatusComite.NAO_INICIADO);
+        }
+        return comite;
     }
 }
