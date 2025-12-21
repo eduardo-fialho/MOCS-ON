@@ -80,8 +80,8 @@ public class PasswordResetService {
         String subject = "MOCS ON - redefinicao de senha";
         String body = String.format(
                 "Ola,%n%nRecebemos um pedido para redefinir a senha do portal MOCS ON.%n%n" +
-                        "Use o link abaixo (valido por %d minutos):%n%s%n%n" +
-                        "Se voce nao solicitou, ignore este e-mail.%n%n" +
+                        "Use o link abaixo (válido por %d minutos):%n%s%n%n" +
+                        "Se você não solicitou, ignore este e-mail.%n%n" +
                         "Equipe MOCS ON%n",
                 expirationMinutes,
                 link

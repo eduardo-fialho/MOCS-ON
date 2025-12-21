@@ -7,9 +7,11 @@ public class AgendaDiaria {
     private String data_evento;
     private String hora_evento;
     private Boolean visivel = true;
+    private String tipo;
 
     public AgendaDiaria() {
         this.visivel = true;
+        this.tipo = "GERAL";
     }
     
     public AgendaDiaria(String titulo, String descricao, String data_evento, String hora_evento) {
@@ -20,12 +22,13 @@ public class AgendaDiaria {
         this.visivel = true;
     }
 
-    public AgendaDiaria(String titulo, String descricao, String data_evento, String hora_evento, Boolean visivel) {
+    public AgendaDiaria(String titulo, String descricao, String data_evento, String hora_evento, Boolean visivel, String tipo) {
         this.titulo = titulo;
         this.descricao = descricao;
         this.data_evento = data_evento;
         this.hora_evento = hora_evento;
         this.visivel = (visivel == null ? true : visivel);
+        this.tipo = (tipo == null ? "GERAL" : tipo);
     }
 
     public Long getId() { 
@@ -68,6 +71,14 @@ public class AgendaDiaria {
     }
     public void setVisivel(Boolean visivel) {
         this.visivel = visivel;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 }
 

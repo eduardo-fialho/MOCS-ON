@@ -1,8 +1,11 @@
 package com.mocs_on.controller;
 
 import java.io.IOException;
+<<<<<<< HEAD
 import java.security.Principal;
 import java.time.LocalDateTime;
+=======
+>>>>>>> origin/main
 import java.util.List;
 import java.util.Map;
 
@@ -21,12 +24,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+<<<<<<< HEAD
 import com.mocs_on.domain.Comite;
 import com.mocs_on.domain.Documento;
 import com.mocs_on.domain.StatusDocumento;
 import com.mocs_on.domain.Usuario;
 import com.mocs_on.service.DocumentoDAO;
 import com.mocs_on.service.LoginDAO;
+=======
+import com.mocs_on.domain.Documento;
+import com.mocs_on.domain.StatusDocumento;
+import com.mocs_on.service.DocumentoDAO;
+>>>>>>> origin/main
 
 @RestController
 @RequestMapping("/documentos")
@@ -36,9 +45,12 @@ public class DocumentoController {
     @Autowired
     private DocumentoDAO documentoDAO;
 
+<<<<<<< HEAD
     @Autowired
     private LoginDAO loginDAO;
 
+=======
+>>>>>>> origin/main
     @GetMapping
     public ResponseEntity<List<Documento>> recuperarDocumentos() {
         List<Documento> documentos = documentoDAO.recuperarTodos();
@@ -49,6 +61,7 @@ public class DocumentoController {
     public ResponseEntity<String> uploadDocumento(
             @RequestParam("file") MultipartFile file,
             @RequestParam("nome") String nome,
+<<<<<<< HEAD
             @RequestParam("comite") String comiteSigla,
             Principal principal,
             @RequestParam(value = "avaliacao", required = false) String avaliacao) {
@@ -76,6 +89,12 @@ public class DocumentoController {
         }
 
         if (file == null || file.isEmpty()) {
+=======
+            @RequestParam("autor") String autor,
+            @RequestParam("avaliacao") String avaliacao) {
+
+        if (file.isEmpty()) {
+>>>>>>> origin/main
             return ResponseEntity.badRequest().body("Arquivo vazio");
         }
 
@@ -84,10 +103,15 @@ public class DocumentoController {
         }
 
         String nomeArquivoReal = file.getOriginalFilename();
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
         if (nomeArquivoReal == null) {
             return ResponseEntity.badRequest().body("Nome do arquivo inválido");
         }
 
+<<<<<<< HEAD
         String extensao = "";
         int idx = nomeArquivoReal.lastIndexOf('.');
         if (idx >= 0) {
@@ -116,6 +140,21 @@ public class DocumentoController {
         doc.setStatus(StatusDocumento.RECEBIDO);
         doc.setAtivo(true);
         doc.setData(LocalDateTime.now());
+=======
+        String extensao = nomeArquivoReal.substring(nomeArquivoReal.lastIndexOf('.') + 1).toLowerCase();
+        List<String> extensoesPermitidas = List.of("pdf");
+
+        if (!extensoesPermitidas.contains(extensao)) {
+            return ResponseEntity.badRequest()
+                    .body("Tipo de arquivo não permitido. Somente PDF, DOCX e PNG são aceitos.");
+        }
+
+        Documento doc = new Documento();
+        doc.setNome(nome);
+        doc.setAutor(autor);
+        doc.setStatus(StatusDocumento.RECEBIDO);
+        doc.setAtivo(true);
+>>>>>>> origin/main
 
         try {
             doc.setArquivo(file.getBytes());
@@ -131,6 +170,7 @@ public class DocumentoController {
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao salvar documento");
         }
+<<<<<<< HEAD
     }
 
     @GetMapping("/{id}/download")
@@ -180,3 +220,51 @@ public class DocumentoController {
     }
 
 }
+=======
+    }
+
+    @GetMapping("/{id}/download")
+    public ResponseEntity<byte[]> baixarDocumento(@PathVariable Long id) {
+        Documento doc = documentoDAO.recuperarPorId(id);
+
+        if (doc == null || doc.getArquivo() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String nomeArquivo = doc.getNome();
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=\"" + nomeArquivo + "\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(doc.getArquivo());
+    }
+
+    @GetMapping("/{id}/visualizar")
+    public ResponseEntity<byte[]> visualizar(@PathVariable Long id) {
+        Documento doc = documentoDAO.recuperarPorId(id);
+
+        if (doc == null || doc.getArquivo() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header("Content-Disposition", "inline; filename=\"" + doc.getNome() + "\"")
+                .body(doc.getArquivo());
+    }
+
+    @PostMapping("/{id}/avaliar")
+    @ResponseBody
+    public Documento avaliarDocumento(@PathVariable Long id, @RequestBody Map<String, Object> body) {
+        Documento doc = documentoDAO.recuperarPorId(id);
+        if (doc == null) {
+            throw new RuntimeException("Documento não encontrado");
+        }
+        String statusStr = (String) body.get("status");
+        doc.setStatus(StatusDocumento.valueOf(statusStr.toUpperCase()));
+        doc.setAvaliacao((String) body.get("comments"));
+        documentoDAO.atualizarDocumento(doc);
+        return doc;
+    }
+}
+>>>>>>> origin/main

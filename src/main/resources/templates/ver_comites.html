@@ -30,7 +30,11 @@
                     <span class="font-semibold text-gray-700 hidden sm:block">CSNU</span>
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" class="flex items-center space-x-2">
-                            <img src="https://placehold.co/40x40/cccccc/ffffff?text=U" alt="Avatar"
+                            <img :src="userAvatar"
+                                src="https://placehold.co/40x40/cccccc/ffffff?text=U"
+                                data-user-avatar
+                                @error="$event.target.src = defaultAvatar"
+                                alt="Avatar"
                                 class="h-9 w-9 rounded-full border-2 border-mocs-blue">
                             <span class="hidden md:block font-semibold text-gray-700"
                                 x-text="userName">Carregando...</span>
@@ -70,6 +74,7 @@
                             <th class="py-3 px-6 text-left">Status</th>
                             <th class="py-3 px-6 text-left">Número de Delegados</th>
                             <th class="py-3 px-6 text-left">Descrição</th>
+                            <th class="py-3 px-6 text-left">Dashboard</th>
                             <th class="py-3 px-6 text-left">Editar</th>
                         </tr>
                     </thead>
@@ -80,6 +85,13 @@
                             <td class="py-4 px-6" th:text="${comite.status}">Status</td>
                             <td class="py-4 px-6" th:text="${comite.numeroDelegados}">0</td>
                             <td class="py-4 px-6" th:text="${comite.descricao}">0</td>
+
+                            <td class="py-4 px-6">
+                                <!--(comiteId=${comite.id})-->
+                                <a th:href="@{/dashboard}"><button class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
+                                    Ver dashboard
+                                </button></a>
+                            </td>
                             <td class="py-4 px-6">  
                                 <a th:href="@{editar/{id}(id=${comite.id})}"><button class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">
                                     Editar
@@ -91,6 +103,12 @@
             </section>
         </main>
     </div>
+
+    <script th:src="@{/js/dashboard_config.js}"></script>
+    <script th:src="@{/js/profile_data.js}"></script>
+    <script th:src="@{/js/announcements_data.js}"></script>
+    <script th:src="@{/js/mural_data.js}"></script>
+    <script th:src="@{/js/agenda.js}"></script>
 </body>
 
 </html>

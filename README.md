@@ -135,7 +135,7 @@ Planejamento da construção do projeto resumido em 3 sprints.
 | Responsável | Item | Descrição resumida |
 |:-----------|:-----|:-------------------|
 | Ana Sofia de Miranda | CSU06 | Upload de documentos pelos delegados com validação de formatos. |
-| Hike Penedo Mendes | CSU10 | Consulta informal e painel de informações públicas. |
+| Hike Penedo Mendes | CSU16 | Agenda diária consolidada para logística do evento. |
 | Eduardo Lopes Fialho | CSU05 | Painel para análise e aprovação de documentos. |
 | Samuel Soares dos Santos |CSU08 | Reações e comentários moderados em posts. |
 | Arthur Henrique Neves | CSU02 | Administração dos perfis e tipos de usuários. |
@@ -144,8 +144,8 @@ Planejamento da construção do projeto resumido em 3 sprints.
 ### Sprint 3 — Governança
 | Responsável | Item | Descrição resumida |
 |:-----------|:-----|:-------------------|
-| Ana Sofia de Miranda | CSU15 | Publicação das agendas de cada comitê. |
-| Hike Penedo Mendes | CSU16 | Agenda diária consolidada para logística do evento. |
+| Ana Sofia de Miranda | CSU10 | Consulta informal e painel de informações públicas. |
+| Hike Penedo Mendes | CSU15 | Publicação das agendas de cada comitê. |
 | Eduardo Lopes Fialho | CSU18 | Publicação de guias e materiais de estudo centralizados. |
 | Samuel Soares dos Santos | CSU12 | Submeter e Aprovar um post da Imprensa |
 | Arthur Henrique Neves | CSU09 | Registro avançado de listas de presença. |

@@ -4,16 +4,10 @@ let currentDocuments = [];
 async function fetchDocuments() {
     try {
         const res = await fetch('http://localhost:8082/documentos');
-
-        if (!res.ok) {
-            throw new Error(`Erro HTTP ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`Erro HTTP ${res.status}`);
 
         const data = await res.json();
-
-        if (!Array.isArray(data)) {
-            throw new Error('Resposta do servidor não é um array de documentos');
-        }
+        if (!Array.isArray(data)) throw new Error('Resposta inválida do servidor');
 
         currentDocuments = data;
         selectedDocumentId = currentDocuments.length > 0 ? currentDocuments[0].id : null;
@@ -39,7 +33,7 @@ function renderDocumentList(documents) {
     if (!container) return;
 
     if (!Array.isArray(documents) || documents.length === 0) {
-        container.innerHTML = `<div class="text-center text-gray-500 py-6">
+        container.innerHTML = `<div class="text-center text-slate-500 py-6">
             Nenhum documento encontrado.
         </div>`;
         return;
@@ -47,12 +41,14 @@ function renderDocumentList(documents) {
 
     container.innerHTML = documents.map(doc => {
         const isSelected = doc.id === selectedDocumentId;
-        const selectedClass = isSelected ? 'bg-mocs-blue text-white shadow-md' : 'hover:bg-gray-50';
+        const selectedClass = isSelected ? 'bg-blue-600 text-white shadow-md border-blue-600' : 'bg-white hover:bg-slate-50 border-slate-200';
 
         return `
             <div class="p-3 border rounded-lg cursor-pointer ${selectedClass}" data-doc-id="${doc.id}">
                 <p class="font-bold truncate">${doc.nome}</p>
-                <p class="text-sm mt-1">Autor: ${doc.autor || 'Desconhecido'} | Status: ${doc.status}</p>
+                <p class="text-sm mt-1 ${isSelected ? 'text-blue-50' : 'text-slate-600'}">
+                    Autor: ${doc.autor || 'Desconhecido'} | Status: ${doc.status}
+                </p>
             </div>
         `;
     }).join('');
@@ -67,7 +63,7 @@ function renderDocumentDetails(doc) {
     if (!container) return;
 
     if (!doc) {
-        container.innerHTML = `<p class="text-gray-500">Selecione um documento.</p>`;
+        container.innerHTML = `<p class="text-slate-500">Selecione um documento.</p>`;
         return;
     }
 
@@ -75,18 +71,18 @@ function renderDocumentDetails(doc) {
     let avaliacaoHTML = '';
 
     if (doc.avaliacao) {
-        avaliacaoHTML = `<div class="p-3 mt-2 border rounded bg-gray-50 text-gray-700">${doc.avaliacao}</div>`;
+        avaliacaoHTML = `<div class="p-3 mt-2 border rounded bg-slate-50 text-slate-700">${doc.avaliacao}</div>`;
     }
 
     if (doc.status === 'CORRIGIR') {
         buttonsHTML = `
-            <div class="inline-flex mb-2">
+            <div class="flex flex-wrap gap-2 mb-2">
                 <button id="download-button" data-doc-id="${doc.id}"
-                    class="bg-mocs-blue text-white py-2 px-4 rounded inline-block mr-2">
+                    class="bg-blue-600 text-white py-2 px-4 rounded shadow hover:bg-blue-700 transition">
                     Baixar
                 </button>
                 <button id="evaluate-button" data-doc-id="${doc.id}"
-                    class="bg-mocs-orange text-white font-semibold py-2 px-4 rounded hover:bg-opacity-90 transition duration-150 mx-2">
+                    class="bg-amber-500 text-white font-semibold py-2 px-4 rounded shadow hover:bg-amber-600 transition">
                     Avaliar Documento
                 </button>
             </div>
@@ -94,19 +90,19 @@ function renderDocumentDetails(doc) {
     } else if (doc.status === 'APRECIADO' || doc.status === 'APROVADO') {
         buttonsHTML = `
             <button id="download-button" data-doc-id="${doc.id}"
-                class="bg-mocs-blue text-white py-2 px-4 rounded w-full">
+                class="bg-blue-600 text-white py-2 px-4 rounded shadow w-full hover:bg-blue-700 transition">
                 Baixar
             </button>
         `;
     } else {
         buttonsHTML = `
-            <div class="inline-flex">
+            <div class="flex flex-wrap gap-2 mb-2">
                 <button id="download-button" data-doc-id="${doc.id}"
-                    class="bg-mocs-blue text-white py-2 px-4 rounded inline-block mr-2">
+                    class="bg-blue-600 text-white py-2 px-4 rounded shadow hover:bg-blue-700 transition">
                     Baixar
                 </button>
                 <button id="evaluate-button" data-doc-id="${doc.id}"
-                    class="bg-mocs-orange text-white font-semibold py-2 px-4 rounded hover:bg-opacity-90 transition duration-150 mx-2">
+                    class="bg-amber-500 text-white font-semibold py-2 px-4 rounded shadow hover:bg-amber-600 transition">
                     Avaliar Documento
                 </button>
             </div>
@@ -114,9 +110,9 @@ function renderDocumentDetails(doc) {
     }
 
     container.innerHTML = `
-        <p class="font-bold text-lg mb-2">${doc.nome}</p>
-        <p class="text-gray-600 mb-2">Autor: ${doc.autor || 'Desconhecido'}</p>
-        <p class="text-gray-600 mb-2">Status: ${doc.status}${doc.isOfficial ? ' - Oficial' : ''}</p>
+        <p class="font-bold text-lg mb-2 text-slate-900">${doc.nome}</p>
+        <p class="text-slate-600 mb-2">Autor: ${doc.autor || 'Desconhecido'}</p>
+        <p class="text-slate-600 mb-4">Status: ${doc.status}${doc.isOfficial ? ' - Oficial' : ''}</p>
         ${buttonsHTML}
         ${avaliacaoHTML}
     `;

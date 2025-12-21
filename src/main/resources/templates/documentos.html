@@ -1,112 +1,88 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOCS ON - Documentos do Comitê</title>
-
+    <title>MOCS ON - Documentos</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" th:href="@{/css/documentos.css}">
 </head>
+<body class="min-h-screen bg-slate-50 text-slate-900">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-6">
 
-<body class="bg-gray-100">
-    <div class="flex flex-col min-h-screen">
-
-        <header class="bg-white shadow-md z-10 sticky top-0" x-data="() => profileData()" x-init="loadUserInfo()">
-            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-                
-                <div class="mt-4 md:mt-0">
-                    <a th:href="@{/secretariado.html}"
-                    class="text-gray-600 hover:text-mocs-blue font-semibold py-2 px-4 rounded-lg hover:bg-gray-100 inline-flex items-center">
-                        <i class="fas fa-arrow-left mr-2"></i> Voltar
-                    </a>
-                </div>
-                
-                <div class="flex items-center space-x-4">
-                    <a th:href="@{/}">
-                        <img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON"
-                            class="h-8">
-                    </a>
-                    <h1 class="text-xl font-bold text-mocs-blue hidden md:block">Lista de Documento</h1>
-                </div>
-    
-                <div class="flex items-center space-x-6">
-                    <span class="font-semibold text-gray-700 hidden sm:block" x-text="userCargo">VISITANTE</span>
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center space-x-2">
-                            <img src="https://placehold.co/40x40/cccccc/ffffff?text=U" alt="Avatar"
-                                class="h-9 w-9 rounded-full border-2 border-mocs-blue">
-                            <span class="hidden md:block font-semibold text-gray-700"
-                                x-text="userName">Carregando...</span>
-                            <i class="fas fa-chevron-down text-xs text-gray-500"></i>
-                        </button>
-                        <div x-show="open" @click.away="open = false"
-                            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20"
-                            style="display: none;">
-                            <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b">
-                                <i class="fas fa-user mr-2"></i> Meu perfil
+        <header class="bg-white border border-slate-200 rounded-2xl px-6 py-4 shadow-md flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+                x-data="() => profileData()" x-init="loadUserInfo()">
+            <div class="flex items-center gap-3">
+                <a th:href="@{/secretariado.html}" class="inline-flex items-center text-blue-700 hover:underline">
+                    <i class="fas fa-arrow-left mr-2"></i> Voltar
+                </a>
+                <span class="hidden md:inline-flex text-slate-300">|</span>
+                <span class="text-lg font-bold tracking-tight text-blue-700">MOCS ON</span>
+            </div>
+            <div class="text-center md:text-left">
+                <h1 class="text-2xl font-extrabold text-slate-900">Documentos do Secretariado</h1>
+                <p class="text-sm text-slate-500">Envio, download e avaliação em um só painel.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="hidden sm:block text-slate-600 font-semibold" x-text="userCargo">VISITANTE</span>
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-full px-3 py-2">
+                        <img :src="userAvatar"
+                             src="https://placehold.co/40x40/94a3b8/ffffff?text=U"
+                             data-user-avatar
+                             @error="$event.target.src = defaultAvatar"
+                             alt="Avatar" class="h-9 w-9 rounded-full border border-slate-200">
+                        <span class="hidden md:block font-semibold text-slate-900" x-text="userName">Carregando...</span>
+                        <i class="fas fa-chevron-down text-xs text-slate-400"></i>
+                    </button>
+                    <div x-show="open" @click.away="open = false"
+                         class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-xl py-2 z-20"
+                         style="display: none;">
+                        <a href="/profile" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"><i class="fas fa-user mr-2"></i> Meu perfil</a>
+                        <template x-if="isSecretario">
+                            <a href="/secretariado.html" class="block px-4 py-2 text-sm text-blue-700 font-semibold hover:bg-slate-50">
+                                <i class="fas fa-user-tie mr-2"></i> Área do Secretariado
                             </a>
-                            <template x-if="isSecretario">
-                                <div>
-                                    <a href="/secretariado.html"
-                                        class="block px-4 py-2 text-sm text-mocs-blue font-semibold hover:bg-gray-100 border-b">
-                                        <i class="fas fa-user-tie mr-2"></i> Área do Secretariado
-                                    </a>
-                                </div>
-                            </template>
-                            <a href="/auth/logout"
-                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
-                        </div>
+                        </template>
+                        <a href="/auth/logout" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Sair</a>
                     </div>
                 </div>
             </div>
         </header>
 
-        <main class="flex-grow container mx-auto p-4 md:p-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-                <div class="lg:col-span-2 flex flex-col gap-6">
-
-                    <div class="bg-white p-4 rounded-xl shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                        <div class="flex flex-col sm:flex-row gap-4 flex-1">
-                            <input type="text" id="search-input" placeholder="Buscar por título, autor, tipo..."
-                                class="w-full sm:flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
-                        </div>
-
-                        <a th:href="@{/submissao_documentos.html}"
-                            class="bg-mocs-orange text-white font-semibold py-2 px-4 rounded-lg hover:bg-opacity-90 transition duration-150 flex items-center">
-                            <i class="fas fa-plus mr-2"></i> Novo Documento
-                        </a>
-                    </div>
-
-                    <div class="bg-white p-6 rounded-xl shadow-lg flex-1">
-                        <h2 class="text-2xl font-bold text-mocs-blue mb-4">Documentos Enviados</h2>
-                        <div class="space-y-3 custom-scrollbar max-h-[70vh] overflow-y-auto" id="document-list-container">
-                        </div>
-                    </div>
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <section class="lg:col-span-2 space-y-4">
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                    <input id="search-input" type="text" placeholder="Buscar por título, autor ou tipo..."
+                           class="w-full sm:flex-1 px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    <a th:href="@{/submissao_documentos.html}"
+                       class="inline-flex items-center bg-amber-500 text-white font-semibold px-5 py-3 rounded-xl shadow hover:bg-amber-600 transition">
+                        <i class="fas fa-plus mr-2"></i> Novo Documento
+                    </a>
                 </div>
 
-                <div class="lg:col-span-1 flex flex-col gap-6">
-                    <div class="bg-white p-6 rounded-xl shadow-lg sticky top-20">
-                        <h2 class="text-xl font-bold text-mocs-orange mb-4">Detalhes do Documento</h2>
-                        <div id="details-view-container">
-                        </div>
-                    </div>
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <h2 class="text-xl font-bold text-slate-900 mb-4">Documentos enviados</h2>
+                    <div id="document-list-container" class="space-y-3 max-h-[70vh] overflow-y-auto pr-1 custom-scrollbar"></div>
                 </div>
-            </div>
+            </section>
+
+            <aside class="lg:col-span-1">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm sticky top-8">
+                    <h2 class="text-lg font-bold text-amber-600 mb-4">Detalhes</h2>
+                    <div id="details-view-container" class="text-slate-800"></div>
+                </div>
+            </aside>
         </main>
     </div>
 
+    
     <script th:src="@{/js/documentos.js}"></script>
     <script th:src="@{/js/dashboard_config.js}"></script>
     <script th:src="@{/js/profile_data.js}"></script>
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 </body>
-
 </html>

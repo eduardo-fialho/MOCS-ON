@@ -13,6 +13,7 @@ import com.mocs_on.service.CommentDAO;
 import com.mocs_on.service.LoginDAO;
 import com.mocs_on.service.PostDAO;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +50,8 @@ public class CommentController {
             @PathVariable Long postId,
             @RequestBody Map<String, String> body,
             Principal principal,
-            Authentication authentication) {
+            Authentication authentication,
+            HttpSession session) {
 
         if (body == null || body.get("mensagem") == null || body.get("mensagem").isBlank()) {
             return ResponseEntity.badRequest().build();
@@ -60,8 +62,16 @@ public class CommentController {
             usuario = principal.getName();
         } else if (authentication != null && authentication.getName() != null && !authentication.getName().isBlank()) {
             usuario = authentication.getName();
+        } else if (session != null && session.getAttribute(AuthController.SESSION_USER_ATTRIBUTE) != null) {
+            usuario = session.getAttribute(AuthController.SESSION_USER_ATTRIBUTE).toString();
         } else {
             usuario = body.get("usuario");
+            if (usuario == null || usuario.isBlank()) {
+                usuario = body.get("autor");
+            }
+            if (usuario == null || usuario.isBlank()) {
+                usuario = body.get("email");
+            }
         }
 
         if (usuario == null || usuario.isBlank()) {
@@ -69,6 +79,12 @@ public class CommentController {
         }
 
         String usuarioNome = null;
+        if (session != null && session.getAttribute(AuthController.SESSION_USER_NAME) != null) {
+            usuarioNome = session.getAttribute(AuthController.SESSION_USER_NAME).toString();
+        }
+        if (usuarioNome == null || usuarioNome.isBlank()) {
+            usuarioNome = body.get("usuarioNome");
+        }
         try {
             var opt = loginDAO.findByEmail(usuario);
             if (opt.isPresent()) {

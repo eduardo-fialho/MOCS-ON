@@ -11,8 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.mocs_on.domain.Reaction;
 import com.mocs_on.domain.Post;
+import com.mocs_on.domain.Reaction;
 import com.mocs_on.service.PostDAO;
 import com.mocs_on.service.LoginDAO;
 import com.mocs_on.domain.Usuario;
@@ -32,16 +32,12 @@ public class PostController {
     public ResponseEntity<List<Post>> recuperarAviso(
             @RequestParam(name = "usuario", required = false) String usuario,
             Principal principal) {
+        return ResponseEntity.ok(postService.recuperarTodos());
+    }
 
-        String effectiveUser = (principal != null) ? principal.getName() : usuario;
-
-        List<Post> posts;
-        if (effectiveUser != null && !effectiveUser.isBlank()) {
-            posts = postService.recuperarTodosParaUsuario(effectiveUser);
-        } else {
-            posts = postService.recuperarTodos();
-        }
-        return ResponseEntity.ok(posts);
+    @GetMapping("/gallery")
+    public ResponseEntity<List<Post>> recuperarGaleria() {
+        return ResponseEntity.ok(postService.recuperarGaleria());
     }
 
     @PostMapping
@@ -85,7 +81,11 @@ public class PostController {
     }
 
     @PostMapping("/{postId}/reaction")
-    public ResponseEntity<Void> addReaction(@PathVariable Long postId, @RequestBody Reaction body, Principal principal) {
+    public ResponseEntity<Void> addReaction(
+            @PathVariable Long postId,
+            @RequestBody Reaction body,
+            Principal principal
+    ) {
         if (body == null || body.getEmoji() == null || body.getEmoji().isBlank()) {
             return ResponseEntity.badRequest().build();
         }
@@ -95,19 +95,23 @@ public class PostController {
             return ResponseEntity.badRequest().build();
         }
 
-        PostDAO.ReactionResult result = postService.reactToPost(postId, usuario, body.getEmoji());
+        String currentReaction = postService.findUserReaction(postId, usuario);
 
-        switch (result) {
-            case CREATED:
-                return ResponseEntity.status(HttpStatus.CREATED).build();
-            case UPDATED:
-                return ResponseEntity.ok().build();
-            case REMOVED:
-                return ResponseEntity.noContent().build();
-            default:
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        if (currentReaction == null) {
+            postService.addReactionToPost(postId, usuario, body.getEmoji());
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         }
+
+        if (currentReaction.equals(body.getEmoji())) {
+            postService.removeReactionFromPost(postId, usuario, body.getEmoji());
+            return ResponseEntity.noContent().build();
+        }
+
+        postService.removeReactionFromPost(postId, usuario, currentReaction);
+        postService.addReactionToPost(postId, usuario, body.getEmoji());
+        return ResponseEntity.ok().build();
     }
+
 
     @DeleteMapping("/{postId}/reaction")
     public ResponseEntity<Void> removeReaction(@PathVariable Long postId, @RequestBody Reaction body) {
@@ -120,6 +124,12 @@ public class PostController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+    
+    @DeleteMapping("/reactions")
+    public ResponseEntity<Void> deleteAllReactions() {
+        postService.deleteAllReactions();
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{postId}/exclude")

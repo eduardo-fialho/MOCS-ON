@@ -11,8 +11,12 @@ public class Post {
     private String autor;
     private TipoPost status;
     private LocalDateTime dataPublicacao;
+<<<<<<< HEAD
     private String comiteSigla;
     private String aprovador; // email do diretor que aprovou, se aplicável
+=======
+    private Long comiteId;
+>>>>>>> origin/main
 
     private String myReaction;
 
@@ -24,6 +28,7 @@ public class Post {
         ANONIMO,
         CONSULTA_INFORMAL,
         EXCLUIDO,
+        PENDENTE,
     }
 
     public Post() {
@@ -60,6 +65,11 @@ public class Post {
         if (status == TipoPost.ANONIMO) {
             return DISPLAY_ANON;
         }
+        return autor;
+    }
+
+    /** Retorna o autor conforme armazenado, sem anonimizacao. */
+    public String getAutorRaw() {
         return autor;
     }
 
@@ -122,4 +132,11 @@ public class Post {
     public void setMyReaction(String myReaction) {
         this.myReaction = myReaction;
     }
+    public Long getComiteId() {
+        return comiteId;
+    }
+    public void setComiteId(Long comiteId) {
+        this.comiteId = comiteId;
+    }
 }
+

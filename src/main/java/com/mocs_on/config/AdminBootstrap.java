@@ -8,10 +8,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-/**
- * Cria automaticamente um usuario do Secretariado na primeira execucao
- * para evitar dependencias de scripts manuais.
- */
 @Component
 public class AdminBootstrap implements CommandLineRunner {
 
@@ -46,7 +42,7 @@ public class AdminBootstrap implements CommandLineRunner {
         userAccountService.ensureCoreTables();
         String normalized = userAccountService.normalizeEmail(adminEmail);
         if (!userAccountService.isValidEmail(normalized)) {
-            log.warn("Bootstrap desativado: e-mail invalido configurado ({}).", adminEmail);
+            log.warn("Bootstrap desativado: e-mail inválido configurado ({}).", adminEmail);
             return;
         }
         if (userAccountService.userExists(normalized)) {

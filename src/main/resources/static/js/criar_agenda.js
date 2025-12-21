@@ -7,7 +7,6 @@ const formEditarEventos = document.getElementById("form-editar-eventos");
 const listaEditar = document.getElementById("lista-editar-eventos");
 const botaoCancelarEdicao = document.getElementById("botao-cancelar-editar");
 
-// Criar Evento
 document.getElementById("form-criar-evento").addEventListener("submit", async function (e) {
     e.preventDefault();
 
@@ -19,7 +18,7 @@ document.getElementById("form-criar-evento").addEventListener("submit", async fu
     };
 
     if (!dados.titulo) {
-        alert("Título é obrigatório.");
+        alert("Título obrigatório.");
         return;
     }
 
@@ -83,7 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// Editar eventos
 botaoEditarEventos?.addEventListener("click", () => {
     formEditarEventos.classList.toggle("hidden");
 
@@ -165,7 +163,7 @@ async function carregarEventosParaEdicao() {
                 const hora_evento = bloco.querySelector(".input-hora").value;
 
                 if (!titulo) {
-                    alert("Título é obrigatório.");
+                    alert("Título obrigatório.");
                     return;
                 }
 

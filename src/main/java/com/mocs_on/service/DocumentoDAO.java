@@ -73,7 +73,10 @@ public class DocumentoDAO {
     }
 
     public int inserirDocumento(Documento doc) {
-        String sql = "INSERT INTO documentos (nome, autor, ativo, status, arquivo, data, avaliacao, comite_sigla) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = """
+            INSERT INTO documentos (nome, autor, ativo, status, arquivo, avaliacao)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """;
 
         return jdbcTemplate.update(
             sql,
@@ -82,9 +85,7 @@ public class DocumentoDAO {
             doc.getAtivo(),
             doc.getStatus().name(),
             doc.getArquivo(),
-            doc.getData(),
-            doc.getAvaliacao(),
-            doc.getComiteSigla()
+            doc.getAvaliacao()
         );
     }
 

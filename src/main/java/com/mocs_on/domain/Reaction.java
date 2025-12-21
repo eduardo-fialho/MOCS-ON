@@ -10,6 +10,9 @@ public class Reaction {
     private String emoji;
     private LocalDateTime createdAt;
     
+    public Reaction() {
+    }
+
     public Reaction(Long id, Long postId, String usuario, String emoji, LocalDateTime createdAt) {
         this.id = id;
         this.postId = postId;
@@ -69,4 +72,3 @@ public class Reaction {
                 '}';
     }
 }
-
