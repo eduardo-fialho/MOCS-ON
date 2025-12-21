@@ -14,8 +14,6 @@ import org.springframework.stereotype.Repository;
 
 import com.mocs_on.domain.Comite;
 import com.mocs_on.domain.Comite.StatusComite;
-import com.mocs_on.domain.GuiaEstudos;
-import com.mocs_on.domain.Usuario;
 import com.mocs_on.dto.InformacoesComiteDTO;
 
 @Repository
@@ -135,7 +133,6 @@ public class ComiteDao {
             ps.setInt(4, vo.getNumeroDelegados());
             ps.setString(5, vo.getDescricao());
             ps.executeUpdate();
-            conn.commit();
             rs = ps.getGeneratedKeys();
             if (rs.next()) {
                 long id = rs.getLong(1);
@@ -210,7 +207,6 @@ public class ComiteDao {
             rs = null;
         }
     }
-
     public List<InformacoesComiteDTO> informacoesComites() {
         String sql = """
             SELECT id, nome, sigla
@@ -242,5 +238,4 @@ public class ComiteDao {
 
         return lista.isEmpty() ? null : lista.get(0);
     }
-
 }

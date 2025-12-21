@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOCS ON - Detalhes do comit&ecirc;</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/comite-ui.css}">
+</head>
+
+<body class="comite-page">
+    <div class="flex flex-col min-h-screen mocs-shell">
+        <header class="mocs-topbar z-10 sticky top-0" x-data="profileData()" x-init="loadUserInfo()">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard.html"><img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON"
+                            class="h-8"></a>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <span class="font-semibold text-gray-700 hidden sm:block">CSNU</span>
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center space-x-2">
+                            <img :src="userAvatar"
+                                src="https://placehold.co/40x40/cccccc/ffffff?text=U"
+                                data-user-avatar
+                                @error="$event.target.src = defaultAvatar"
+                                alt="Avatar"
+                                class="h-9 w-9 rounded-full border-2 border-mocs-blue">
+                            <span class="hidden md:block font-semibold text-gray-700"
+                                x-text="userName">Carregando...</span>
+                            <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+                        </button>
+                        <div x-show="open" @click.away="open = false"
+                            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20"
+                            style="display: none;">
+                            <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b">
+                                <i class="fas fa-user mr-2"></i> Meu perfil
+                            </a>
+                            <template x-if="isSecretario">
+                                <div>
+                                    <a href="/secretariado.html"
+                                        class="block px-4 py-2 text-sm text-mocs-blue font-semibold hover:bg-gray-100 border-b">
+                                        <i class="fas fa-user-tie mr-2"></i> &Aacute;rea do Secretariado
+                                    </a>
+                                </div>
+                            </template>
+
+                            <a href="/auth/logout"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow container mx-auto px-4 py-8 md:py-10 space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="space-y-2">
+                    <span class="accent-pill"><i class="fa-solid fa-book-open"></i> Comit&ecirc;</span>
+                    <h2 class="page-title text-3xl md:text-4xl">Detalhes do comit&ecirc;</h2>
+                    <p class="text-sm text-slate-600" th:text="${comite.nome}">Comite</p>
+                </div>
+                <a th:href="@{/comite/listar}" class="back-link">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Voltar
+                </a>
+            </div>
+
+            <section class="mocs-card mocs-card--hero" style="animation-delay: 0.05s;">
+                <div class="flex flex-wrap items-start justify-between gap-4">
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.22em] text-slate-500">Vis&atilde;o geral</p>
+                        <h3 class="text-2xl font-semibold mt-2"
+                            th:text="${comite.sigla + ' - ' + comite.nome}">Comite</h3>
+                    </div>
+                    <span class="status-chip" th:text="${comite.status}">EM_ANDAMENTO</span>
+                </div>
+                <p class="text-sm text-slate-600 mt-3" th:text="${comite.descricao}">
+                    Descricao do comite.
+                </p>
+            </section>
+
+            <section class="space-y-4">
+                <div class="flex items-center justify-between gap-3">
+                    <h3 class="section-title">Delega&ccedil;&otilde;es</h3>
+                    <span class="section-pill">Comiss&otilde;es vinculadas</span>
+                </div>
+
+                <div th:if="${delegacoes == null or #lists.isEmpty(delegacoes)}" class="empty-state">
+                    <i class="fa-regular fa-circle-info"></i>
+                    Sem delega&ccedil;&otilde;es cadastradas.
+                </div>
+
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div th:each="delegacao : ${delegacoes}" class="delegation-card">
+                        <div class="flex items-center justify-between gap-3">
+                            <h4 class="text-lg font-semibold text-slate-900" th:text="${delegacao.nome}">Delegacao</h4>
+                        </div>
+                        <div class="mt-4">
+                            <p class="text-xs uppercase tracking-[0.18em] text-slate-400">Delegados</p>
+                            <ul class="mt-3 space-y-2"
+                                th:if="${delegadosPorDelegacao[delegacao.id] != null and !#lists.isEmpty(delegadosPorDelegacao[delegacao.id])}">
+                                <li th:each="delegado : ${delegadosPorDelegacao[delegacao.id]}"
+                                    class="delegate-item">
+                                    <span class="delegate-name" th:text="${delegado.nome}">Nome</span>
+                                    <span class="delegate-email" th:text="${delegado.email}">email</span>
+                                </li>
+                            </ul>
+                            <p class="text-sm text-slate-500"
+                               th:if="${delegadosPorDelegacao[delegacao.id] == null or #lists.isEmpty(delegadosPorDelegacao[delegacao.id])}">
+                                Nenhum delegado vinculado.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mocs-card mocs-card--soft"
+                     th:if="${delegadosSemDelegacao != null and !#lists.isEmpty(delegadosSemDelegacao)}">
+                <div class="flex items-center justify-between gap-3">
+                    <h3 class="section-title text-lg">Delegados sem delega&ccedil;&atilde;o</h3>
+                    <span class="mini-chip mini-chip--alert">Pendentes</span>
+                </div>
+                <ul class="mt-4 space-y-2">
+                    <li th:each="delegado : ${delegadosSemDelegacao}" class="delegate-item delegate-item--compact">
+                        <span class="delegate-name" th:text="${delegado.nome}">Nome</span>
+                        <span class="delegate-email" th:text="${delegado.email}">email</span>
+                    </li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <script th:src="@{/js/dashboard_config.js}"></script>
+    <script th:src="@{/js/profile_data.js}"></script>
+</body>
+
+</html>

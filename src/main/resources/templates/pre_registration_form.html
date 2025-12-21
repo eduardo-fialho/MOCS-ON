@@ -63,9 +63,23 @@
 
                 <label class="text-sm font-semibold text-slate-700 space-y-1 block">
                     <span>Comitê ou área de interesse</span>
-                    <input type="text" th:field="*{comitePreferido}" required
-                           class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                           placeholder="Ex.: CSNU, UNESCO, Comitê    de Imprensa...">
+                    <select id="comitePreferido" th:field="*{comitePreferido}" required
+
+                            class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+                        <option value="">Selecione</option>
+
+                        <option th:if="${comites == null or #lists.isEmpty(comites)}" value="" disabled>Sem comites cadastrados</option>
+
+                        <option th:each="comite : ${comites}" th:value="${comite.sigla != null and !#strings.isEmpty(comite.sigla) ? comite.sigla + ' - ' + comite.nome : comite.nome}"
+
+                                th:text="${comite.sigla != null and !#strings.isEmpty(comite.sigla) ? comite.sigla + ' - ' + comite.nome : comite.nome}">
+
+                            Comite
+
+                        </option>
+
+                    </select>
                 </label>
 
                 <label class="text-sm font-semibold text-slate-700 space-y-1 block">

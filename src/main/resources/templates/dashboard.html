@@ -158,10 +158,10 @@
 </head>
 
 <body class="bg-gray-100 dashboard-bg">
-    <div class="flex flex-col min-h-screen">
+    <div class="flex flex-col min-h-screen" x-data="profileData()">
         <!-- Cabeçalho -->
-        <header class="z-10 sticky top-0" x-data="profileData()" @click.away="menuOpen = false"
->
+        <header class="z-10 sticky top-0" @click.away="menuOpen = false"
+            @keydown.escape.window="menuOpen = false; closeAcademic()">
             <div class="container mx-auto px-4 py-3">
                 <div class="liquid-glass liquid-glass--header w-full transition-all duration-500" :class="menuOpen ? 'pb-4' : ''">
                     <div class="flex flex-wrap items-center justify-between gap-4">
@@ -179,6 +179,11 @@
                                 <div class="flex flex-col items-center gap-3 text-sm font-semibold w-64">
                                     <a href="/profile" class="menu-chip w-full justify-center">
                                         <i class="fas fa-user"></i> Meu perfil
+                                    </a>
+                                    <a href="/academic.html" x-show="!isSecretario"
+                                       th:if="${usuarioTipo != null and #strings.equalsIgnoreCase(usuarioTipo, 'DELEGADO')}"
+                                       class="menu-chip w-full justify-center">
+                                        <i class="fas fa-graduation-cap"></i> Academic
                                     </a>
                                     <template x-if="isSecretario">
                                         <a th:href="@{/secretariado.html}" class="menu-chip w-full justify-center">

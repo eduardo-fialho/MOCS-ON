@@ -12,6 +12,23 @@
         body { font-family: "Inter", sans-serif; background: radial-gradient(circle at top, #f0f4ff, #e3e8f2 55%, #dfe3ec); }
         .bg-mocs-blue { background-color: #205395; }
         .glass-card { background-color: rgba(255,255,255,0.95); backdrop-filter: blur(8px); }
+        .cta-animated {
+            color: #205395;
+            border-color: rgba(32, 83, 149, 0.6);
+            background: linear-gradient(135deg, rgba(32, 83, 149, 0.12), rgba(32, 83, 149, 0.02));
+            box-shadow: 0 10px 18px rgba(32, 83, 149, 0.12);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+        }
+        .cta-animated:hover {
+            color: #fff;
+            background: linear-gradient(135deg, #205395, #2b6cb0);
+            box-shadow: 0 14px 24px rgba(32, 83, 149, 0.35);
+            transform: translateY(-1px);
+        }
+        .cta-animated:focus-visible {
+            outline: 2px solid rgba(32, 83, 149, 0.5);
+            outline-offset: 2px;
+        }
         .cropper-backdrop { background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); }
         .cropper-box {
             width: 320px;
@@ -41,7 +58,7 @@
             <p class="text-sm text-gray-500">Ajuste dados, segurança e histórico sem bagunçar o perfil visual.</p>
         </div>
         <a th:href="@{/profile}"
-           class="px-4 py-2 rounded-full border border-mocs-blue text-mocs-blue font-semibold hover:bg-mocs-blue hover:text-white transition text-sm">
+           class="px-4 py-2 rounded-full border font-semibold transition text-sm cta-animated">
             Voltar para o perfil
         </a>
     </div>
