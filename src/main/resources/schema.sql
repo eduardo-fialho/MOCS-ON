@@ -357,3 +357,20 @@ CREATE TABLE IF NOT EXISTS `consulta_votos` (
     REFERENCES consulta(id)
     ON DELETE CASCADE
 );
+
+CREATE TABLE usuario_comites (
+  usuario_id INT UNSIGNED NOT NULL,
+  comite_id BIGINT UNSIGNED NOT NULL,
+
+  PRIMARY KEY (usuario_id, comite_id),
+
+  CONSTRAINT fk_uc_usuario
+    FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT fk_uc_comite
+    FOREIGN KEY (comite_id)
+    REFERENCES comites(id)
+    ON DELETE CASCADE
+);
