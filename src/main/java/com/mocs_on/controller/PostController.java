@@ -14,8 +14,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.mocs_on.domain.Post;
 import com.mocs_on.domain.Reaction;
 import com.mocs_on.service.PostDAO;
-import com.mocs_on.service.LoginDAO;
-import com.mocs_on.domain.Usuario;
 
 @RestController
 @RequestMapping("/post")
@@ -24,9 +22,6 @@ public class PostController {
 
     @Autowired
     private PostDAO postService;
-
-    @Autowired
-    private LoginDAO loginDAO;
 
     @GetMapping
     public ResponseEntity<List<Post>> recuperarAviso(
@@ -41,30 +36,8 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> postarAviso(@RequestBody Post post, Principal principal) {
+    public ResponseEntity<Void> postarAviso(@RequestBody Post post) {
         post.setData(LocalDateTime.now());
-
-        // If creating a Consulta Informal, enforce delegate + director approval + committee set
-        if (post.getStatus() == Post.TipoPost.CONSULTA_INFORMAL) {
-            if (principal == null || principal.getName() == null) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-            var userOpt = loginDAO.findByEmail(principal.getName());
-            if (userOpt.isEmpty()) return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            Usuario u = userOpt.get();
-            if (u.getTipo() == null || !u.getTipo().name().equalsIgnoreCase("DELEGADO")) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-
-            if (post.getComiteSigla() == null || post.getComiteSigla().isBlank() || post.getAprovador() == null) {
-                return ResponseEntity.badRequest().build();
-            }
-
-            var approverOpt = loginDAO.findByEmail(post.getAprovador());
-            if (approverOpt.isEmpty() || approverOpt.get().getTipo() == null || !approverOpt.get().getTipo().name().equalsIgnoreCase("DIRETOR")) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-        }
 
         Long id = postService.inserirPost(post);
         if (id != null) {

@@ -11,12 +11,7 @@ public class Post {
     private String autor;
     private TipoPost status;
     private LocalDateTime dataPublicacao;
-<<<<<<< HEAD
-    private String comiteSigla;
-    private String aprovador; // email do diretor que aprovou, se aplicável
-=======
     private Long comiteId;
->>>>>>> origin/main
 
     private String myReaction;
 
@@ -26,7 +21,6 @@ public class Post {
     public enum TipoPost {
         PUBLICO,
         ANONIMO,
-        CONSULTA_INFORMAL,
         EXCLUIDO,
         PENDENTE,
     }
@@ -68,7 +62,6 @@ public class Post {
         return autor;
     }
 
-    /** Retorna o autor conforme armazenado, sem anonimizacao. */
     public String getAutorRaw() {
         return autor;
     }
@@ -91,22 +84,6 @@ public class Post {
 
     public void setData(LocalDateTime dataPublicacao) {
         this.dataPublicacao = dataPublicacao;
-    }
-
-    public String getComiteSigla() {
-        return comiteSigla;
-    }
-
-    public void setComiteSigla(String comiteSigla) {
-        this.comiteSigla = comiteSigla;
-    }
-
-    public String getAprovador() {
-        return aprovador;
-    }
-
-    public void setAprovador(String aprovador) {
-        this.aprovador = aprovador;
     }
 
     public Map<String, Integer> getReactions() {
@@ -139,4 +116,3 @@ public class Post {
         this.comiteId = comiteId;
     }
 }
-

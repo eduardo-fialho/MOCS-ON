@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     dropdownBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         dropdown.classList.toggle("hidden");
-    });
+    }); 
 
     document.addEventListener("click", () => {
         dropdown.classList.add("hidden");
