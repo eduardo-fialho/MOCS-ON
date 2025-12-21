@@ -1,10 +1,10 @@
 const APP_CONTEXT_PATH = (() => {
-  const path = window.location.pathname || '';
-  const base = path.replace(/\/[^/]*$/, '');
-  if (!base || base === '/' || base === path) {
+  const meta = document.querySelector('meta[name="app-context-path"]');
+  const raw = meta ? meta.content.trim() : '';
+  if (!raw) {
     return '';
   }
-  return base;
+  return raw.endsWith('/') ? raw.slice(0, -1) : raw;
 })();
 const API_BASE_URL = `${window.location.origin}${APP_CONTEXT_PATH}`;
 const API_ENDPOINT = `${API_BASE_URL}/aviso`;

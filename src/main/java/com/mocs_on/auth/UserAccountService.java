@@ -1,14 +1,18 @@
 package com.mocs_on.auth;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.regex.Pattern;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.*;
-import java.util.regex.Pattern;
 
 @Service
 public class UserAccountService {

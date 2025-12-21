@@ -1,9 +1,11 @@
 package com.mocs_on.controller;
 
 import com.mocs_on.auth.UserAccountService;
+import com.mocs_on.dto.ComiteResumoDTO;
 import com.mocs_on.domain.Post;
 import com.mocs_on.domain.Post;
 import com.mocs_on.service.PostDAO;
+import com.mocs_on.service.UsuarioComiteDao;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -12,6 +14,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -49,6 +52,8 @@ public class ProfileController {
     private final UserAccountService userAccountService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final PostDAO postDAO;
+    private final UsuarioComiteDao usuarioComiteDao;
+    private final JdbcTemplate jdbcTemplate;
     private static final long MAX_PHOTO_SIZE = 2 * 1024 * 1024; // 2MB (galeria/arquivos)
     // Para o BLOB no banco (max_allowed_packet ~1MB), mantemos um limite seguro.
     private static final int PROFILE_DB_MAX_BYTES = 900 * 1024; // 900KB
@@ -61,10 +66,14 @@ public class ProfileController {
 
     public ProfileController(UserAccountService userAccountService,
                              BCryptPasswordEncoder passwordEncoder,
-                             PostDAO postDAO) {
+                             PostDAO postDAO,
+                             UsuarioComiteDao usuarioComiteDao,
+                             JdbcTemplate jdbcTemplate) {
         this.userAccountService = userAccountService;
         this.passwordEncoder = passwordEncoder;
         this.postDAO = postDAO;
+        this.usuarioComiteDao = usuarioComiteDao;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @GetMapping
@@ -83,6 +92,17 @@ public class ProfileController {
         UserAccountService.UserRecord user = userOpt.get();
 
         model.addAttribute("user", user);
+        List<ComiteResumoDTO> comites = usuarioComiteDao.listarComitesPorUsuario(userId);
+        String comiteLabel = formatComiteLabel(comites);
+        FaltasResumo faltas = fetchFaltasResumo(userId);
+        Long faltasPercent = calcularPercentualFaltas(faltas);
+        model.addAttribute("comiteLabel", comiteLabel);
+        String delegacaoLabel = fetchDelegacaoLabel(userId);
+        model.addAttribute("delegacaoLabel", delegacaoLabel);
+        model.addAttribute("delegacaoNotificacoes", fetchDelegacaoNotificacoes(userId));
+        model.addAttribute("faltasPercent", faltasPercent);
+        model.addAttribute("faltasTotal", faltas.total());
+        model.addAttribute("faltasAusentes", faltas.ausentes());
         return "profile";
     }
 
@@ -442,6 +462,110 @@ public class ProfileController {
         return ResponseEntity.noContent().build();
     }
 
+    private String formatComiteLabel(List<ComiteResumoDTO> comites) {
+        if (comites == null || comites.isEmpty()) {
+            return "Sem comite";
+        }
+        int limit = Math.min(3, comites.size());
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < limit; i++) {
+            if (i > 0) {
+                builder.append(", ");
+            }
+            builder.append(formatSingleComite(comites.get(i)));
+        }
+        int remaining = comites.size() - limit;
+        if (remaining > 0) {
+            builder.append(" +").append(remaining);
+        }
+        String label = builder.toString().trim();
+        return label.isEmpty() ? "Sem comite" : label;
+    }
+
+    private String formatSingleComite(ComiteResumoDTO comite) {
+        if (comite == null) {
+            return "";
+        }
+        String sigla = safeTrim(comite.getSigla());
+        String nome = safeTrim(comite.getNome());
+        if (sigla.isEmpty()) {
+            return nome;
+        }
+        if (nome.isEmpty()) {
+            return sigla;
+        }
+        return sigla + " - " + nome;
+    }
+
+    private String safeTrim(String value) {
+        return value == null ? "" : value.trim();
+    }
+
+    private FaltasResumo fetchFaltasResumo(long userId) {
+        String sql = """
+                SELECT
+                    COALESCE(SUM(CASE WHEN UPPER(status) = 'AUSENTE' THEN 1 ELSE 0 END), 0) AS ausentes,
+                    COUNT(*) AS total
+                FROM presenca_registros
+                WHERE usuario_id = ?
+                """;
+        return jdbcTemplate.query(sql, rs -> {
+            if (rs.next()) {
+                long total = rs.getLong("total");
+                long ausentes = rs.getLong("ausentes");
+                return new FaltasResumo(total, ausentes);
+            }
+            return new FaltasResumo(0, 0);
+        }, userId);
+    }
+
+    private Long calcularPercentualFaltas(FaltasResumo faltas) {
+        if (faltas == null || faltas.total() <= 0) {
+            return null;
+        }
+        return Math.round((faltas.ausentes() * 100.0) / faltas.total());
+    }
+
+    private String fetchDelegacaoLabel(Long userId) {
+        String sql = "SELECT c.sigla, c.nome, d.nome AS delegacao_nome " +
+                "FROM usuario_comite uc " +
+                "JOIN comites c ON c.id = uc.comite_id " +
+                "LEFT JOIN usuario_delegacao ud ON ud.usuario_id = uc.usuario_id AND ud.comite_id = uc.comite_id " +
+                "LEFT JOIN delegacoes d ON d.id = ud.delegacao_id " +
+                "WHERE uc.usuario_id = ? " +
+                "ORDER BY c.nome";
+        try {
+            List<String> labels = jdbcTemplate.query(sql, (rs, rowNum) -> {
+                String sigla = rs.getString("sigla");
+                String nomeComite = rs.getString("nome");
+                String comiteLabel = (sigla == null || sigla.isBlank()) ? nomeComite : sigla;
+                String delegacaoNome = rs.getString("delegacao_nome");
+                if (delegacaoNome == null || delegacaoNome.isBlank()) {
+                    return comiteLabel + ": Sem delegacao";
+                }
+                return comiteLabel + ": " + delegacaoNome;
+            }, userId);
+
+            if (labels == null || labels.isEmpty()) {
+                return "Sem delegacao";
+            }
+            return String.join(" | ", labels);
+        } catch (DataAccessException ex) {
+            return "Sem delegacao";
+        }
+    }
+
+    private List<String> fetchDelegacaoNotificacoes(Long userId) {
+        String sql = "SELECT mensagem FROM delegacao_notificacoes " +
+                "WHERE usuario_id = ? " +
+                "ORDER BY created_at DESC LIMIT 3";
+        try {
+            return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getString("mensagem"), userId);
+        } catch (DataAccessException ex) {
+            return List.of();
+        }
+    }
+
     private Long currentUserId(HttpSession session) {
         if (session == null) {
             return null;
@@ -600,6 +724,9 @@ public class ProfileController {
         if (!model.containsAttribute("passwordForm")) {
             model.addAttribute("passwordForm", new PasswordForm());
         }
+    }
+
+    private record FaltasResumo(long total, long ausentes) {
     }
 
     public static class ProfileForm {

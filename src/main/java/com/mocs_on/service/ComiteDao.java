@@ -133,7 +133,6 @@ public class ComiteDao {
             ps.setInt(4, vo.getNumeroDelegados());
             ps.setString(5, vo.getDescricao());
             ps.executeUpdate();
-            conn.commit();
             rs = ps.getGeneratedKeys();
             if (rs.next()) {
                 long id = rs.getLong(1);
@@ -207,7 +206,6 @@ public class ComiteDao {
             rs = null;
         }
     }
-
     public List<InformacoesComiteDTO> informacoesComites() {
         String sql = """
             SELECT id, nome, sigla

@@ -47,6 +47,11 @@
                                     <a href="/profile" class="menu-chip w-full justify-center">
                                         <i class="fas fa-user"></i> Meu perfil
                                     </a>
+                                    <a href="/academic.html" x-show="!isSecretario"
+                                       th:if="${usuarioTipo != null and #strings.equalsIgnoreCase(usuarioTipo, 'DELEGADO')}"
+                                       class="menu-chip w-full justify-center">
+                                        <i class="fas fa-graduation-cap"></i> Academic
+                                    </a>
                                     <template x-if="isSecretario">
                                         <a th:href="@{/secretariado.html}" class="menu-chip w-full justify-center">
                                             <i class="fas fa-user-tie"></i> Área do Secretariado

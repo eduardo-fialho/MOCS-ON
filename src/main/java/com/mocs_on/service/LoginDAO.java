@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
 
 import com.mocs_on.domain.Comite;
+import com.mocs_on.domain.Comite.StatusComite;
 import com.mocs_on.domain.Login;
 import com.mocs_on.domain.Usuario;
 import com.mocs_on.security.CargoEnum;
@@ -134,20 +135,41 @@ public class LoginDAO {
     }
 
     private List<Comite> findComitesByUsuarioId(Long usuarioId) {
-        String sql = "SELECT c.id, c.sigla, c.nome, c.num_delegados, c.descricao, c.status FROM comites c JOIN usuario_comites uc ON uc.comite_id = c.id WHERE uc.usuario_id = ?";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            Comite c = new Comite();
-            c.setId(rs.getLong("id"));
-            c.setSigla(rs.getString("sigla"));
-            c.setNome(rs.getString("nome"));
-            c.setNumeroDelegados(rs.getInt("num_delegados"));
-            c.setDescricao(rs.getString("descricao"));
+        if (usuarioId == null) {
+            return List.of();
+        }
+        String sql = """
+                SELECT c.id,
+                       c.sigla,
+                       c.nome,
+                       c.status,
+                       c.num_delegados,
+                       c.descricao
+                FROM usuario_comite uc
+                JOIN comites c ON c.id = uc.comite_id
+                WHERE uc.usuario_id = ?
+                ORDER BY c.nome
+                """;
+        return jdbcTemplate.query(sql, this::mapRowToComite, usuarioId);
+    }
+
+    private Comite mapRowToComite(ResultSet rs, int rowNum) throws SQLException {
+        Comite comite = new Comite();
+        comite.setId(rs.getLong("id"));
+        comite.setSigla(rs.getString("sigla"));
+        comite.setNome(rs.getString("nome"));
+        comite.setDescricao(rs.getString("descricao"));
+        comite.setNumeroDelegados(rs.getInt("num_delegados"));
+        String status = rs.getString("status");
+        if (status != null) {
             try {
-                c.setStatus(Comite.StatusComite.valueOf(rs.getString("status")));
-            } catch (Exception ex) {
-                c.setStatus(Comite.StatusComite.EM_ANDAMENTO);
+                comite.setStatus(StatusComite.valueOf(status));
+            } catch (IllegalArgumentException ex) {
+                comite.setStatus(StatusComite.NAO_INICIADO);
             }
-            return c;
-        }, usuarioId);
+        } else {
+            comite.setStatus(StatusComite.NAO_INICIADO);
+        }
+        return comite;
     }
 }

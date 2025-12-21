@@ -21,6 +21,6 @@ public class ImprensaController {
 
     @GetMapping("/feed")
     public String feedImprensa() {
-        return "imprensa_feed.html"; 
+        return "imprensa_feed";
     } 
 }

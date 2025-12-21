@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOCS ON - Area academica</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+
+    <style>
+        :root {
+            --mocs-blue: #205395;
+            --mocs-blue-dark: #153d73;
+            --mocs-orange: #ff8c00;
+            --mocs-ice: #eef4fb;
+            --mocs-ink: #0f172a;
+            --mocs-muted: #475569;
+            --mocs-border: rgba(32, 83, 149, 0.18);
+            --mocs-shadow: 0 28px 50px -40px rgba(15, 23, 42, 0.65);
+        }
+
+        body {
+            font-family: "Sora", sans-serif;
+            color: var(--mocs-ink);
+            background: radial-gradient(circle at 12% 10%, rgba(255, 140, 0, 0.14), transparent 45%),
+                radial-gradient(circle at 85% 0%, rgba(32, 83, 149, 0.2), transparent 42%),
+                linear-gradient(180deg, #f8fafc 0%, #f1f5f9 60%, #eef2f7 100%);
+        }
+
+        .mocs-topbar {
+            background: rgba(255, 255, 255, 0.94);
+            border-bottom: 1px solid rgba(32, 83, 149, 0.12);
+            backdrop-filter: blur(6px);
+        }
+
+        .page-title {
+            font-family: "Fraunces", serif;
+            color: var(--mocs-blue-dark);
+        }
+
+        .accent-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--mocs-blue);
+            background: rgba(32, 83, 149, 0.12);
+        }
+
+        .hero-card {
+            background: linear-gradient(135deg, rgba(32, 83, 149, 0.08), rgba(255, 140, 0, 0.12));
+            border: 1px solid var(--mocs-border);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: var(--mocs-shadow);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .hero-item {
+            border-radius: 16px;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+        }
+
+        .notice-card {
+            border-radius: 18px;
+            border: 1px solid rgba(251, 191, 36, 0.35);
+            background: rgba(254, 243, 199, 0.6);
+        }
+
+        .search-card {
+            border-radius: 18px;
+            padding: 14px 16px;
+            border: 1px solid rgba(32, 83, 149, 0.15);
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+        }
+
+        .comite-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .comite-card {
+            border-radius: 20px;
+            padding: 18px;
+            border: 1px solid rgba(32, 83, 149, 0.18);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: var(--mocs-shadow);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .comite-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            text-align: left;
+        }
+
+        .comite-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 60;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .comite-modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(4px);
+        }
+
+        .comite-modal-card {
+            position: relative;
+            width: min(980px, 94vw);
+            max-height: 90vh;
+            border-radius: 26px;
+            border: 1px solid rgba(32, 83, 149, 0.22);
+            background: linear-gradient(180deg, #ffffff 0%, rgba(238, 244, 251, 0.96) 100%);
+            box-shadow: 0 28px 55px rgba(15, 23, 42, 0.3);
+            padding: 24px;
+            overflow: hidden;
+        }
+
+        .comite-modal-scroll {
+            max-height: calc(90vh - 120px);
+            overflow-y: auto;
+            padding-right: 18px;
+            margin-top: 52px;
+        }
+
+
+        .comite-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 38px;
+            height: 38px;
+            border-radius: 999px;
+            border: 1px solid rgba(32, 83, 149, 0.2);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--mocs-blue);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
+            z-index: 2;
+        }
+
+        .comite-modal-head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            padding-right: 48px;
+        }
+
+        .comite-modal-body {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+        }
+
+        .comite-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--mocs-blue), var(--mocs-blue-dark));
+        }
+
+        .comite-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--mocs-blue);
+            background: rgba(32, 83, 149, 0.1);
+        }
+
+        .delegacao-group {
+            border-radius: 16px;
+            padding: 12px 14px;
+            background: rgba(32, 83, 149, 0.05);
+            border: 1px solid rgba(32, 83, 149, 0.12);
+        }
+
+        .delegacao-title {
+            font-weight: 600;
+            color: var(--mocs-blue-dark);
+        }
+
+        .delegacao-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            color: var(--mocs-muted);
+            background: rgba(32, 83, 149, 0.06);
+        }
+
+        .delegacao-users {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .delegado-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            color: var(--mocs-ink);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(32, 83, 149, 0.14);
+        }
+
+        .empty-state {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-radius: 16px;
+            background: rgba(32, 83, 149, 0.08);
+            color: var(--mocs-blue-dark);
+            font-weight: 600;
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="flex flex-col min-h-screen">
+        <header class="mocs-topbar z-10 sticky top-0" x-data="profileData()" x-init="loadUserInfo()">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard.html"><img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON"
+                            class="h-8"></a>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <span class="font-semibold text-gray-700 hidden sm:block">CSNU</span>
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center space-x-2">
+                            <img :src="userAvatar"
+                                src="https://placehold.co/40x40/cccccc/ffffff?text=U"
+                                data-user-avatar
+                                @error="$event.target.src = defaultAvatar"
+                                alt="Avatar"
+                                class="h-9 w-9 rounded-full border-2 border-mocs-blue">
+                            <span class="hidden md:block font-semibold text-gray-700"
+                                x-text="userName">Carregando...</span>
+                            <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+                        </button>
+                        <div x-show="open" @click.away="open = false"
+                            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20"
+                            style="display: none;">
+                            <a href="/dashboard.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b">
+                                <i class="fas fa-house mr-2"></i> Dashboard
+                            </a>
+                            <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b">
+                                <i class="fas fa-user mr-2"></i> Meu perfil
+                            </a>
+                            <template x-if="isSecretario">
+                                <div>
+                                    <a href="/secretariado.html"
+                                        class="block px-4 py-2 text-sm text-mocs-blue font-semibold hover:bg-gray-100 border-b">
+                                        <i class="fas fa-user-tie mr-2"></i> &Aacute;rea do Secretariado
+                                    </a>
+                                </div>
+                            </template>
+
+                            <a href="/auth/logout"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow container mx-auto px-4 py-8 md:py-10 space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="space-y-2">
+                    <span class="accent-pill"><i class="fa-solid fa-graduation-cap"></i> Academic</span>
+                    <h1 class="page-title text-3xl md:text-4xl">&Aacute;rea acad&ecirc;mica</h1>
+                    <p class="text-sm text-slate-600">Acompanhe seus comit&ecirc;s e explore novas delega&ccedil;&otilde;es.</p>
+                </div>
+                <a href="/dashboard.html"
+                   class="inline-flex items-center gap-2 rounded-full border border-mocs-blue/30 bg-white px-4 py-2 text-sm font-semibold text-mocs-blue shadow-sm hover:-translate-y-0.5">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Voltar ao dashboard
+                </a>
+            </div>
+
+            <section class="hero-card space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Resumo do usuario</p>
+                        <h2 class="text-2xl font-semibold text-slate-800">Vis&atilde;o acad&ecirc;mica</h2>
+                    </div>
+                </div>
+
+                <div th:if="${delegacaoNotificacoes != null and !#lists.isEmpty(delegacaoNotificacoes)}"
+                     class="notice-card px-4 py-3">
+                    <p class="text-xs uppercase text-amber-600 font-semibold">Atualizacoes de delegacao</p>
+                    <ul class="mt-2 space-y-1 text-sm text-amber-900">
+                        <li th:each="msg : ${delegacaoNotificacoes}" th:text="${msg}">
+                            Atualizacao de delegacao.
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="hero-grid">
+                    <div class="hero-item">
+                        <p class="text-xs uppercase text-slate-500">Comites vinculados</p>
+                        <p class="text-sm font-semibold text-slate-800" th:text="${comiteLabel}">Sem comite</p>
+                    </div>
+                    <div class="hero-item">
+                        <p class="text-xs uppercase text-slate-500">Delegacoes</p>
+                        <p class="text-sm font-semibold text-slate-800" th:text="${delegacaoLabel}">Sem delegacao</p>
+                    </div>
+                    <div class="hero-item">
+                        <p class="text-xs uppercase text-slate-500">Cargo</p>
+                        <p class="text-sm font-semibold text-slate-800" th:text="${usuarioTipo}">DELEGADO</p>
+                    </div>
+                    <div class="hero-item">
+                        <p class="text-xs uppercase text-slate-500">Faltas</p>
+                        <p class="text-sm font-semibold text-slate-800"
+                           th:text="${faltasTotal != null and faltasTotal > 0 ? faltasPercent + '%': 'Sem registros'}">0%</p>
+                        <p class="text-[11px] text-slate-500" th:if="${faltasTotal != null and faltasTotal > 0}"
+                           th:text="'Ausencias: ' + ${faltasAusentes} + ' / ' + ${faltasTotal}">Ausencias: 0 / 0</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="search-card">
+                <div class="flex flex-col gap-2">
+                    <label for="academicSearch" class="text-sm font-semibold text-slate-700">Buscar comit&ecirc;s</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-3 text-slate-400"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input id="academicSearch" type="text" oninput="filterAcademicList()"
+                               placeholder="Digite o nome do comit&ecirc; ou delega&ccedil;&atilde;o..."
+                               class="w-full rounded-xl border border-slate-200 bg-white py-2 pl-10 pr-4 text-sm focus:border-mocs-blue focus:outline-none focus:ring-2 focus:ring-mocs-blue/20">
+                    </div>
+                </div>
+            </section>
+
+            <section class="space-y-4">
+                <div class="flex items-center justify-between gap-3">
+                    <h3 class="page-title text-2xl">Comit&ecirc;s e delega&ccedil;&otilde;es</h3>
+                    <span class="comite-chip"><i class="fa-solid fa-layer-group"></i> Catalogo</span>
+                </div>
+
+                <div th:if="${catalogComites == null or #lists.isEmpty(catalogComites)}" class="empty-state">
+                    <i class="fa-regular fa-circle-info"></i>
+                    Nenhum comit&ecirc; cadastrado ainda.
+                </div>
+
+                <div class="comite-grid" th:if="${catalogComites != null and !#lists.isEmpty(catalogComites)}">
+                    <article class="comite-card space-y-3" data-academic-card="true"
+                             th:each="comite : ${catalogComites}" x-data="{ open: false }">
+                        <button type="button" class="comite-toggle" @click="open = true"
+                                :aria-expanded="open.toString()">
+                            <div>
+                                <h4 class="text-lg font-semibold text-slate-800"
+                                    th:text="${comite.sigla != null and !#strings.isEmpty(comite.sigla) ? comite.sigla + ' - ' + comite.nome : comite.nome}">
+                                    CSNU - Conselho
+                                </h4>
+                                <p class="text-xs uppercase tracking-[0.3em] text-slate-400 mt-1">Clique para ver detalhes</p>
+                            </div>
+                            <span class="comite-chip">Detalhes</span>
+                        </button>
+
+                        <div x-cloak x-show="open" class="comite-modal" @keydown.window.escape="open = false">
+                            <div class="comite-modal-backdrop" @click="open = false"
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0"
+                                 x-transition:enter-end="opacity-100"
+                                 x-transition:leave="transition ease-in duration-150"
+                                 x-transition:leave-start="opacity-100"
+                                 x-transition:leave-end="opacity-0"></div>
+                            <div class="comite-modal-card"
+                                 x-transition:enter="transition ease-out duration-220"
+                                 x-transition:enter-start="opacity-0 scale-95"
+                                 x-transition:enter-end="opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-150"
+                                 x-transition:leave-start="opacity-100 scale-100"
+                                 x-transition:leave-end="opacity-0 scale-96">
+                                <button type="button" class="comite-modal-close" @click="open = false">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                                <div class="comite-modal-scroll custom-scrollbar">
+                                    <div class="space-y-6">
+                                        <div class="comite-modal-head">
+                                            <div>
+                                                <span class="accent-pill"><i class="fa-solid fa-shield"></i> Comit&ecirc;</span>
+                                                <h3 class="text-2xl font-semibold text-slate-800 mt-2"
+                                                    th:text="${comite.sigla != null and !#strings.isEmpty(comite.sigla) ? comite.sigla + ' - ' + comite.nome : comite.nome}">
+                                                    CSNU - Conselho
+                                                </h3>
+                                            </div>
+                                            <div class="comite-meta">
+                                                <span class="status-pill" th:text="${comite.status}">EM_ANDAMENTO</span>
+                                                <span class="comite-chip"
+                                                      th:text="${comite.numeroDelegados != null ? comite.numeroDelegados + ' delegados' : 'Delegados nao informados'}">
+                                                    0 delegados
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-5">
+                                            <div class="space-y-3">
+                                                <p class="text-xs uppercase tracking-[0.25em] text-slate-400">Descri&ccedil;&atilde;o</p>
+                                                <p class="text-sm text-slate-600"
+                                                   th:text="${comite.descricao != null and !#strings.isEmpty(comite.descricao) ? comite.descricao : 'Descricao nao informada.'}">
+                                                    Descricao nao informada.
+                                                </p>
+                                            </div>
+
+                                            <div class="space-y-3">
+                                                <p class="text-xs uppercase tracking-[0.25em] text-slate-400">Delega&ccedil;&otilde;es e delegados</p>
+                                                <div class="space-y-3"
+                                                     th:if="${delegacoesPorComite[comite.id] != null and !#lists.isEmpty(delegacoesPorComite[comite.id])}">
+                                                    <div class="delegacao-group" th:each="delegacao : ${delegacoesPorComite[comite.id]}">
+                                                        <div class="flex items-center justify-between gap-2">
+                                                            <span class="delegacao-title" th:text="${delegacao.nome}">Delegacao</span>
+                                                            <span class="delegacao-item"
+                                                                  th:text="${delegacao.delegados != null ? #lists.size(delegacao.delegados) + ' inscritos' : '0 inscritos'}">
+                                                                0 inscritos
+                                                            </span>
+                                                        </div>
+                                                        <div class="delegacao-users"
+                                                             th:if="${delegacao.delegados != null and !#lists.isEmpty(delegacao.delegados)}">
+                                                            <span class="delegado-chip" th:each="delegado : ${delegacao.delegados}"
+                                                                  th:text="${delegado.nome}">
+                                                                Delegado
+                                                            </span>
+                                                        </div>
+                                                        <p class="text-xs text-slate-400 mt-2"
+                                                           th:if="${delegacao.delegados == null or #lists.isEmpty(delegacao.delegados)}">
+                                                            Nenhum delegado inscrito.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <p class="text-sm text-slate-400"
+                                                   th:if="${delegacoesPorComite[comite.id] == null or #lists.isEmpty(delegacoesPorComite[comite.id])}">
+                                                    Sem delega&ccedil;&otilde;es cadastradas.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function normalizeText(value) {
+            return (value || '')
+                .toString()
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '');
+        }
+
+        function filterAcademicList() {
+            var input = document.getElementById('academicSearch');
+            var query = normalizeText(input ? input.value : '');
+            var cards = document.querySelectorAll('[data-academic-card="true"]');
+            cards.forEach(function (card) {
+                var content = normalizeText(card.textContent || '');
+                var visible = !query || content.indexOf(query) !== -1;
+                card.style.display = visible ? '' : 'none';
+            });
+        }
+    </script>
+    <script th:src="@{/js/dashboard_config.js}"></script>
+    <script th:src="@{/js/profile_data.js}"></script>
+</body>
+
+</html>

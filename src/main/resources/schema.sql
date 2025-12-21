@@ -190,6 +190,53 @@ CREATE TABLE IF NOT EXISTS `comites` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `delegacoes` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `comite_id` BIGINT UNSIGNED NOT NULL,
+    `nome` VARCHAR(200) NOT NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `ux_delegacoes_comite_nome` (`comite_id`, `nome`),
+    KEY `idx_delegacoes_comite` (`comite_id`),
+    CONSTRAINT `fk_delegacoes_comite` FOREIGN KEY (`comite_id`) REFERENCES `comites` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `usuario_delegacao` (
+    `usuario_id` INT UNSIGNED NOT NULL,
+    `comite_id` BIGINT UNSIGNED NOT NULL,
+    `delegacao_id` BIGINT UNSIGNED NULL,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`usuario_id`, `comite_id`),
+    KEY `idx_usuario_delegacao_comite` (`comite_id`),
+    KEY `idx_usuario_delegacao_delegacao` (`delegacao_id`),
+    CONSTRAINT `fk_usuario_delegacao_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_usuario_delegacao_comite` FOREIGN KEY (`comite_id`) REFERENCES `comites` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_usuario_delegacao_delegacao` FOREIGN KEY (`delegacao_id`) REFERENCES `delegacoes` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `delegacao_notificacoes` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `usuario_id` INT UNSIGNED NOT NULL,
+    `comite_id` BIGINT UNSIGNED NOT NULL,
+    `mensagem` VARCHAR(500) NOT NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_delegacao_notif_user` (`usuario_id`),
+    KEY `idx_delegacao_notif_comite` (`comite_id`),
+    CONSTRAINT `fk_delegacao_notif_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_delegacao_notif_comite` FOREIGN KEY (`comite_id`) REFERENCES `comites` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `usuario_comite` (
+    `usuario_id` INT UNSIGNED NOT NULL,
+    `comite_id` BIGINT UNSIGNED NOT NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`usuario_id`, `comite_id`),
+    KEY `idx_usuario_comite_comite` (`comite_id`),
+    CONSTRAINT `fk_usuario_comite_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+    CONSTRAINT `fk_usuario_comite_comite` FOREIGN KEY (`comite_id`) REFERENCES `comites` (`id`) ON DELETE CASCADE
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS `materias` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 

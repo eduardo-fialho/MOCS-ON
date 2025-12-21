@@ -10,6 +10,25 @@
     <style>
         body { font-family: "Inter", sans-serif; background-color: #f8fafc; }
         .bg-mocs-blue { background-color: #205395; }
+        .text-mocs-blue { color: #205395; }
+        .border-mocs-blue { border-color: #205395; }
+        .cta-animated {
+            color: #205395;
+            border-color: rgba(32, 83, 149, 0.6);
+            background: linear-gradient(135deg, rgba(32, 83, 149, 0.12), rgba(32, 83, 149, 0.02));
+            box-shadow: 0 10px 18px rgba(32, 83, 149, 0.12);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+        }
+        .cta-animated:hover {
+            color: #fff;
+            background: linear-gradient(135deg, #205395, #2b6cb0);
+            box-shadow: 0 14px 24px rgba(32, 83, 149, 0.35);
+            transform: translateY(-1px);
+        }
+        .cta-animated:focus-visible {
+            outline: 2px solid rgba(32, 83, 149, 0.5);
+            outline-offset: 2px;
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -96,7 +115,7 @@
                 </p>
                 <div class="flex flex-wrap gap-3 justify-end">
                     <a th:href="@{'/admin/users/new?preId=' + ${task.id}}"
-                       class="px-4 py-2 rounded-full border border-mocs-blue text-mocs-blue text-sm font-semibold hover:bg-mocs-blue hover:text-white transition">
+                       class="px-4 py-2 rounded-full border text-sm font-semibold transition cta-animated">
                         Prosseguir cadastro
                     </a>
                     <form th:action="@{'/admin/users/pre-registrations/' + ${task.id} + '/deny'}"
