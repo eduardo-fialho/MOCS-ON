@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.mocs_on.domain.Documento;
 import com.mocs_on.domain.GuiaEstudos;
+import com.mocs_on.domain.RelatoOuvidoria;
 import com.mocs_on.security.SecaoUsuario;
 import com.mocs_on.service.ComiteDao;
 import com.mocs_on.service.DocumentoDAO;
 import com.mocs_on.service.GuiaEstudosDAO;
 import com.mocs_on.service.PreRegistrationService;
+import com.mocs_on.service.RelatoOuvidoriaDAO;
 import com.mocs_on.service.SecretariatDashboardService;
 import com.mocs_on.service.SecretariatDashboardService.DashboardMetrics;
 
@@ -36,6 +38,8 @@ public class HomeController {
     private GuiaEstudosDAO guiasService;
     @Autowired
     private ComiteDao comiteService;
+    @Autowired
+    private RelatoOuvidoriaDAO relatoOuvidoriaDAO;
 
     @GetMapping({"", "/"})
     public String index() {
@@ -65,15 +69,6 @@ public class HomeController {
         }
         populateUserAttributes(model);
         return "dashboard";
-    }
-
-    @GetMapping("/mesa_diretora.html")
-    public String mesaDiretora(HttpSession session, Model model) {
-        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
-            return "redirect:/login";
-        }
-        populateUserAttributes(model);
-        return "mesa_diretora";
     }
 
     @GetMapping("/secretariado.html")
@@ -184,6 +179,45 @@ public class HomeController {
         model.addAttribute("comites", comiteService.informacoesComites());
         populateUserAttributes(model);
         return "editar_guia_de_estudos";
+    }
+
+    @GetMapping("/relatos_ouvidoria.html")
+    public String relatosOuvidoria(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        populateUserAttributes(model);
+        return "relatos_ouvidoria";
+    }
+
+    @GetMapping("/fazer_relato.html")
+    public String fazerRelatosOuvidoria(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        populateUserAttributes(model);
+        return "fazer_relato";
+    }
+
+    @GetMapping("/relato_ouvidoria.html")
+    public String visualizarRelato(
+            @RequestParam Long id,
+            HttpSession session,
+            Model model) {
+
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+
+        RelatoOuvidoria relato = relatoOuvidoriaDAO.recuperarPorId(id);
+        if (relato == null) {
+            return "redirect:/relatos_ouvidoria.html";
+        }
+
+        model.addAttribute("relato", relato);
+        populateUserAttributes(model);
+
+        return "relato_ouvidoria";
     }
 
     private boolean isAuthenticated(HttpSession session) {

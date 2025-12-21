@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOCS ON - Ouvidoria</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/imprensa_feed.css}">
+</head>
+
+<body class="feed-bg min-h-screen bg-slate-50 text-slate-900 font-[Inter]">
+
+<div class="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-6">
+
+    <!-- HEADER -->
+    <header class="bg-white border border-slate-200 rounded-2xl px-6 py-4 shadow-md
+                   flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+        <div class="flex items-center gap-3">
+            <a href="/dashboard" class="inline-flex items-center text-blue-700 hover:underline">
+                <i class="fas fa-arrow-left mr-2"></i> Voltar
+            </a>
+        </div>
+
+        <div class="text-center md:text-left">
+            <h1 class="text-2xl font-extrabold text-slate-900">Ouvidoria</h1>
+            <p class="text-sm text-slate-500">Relatos enviados pela comunidade</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a th:href="@{/fazer_relato.html}"
+               class="inline-flex items-center bg-blue-600 text-white
+                      font-semibold px-5 py-3 rounded-xl shadow
+                      hover:bg-blue-700 transition">
+                <i class="fas fa-plus mr-2"></i> Novo Relato
+            </a>
+        </div>
+
+    </header>
+
+    <!-- LISTA DE RELATOS -->
+    <main class="grid grid-cols-1 gap-6">
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+
+            <h2 class="text-lg font-bold text-blue-600">
+                Relatos Cadastrados
+            </h2>
+
+            <div id="lista-relatos"
+                 class="space-y-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+
+                <!-- Relatos carregados via JS -->
+
+                <p class="text-slate-400">Carregando relatos...</p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script th:src="@{/js/relatos_ouvidoria.js}"></script>
+</body>
+</html>

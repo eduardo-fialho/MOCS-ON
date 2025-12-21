@@ -152,33 +152,22 @@ CREATE TABLE IF NOT EXISTS `pre_registrations` (
     KEY `idx_pre_reg_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `ouvidoria_relatos` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `status` VARCHAR(50) NOT NULL DEFAULT 'novo',
-
-  `identificacao` VARCHAR(50) NOT NULL,
-  `nome_relator` VARCHAR(255) NULL,
-  `comite_relator` VARCHAR(255) NULL,
-
-  `categoria_relato` VARCHAR(100) NOT NULL,
-
-  `comite_conducao` VARCHAR(50) NULL,
-  `comite_respeito` VARCHAR(50) NULL,
-  `comite_imparcialidade` VARCHAR(50) NULL,
-  `comite_apoio` VARCHAR(50) NULL,
-  `comite_mensagem` TEXT NULL,
-  
-  `secretariado_positivos` TEXT NULL,
-  `secretariado_negativos` TEXT NULL,
-  `secretariado_falta` TEXT NULL,
-  `secretariado_sugestoes` TEXT NULL,
-
-  `outros_mensagem` TEXT NULL,
+CREATE TABLE IF NOT EXISTS `relato_ouvidoria` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `criado_em` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `resolvido_em` DATETIME NULL,
+  `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+  `status` VARCHAR(50) NOT NULL,
+  `autor` VARCHAR(255) NOT NULL,
+  `assunto` VARCHAR(255) NOT NULL,
+  `relato` TEXT NOT NULL,
+  `ouvidor` VARCHAR(255) NULL,
+  `resposta` TEXT NULL,
 
   PRIMARY KEY (`id`),
-  KEY `idx_status` (`status`),
-  KEY `idx_categoria_relato` (`categoria_relato`)
+  KEY `idx_ouvidoria_status` (`status`),
+  KEY `idx_ouvidoria_ativo` (`ativo`),
+  KEY `idx_ouvidoria_autor` (`autor`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `agenda_diaria` (

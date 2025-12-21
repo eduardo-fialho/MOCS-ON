@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOCS ON - Enviar Relato</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/imprensa_feed.css}">
+</head>
+
+<body class="feed-bg min-h-screen bg-slate-50 text-slate-900 font-[Inter]">
+
+    <div class="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-6">
+
+        <header
+            class="bg-white border border-slate-200 rounded-2xl px-6 py-4 shadow-md flex flex-col md:flex-row items-center gap-4">
+            <div class="flex items-center gap-3 md:flex-1">
+                <a th:href="@{/relatos_ouvidoria.html}" class="inline-flex items-center text-blue-700 hover:underline">
+                    <i class="fas fa-arrow-left mr-2"></i> Voltar
+                </a>
+            </div>
+
+            <div class="text-center flex-1">
+                <h1 class="text-2xl font-extrabold text-slate-900">Enviar Relato</h1>
+                <p class="text-sm text-slate-500">Preencha os campos abaixo para enviar seu relato.</p>
+            </div>
+
+            <div class="md:flex-1"></div>
+        </header>
+
+
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <section class="lg:col-span-3 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-6">
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Assunto</label>
+                    <input id="assunto" type="text" class="w-full border border-slate-300 rounded-xl px-4 py-3
+                              focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Relato</label>
+                    <textarea id="relato" rows="6" class="w-full border border-slate-300 rounded-xl px-4 py-3
+                                 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4">
+                    <a th:href="@{/relatos_ouvidoria.html}"
+                        class="px-6 py-3 rounded-xl border border-slate-300 text-slate-600 font-semibold hover:bg-slate-100 transition">
+                        Cancelar
+                    </a>
+                    <button id="btn-enviar"
+                        class="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">
+                        Enviar Relato
+                    </button>
+                </div>
+
+                <p id="mensagem" class="hidden text-sm font-semibold text-center"></p>
+            </section>
+        </main>
+    </div>
+
+    <script src="/js/ouvidoria_novo.js"></script>
+</body>
+
+</html>
