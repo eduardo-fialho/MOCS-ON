@@ -255,7 +255,8 @@ public class HomeController {
 
     private void populateUserAttributes(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof SecaoUsuario user) {
+        if (authentication != null && authentication.getPrincipal() instanceof SecaoUsuario) {
+            SecaoUsuario user = (SecaoUsuario) authentication.getPrincipal();
             model.addAttribute("usuarioNome", user.getNome());
             model.addAttribute("usuarioTipo", user.getCargo().name());
         } else {

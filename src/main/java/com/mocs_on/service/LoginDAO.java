@@ -133,6 +133,20 @@ public class LoginDAO {
     }
 
     private List<Comite> findComitesByUsuarioId(Long usuarioId) {
-        return List.of();
+        String sql = "SELECT c.id, c.sigla, c.nome, c.num_delegados, c.descricao, c.status FROM comites c JOIN usuario_comites uc ON uc.comite_id = c.id WHERE uc.usuario_id = ?";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Comite c = new Comite();
+            c.setId(rs.getLong("id"));
+            c.setSigla(rs.getString("sigla"));
+            c.setNome(rs.getString("nome"));
+            c.setNumeroDelegados(rs.getInt("num_delegados"));
+            c.setDescricao(rs.getString("descricao"));
+            try {
+                c.setStatus(Comite.StatusComite.valueOf(rs.getString("status")));
+            } catch (Exception ex) {
+                c.setStatus(Comite.StatusComite.EM_ANDAMENTO);
+            }
+            return c;
+        }, usuarioId);
     }
 }

@@ -447,7 +447,8 @@ public class ProfileController {
             return null;
         }
         Object idAttr = session.getAttribute(AuthController.SESSION_USER_ID);
-        if (idAttr instanceof Number number) {
+        if (idAttr instanceof Number) {
+            Number number = (Number) idAttr;
             return number.longValue();
         }
         return null;

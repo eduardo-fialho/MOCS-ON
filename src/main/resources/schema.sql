@@ -334,3 +334,26 @@ CREATE TABLE IF NOT EXISTS `user_profiles` (
       REFERENCES `usuarios` (`id`) 
       ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `consulta` (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `titulo` VARCHAR(255) NOT NULL,
+  `pergunta` VARCHAR(255) NOT NULL,
+  `status` ENUM('PENDENTE', 'APROVADA', 'REJEITADA', 'ARQUIVADA') NOT NULL,
+  `ativo` BOOLEAN NOT NULL DEFAULT true,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `approved_at` TIMESTAMP NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `consulta_votos` (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `consulta_id` INT UNSIGNED NOT NULL,
+  `usuario_username` VARCHAR(255) NOT NULL,
+  `voto` ENUM('SIM', 'NAO') NOT NULL,
+
+  UNIQUE (`consulta_id`, `usuario_username`),
+
+  FOREIGN KEY (`consulta_id`)
+    REFERENCES consulta(id)
+    ON DELETE CASCADE
+);

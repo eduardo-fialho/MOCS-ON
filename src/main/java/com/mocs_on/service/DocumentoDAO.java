@@ -17,11 +17,7 @@ public class DocumentoDAO {
     private JdbcTemplate jdbcTemplate;
 
     public List<Documento> recuperarTodos() {
-        String sql = """
-            SELECT id, nome, autor, ativo, status, arquivo, data, avaliacao
-            FROM documentos
-            WHERE ativo = true
-        """;
+        String sql = "SELECT id, nome, autor, ativo, status, arquivo, data, avaliacao, comite_sigla FROM documentos WHERE ativo = true";
 
         return jdbcTemplate.query(sql, (resultado, linha) -> {
             Documento doc = new Documento();
@@ -40,17 +36,14 @@ public class DocumentoDAO {
             doc.setData(ts != null ? ts.toLocalDateTime() : null);
             doc.setArquivo(resultado.getBytes("arquivo"));
             doc.setAvaliacao(resultado.getString("avaliacao"));
+            doc.setComiteSigla(resultado.getString("comite_sigla"));
 
             return doc;
         });
     }
 
     public Documento recuperarPorId(Long id) {
-        String sql = """
-            SELECT id, nome, autor, ativo, status, arquivo, data, avaliacao
-            FROM documentos
-            WHERE id = ? AND ativo = true
-        """;
+        String sql = "SELECT id, nome, autor, ativo, status, arquivo, data, avaliacao, comite_sigla FROM documentos WHERE id = ? AND ativo = true";
 
         List<Documento> documentos = jdbcTemplate.query(sql, (resultado, linha) -> {
             Documento doc = new Documento();
@@ -71,6 +64,7 @@ public class DocumentoDAO {
 
             doc.setArquivo(resultado.getBytes("arquivo"));
             doc.setAvaliacao(resultado.getString("avaliacao"));
+            doc.setComiteSigla(resultado.getString("comite_sigla"));
 
             return doc;
         }, id);
@@ -96,11 +90,7 @@ public class DocumentoDAO {
     }
 
     public int atualizarDocumento(Documento doc) {
-        String sql = """
-            UPDATE documentos
-            SET nome = ?, autor = ?, ativo = ?, status = ?, arquivo = ?, avaliacao = ?
-            WHERE id = ?
-        """;
+        String sql = "UPDATE documentos SET nome = ?, autor = ?, ativo = ?, status = ?, arquivo = ?, avaliacao = ?, comite_sigla = ? WHERE id = ?";
 
         return jdbcTemplate.update(
             sql,
@@ -110,6 +100,7 @@ public class DocumentoDAO {
             doc.getStatus().name(),
             doc.getArquivo(),
             doc.getAvaliacao(),
+            doc.getComiteSigla(),
             doc.getId()
         );
     }

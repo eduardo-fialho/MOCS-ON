@@ -21,8 +21,9 @@ public class HDataSource {
     
     @Value("${spring.datasource.url}")
     private String dbUrl;
-    
-    private String jdbcDriver = "com.mysql.cj.jdbc.Driver";
+
+    @Value("${spring.datasource.driver-class-name:com.mysql.cj.jdbc.Driver}")
+    private String jdbcDriver;
   
     public HDataSource() {
     }

@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,19 +21,28 @@
         <header class="z-10 sticky top-0" x-data="profileData()" @click.away="menuOpen = false"
 >
             <div class="container mx-auto px-4 py-3">
-                <div class="liquid-glass liquid-glass--header w-full transition-all duration-500" :class="menuOpen ? 'pb-4' : ''">
+                <div class="liquid-glass liquid-glass--header w-full transition-all duration-500"
+                    :class="menuOpen ? 'pb-4' : ''">
                     <div class="flex flex-wrap items-center justify-between gap-4">
                         <div class="flex items-center gap-4">
-                            <a href="#"><img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON" class="h-8 rounded-xl shadow"></a>
-                            <span class="font-semibold text-mocs-blue tracking-widest uppercase text-xs sm:text-sm">CSNU</span>
+                            <a href="#"><img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON"
+                                    alt="Logo MOCS ON" class="h-8 rounded-xl shadow"></a>
+                            <span
+                                class="font-semibold text-mocs-blue tracking-widest uppercase text-xs sm:text-sm">CSNU</span>
                         </div>
                         <div class="flex flex-col items-center gap-3">
                             <button @click="toggleMenu" class="flex items-center gap-2 font-semibold text-white">
-                                <img :src="userAvatar" @error="$event.target.src = defaultAvatar" alt="Avatar" class="h-9 w-9 rounded-full border-2 border-mocs-blue object-cover">
+                                <img :src="userAvatar" @error="$event.target.src = defaultAvatar" alt="Avatar"
+                                    class="h-9 w-9 rounded-full border-2 border-mocs-blue object-cover">
                                 <span class="hidden md:block text-white" x-text="userName">Carregando...</span>
                                 <i class="fas fa-chevron-down text-xs text-white transition-transform duration-600" :class="menuOpen ? 'rotate-180' : ''"></i>
                             </button>
                             <div class="overflow-hidden transition-all duration-500 ease-out w-full flex justify-center" :class="menuOpen ? 'max-h-59 opacity-100' : 'max-h-0 opacity-0'">
+                                <i class="fas fa-chevron-down text-xs text-white transition-transform duration-300"
+                                    :class="menuOpen ? 'rotate-180' : ''"></i>
+                            </button>
+                            <div class="overflow-hidden transition-all duration-500 ease-out w-full flex justify-center"
+                                :class="menuOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'">
                                 <div class="flex flex-col items-center gap-3 text-sm font-semibold w-64">
                                     <a href="/profile" class="menu-chip w-full justify-center">
                                         <i class="fas fa-user"></i> Meu perfil
@@ -65,22 +75,22 @@
                     <div class="liquid-glass overflow-hidden p-6">
                         <div class="flex flex-col gap-4 lg:flex-row lg:items-end">
                             <div class="flex-1">
-                                <p class="text-xs font-semibold text-gray-400 tracking-widest uppercase">Pesquisar perfis ou hashtags</p>
+                                <p class="text-xs font-semibold text-gray-400 tracking-widest uppercase">Pesquisar
+                                    perfis ou hashtags</p>
                                 <div class="relative mt-2">
-                                    <span class="absolute left-3 top-3 text-gray-400"><i class="fas fa-search"></i></span>
-                                    <input x-model="searchQuery"
-                                           @input="handleSearchInput()"
-                                           @keydown.enter.prevent
-                                           type="text"
-                                           class="liquid-glass-input w-full pl-10 pr-4 py-2.5 rounded-lg focus:ring-2 focus:ring-mocs-blue focus:border-mocs-blue text-gray-700"
-                                           placeholder="Busque pessoas, países ou temas da conferência">
+                                    <span class="absolute left-3 top-3 text-gray-400"><i
+                                            class="fas fa-search"></i></span>
+                                    <input x-model="searchQuery" @input="handleSearchInput()" @keydown.enter.prevent
+                                        type="text"
+                                        class="liquid-glass-input w-full pl-10 pr-4 py-2.5 rounded-lg focus:ring-2 focus:ring-mocs-blue focus:border-mocs-blue text-gray-700"
+                                        placeholder="Busque pessoas, países ou temas da conferência">
                                 </div>
                             </div>
                             <div class="flex flex-wrap gap-2">
                                 <template x-for="filter in filters" :key="filter">
                                     <button @click="activeFilter = filter"
-                                            :class="activeFilter === filter ? 'bg-mocs-blue text-white shadow-md' : 'border border-gray-200 text-gray-600'"
-                                            class="px-3 py-1.5 rounded-full text-sm font-semibold transition">
+                                        :class="activeFilter === filter ? 'bg-mocs-blue text-white shadow-md' : 'border border-gray-200 text-gray-600'"
+                                        class="px-3 py-1.5 rounded-full text-sm font-semibold transition">
                                         <span x-text="filter"></span>
                                     </button>
                                 </template>
@@ -95,20 +105,25 @@
                             <div class="text-sm text-red-600" x-show="searchError" x-text="searchError"></div>
                             <div class="space-y-2" x-show="!searchLoading && searchResults.length">
                                 <template x-for="user in searchResults" :key="user.id">
-                                    <div class="p-3 border border-gray-100 rounded-lg flex flex-col gap-1 hover:border-mocs-blue transition">
+                                    <div
+                                        class="p-3 border border-gray-100 rounded-lg flex flex-col gap-1 hover:border-mocs-blue transition">
                                         <div class="flex items-center justify-between text-sm">
                                             <span class="font-semibold text-gray-800" x-text="user.nome"></span>
-                                            <span class="px-2 py-0.5 text-xs rounded-full bg-mocs-blue text-white" x-text="user.tipo"></span>
+                                            <span class="px-2 py-0.5 text-xs rounded-full bg-mocs-blue text-white"
+                                                x-text="user.tipo"></span>
                                         </div>
                                         <p class="text-xs text-gray-500" x-text="user.email"></p>
                                         <p class="text-xs text-gray-400" x-show="user.lastPostSnippet">
-                                            Último post · <span x-text="formatTime(user.lastPostDate)"></span> — <span x-text="user.lastPostSnippet"></span>
+                                            Último post · <span x-text="formatTime(user.lastPostDate)"></span> — <span
+                                                x-text="user.lastPostSnippet"></span>
                                         </p>
                                     </div>
                                 </template>
                             </div>
-                            <div class="space-y-2" x-show="!searchLoading && !searchResults.length && fallbackPosts.length">
-                                <p class="text-xs uppercase tracking-[0.3em] text-gray-400">Talvez você esteja procurando por</p>
+                            <div class="space-y-2"
+                                x-show="!searchLoading && !searchResults.length && fallbackPosts.length">
+                                <p class="text-xs uppercase tracking-[0.3em] text-gray-400">Talvez você esteja
+                                    procurando por</p>
                                 <template x-for="post in fallbackPosts" :key="`fallback-${post.id}`">
                                     <div class="p-3 rounded-lg bg-gray-50 border border-dashed border-gray-200">
                                         <p class="text-sm font-semibold text-gray-700" x-text="post.author"></p>
@@ -117,7 +132,8 @@
                                     </div>
                                 </template>
                             </div>
-                            <div class="text-xs text-gray-400" x-show="!searchLoading && !searchResults.length && !fallbackPosts.length && !searchError">
+                            <div class="text-xs text-gray-400"
+                                x-show="!searchLoading && !searchResults.length && !fallbackPosts.length && !searchError">
                                 Nenhum perfil correspondente. Tente outro termo.
                             </div>
                         </div>
@@ -129,7 +145,8 @@
                                 <h2 class="text-xl font-bold text-mocs-blue">Galeria visual</h2>
                                 <p class="text-gray-500 text-sm">Últimas postagens (mais recentes primeiro).</p>
                             </div>
-                            <button class="text-sm font-semibold text-mocs-blue hover:text-mocs-orange flex items-center gap-2">
+                            <button
+                                class="text-sm font-semibold text-mocs-blue hover:text-mocs-orange flex items-center gap-2">
                                 <i class="fas fa-sliders-h"></i> Filtrar mídias
                             </button>
                         </div>
@@ -138,23 +155,27 @@
                             <i class="fas fa-spinner fa-spin text-mocs-blue"></i>
                             <span>Carregando galeria...</span>
                         </div>
-                        <div class="text-sm text-gray-400 mt-4" x-show="!feedLoading && !filteredMedia.length && !feedError">
+                        <div class="text-sm text-gray-400 mt-4"
+                            x-show="!feedLoading && !filteredMedia.length && !feedError">
                             Nenhuma mídia disponível para este filtro ainda.
                         </div>
-                        <div id="dashboardGalleryGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4" x-show="!feedLoading && filteredMedia.length">
+                        <div id="dashboardGalleryGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4"
+                            x-show="!feedLoading && filteredMedia.length">
                             <template x-for="mediaItem in filteredMedia" :key="mediaItem.id">
                                 <button type="button"
-                                        class="dashboard-gallery-card relative rounded-2xl overflow-hidden shadow-sm group text-left cursor-pointer"
-                                        @click="openModal(mediaItem)">
+                                    class="dashboard-gallery-card relative rounded-2xl overflow-hidden shadow-sm group text-left cursor-pointer"
+                                    @click="openModal(mediaItem)">
                                     <img class="w-full h-48 object-cover transition duration-300 group-hover:scale-105"
-                                         :src="mediaItem.url"
-                                         :alt="mediaItem.caption">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-3 text-white">
+                                        :src="mediaItem.url" :alt="mediaItem.caption">
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col justify-end p-3 text-white">
                                         <p class="text-sm font-semibold" x-text="mediaItem.caption"></p>
                                         <span class="text-xs text-white/80" x-text="mediaItem.meta"></span>
                                     </div>
-                                    <div class="absolute top-3 left-3 bg-white/90 text-xs font-semibold px-2 py-1 rounded-full text-mocs-blue shadow" x-text="mediaItem.label"></div>
-                                    <div class="absolute top-3 right-3 bg-black/60 text-xs text-white px-2 py-1 rounded-full flex items-center gap-1">
+                                    <div class="absolute top-3 left-3 bg-white/90 text-xs font-semibold px-2 py-1 rounded-full text-mocs-blue shadow"
+                                        x-text="mediaItem.label"></div>
+                                    <div
+                                        class="absolute top-3 right-3 bg-black/60 text-xs text-white px-2 py-1 rounded-full flex items-center gap-1">
                                         <i class="fas fa-heart text-red-400"></i>
                                         <span x-text="mediaItem.likes || 0"></span>
                                     </div>
@@ -163,82 +184,98 @@
                         </div>
                         <div x-cloak x-show="modalOpen" class="fixed inset-0 z-40 px-4" @keydown.window.escape="closeModal()">
                             <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" @click="closeModal()"
-                                 x-transition:enter="transition ease-out duration-200"
-                                 x-transition:enter-start="opacity-0"
-                                 x-transition:enter-end="opacity-100"
-                                 x-transition:leave="transition ease-in duration-150"
-                                 x-transition:leave-start="opacity-100"
-                                 x-transition:leave-end="opacity-0"></div>
+                                x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                                x-transition:leave="transition ease-in duration-150"
+                                x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"></div>
                             <div class="relative w-full h-full flex items-center justify-center">
-                                <button type="button" class="absolute top-6 right-6 text-white/80 hover:text-white text-2xl z-50" @click="closeModal()">
+                                <button type="button"
+                                    class="absolute top-6 right-6 text-white/80 hover:text-white text-2xl z-50"
+                                    @click="closeModal()">
                                     <i class="fas fa-times"></i>
                                 </button>
                                 <div class="flex items-center gap-4">
                                     <div class="flex items-center justify-center overflow-hidden">
                                         <img :src="selectedMedia && selectedMedia.url ? selectedMedia.url : ''"
-                                             alt="Galeria MOCS"
-                                             @load="modalPortrait = $event.target.naturalHeight > $event.target.naturalWidth"
-                                             class="object-contain rounded-2xl"
-                                             :class="modalPortrait ? 'max-h-[85vh] max-w-[65vw]' : 'max-h-[85vh] max-w-[70vw]'">
+                                            alt="Galeria MOCS"
+                                            @load="modalPortrait = $event.target.naturalHeight > $event.target.naturalWidth"
+                                            class="object-contain rounded-2xl"
+                                            :class="modalPortrait ? 'max-h-[85vh] max-w-[65vw]' : 'max-h-[85vh] max-w-[70vw]'">
                                     </div>
-                                    <div class="w-[22rem] lg:w-[24rem] apple-glass p-5 flex flex-col gap-4 max-h-[85vh] overflow-y-auto text-gray-900">
+                                    <div
+                                        class="w-[22rem] lg:w-[24rem] apple-glass p-5 flex flex-col gap-4 max-h-[85vh] overflow-y-auto text-gray-900">
                                         <div class="flex items-center gap-3">
-                                            <div class="h-12 w-12 rounded-full bg-mocs-blue text-white flex items-center justify-center font-bold text-lg">
-                                                <span x-text="selectedMedia && selectedMedia.initials ? selectedMedia.initials : 'MO'"></span>
+                                            <div
+                                                class="h-12 w-12 rounded-full bg-mocs-blue text-white flex items-center justify-center font-bold text-lg">
+                                                <span
+                                                    x-text="selectedMedia && selectedMedia.initials ? selectedMedia.initials : 'MO'"></span>
                                             </div>
                                             <div>
-                                            <p class="text-xs uppercase tracking-[0.35em] text-white/70" x-text="selectedMedia && selectedMedia.label ? selectedMedia.label : ''"></p>
-                                            <p class="text-lg font-semibold text-white" x-text="selectedMedia && selectedMedia.author ? selectedMedia.author : 'Delegado'"></p>
-                                            <p class="text-xs text-white/70" x-text="selectedMedia && selectedMedia.meta ? selectedMedia.meta : ''"></p>
+                                                <p class="text-xs uppercase tracking-[0.35em] text-white/70"
+                                                    x-text="selectedMedia && selectedMedia.label ? selectedMedia.label : ''">
+                                                </p>
+                                                <p class="text-lg font-semibold text-white"
+                                                    x-text="selectedMedia && selectedMedia.author ? selectedMedia.author : 'Delegado'">
+                                                </p>
+                                                <p class="text-xs text-white/70"
+                                                    x-text="selectedMedia && selectedMedia.meta ? selectedMedia.meta : ''">
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <p class="text-sm text-white/85" x-text="selectedMedia && selectedMedia.caption ? selectedMedia.caption : ''"></p>
+                                        <p class="text-sm text-white/85"
+                                            x-text="selectedMedia && selectedMedia.caption ? selectedMedia.caption : ''">
+                                        </p>
                                         <div class="flex items-center gap-3">
                                             <button type="button"
-                                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full border transition text-sm"
-                                                    :class="[(selectedMedia && selectedMedia.liked) ? 'bg-mocs-blue text-white border-mocs-blue' : 'border-mocs-blue text-mocs-blue hover:bg-mocs-blue hover:text-white', likeLoading ? 'opacity-60 cursor-not-allowed' : '']"
-                                                    :disabled="likeLoading"
-                                                    @click="toggleLike()">
-                                                <i class="fas fa-heart" :class="(selectedMedia && selectedMedia.liked) ? 'text-white' : 'text-red-500'"></i>
-                                                <span x-text="selectedMedia && selectedMedia.likes ? selectedMedia.likes : 0"></span>
+                                                class="inline-flex items-center gap-2 px-4 py-2 rounded-full border transition text-sm"
+                                                :class="[(selectedMedia && selectedMedia.liked) ? 'bg-mocs-blue text-white border-mocs-blue' : 'border-mocs-blue text-mocs-blue hover:bg-mocs-blue hover:text-white', likeLoading ? 'opacity-60 cursor-not-allowed' : '']"
+                                                :disabled="likeLoading" @click="toggleLike()">
+                                                <i class="fas fa-heart"
+                                                    :class="(selectedMedia && selectedMedia.liked) ? 'text-white' : 'text-red-500'"></i>
+                                                <span
+                                                    x-text="selectedMedia && selectedMedia.likes ? selectedMedia.likes : 0"></span>
                                             </button>
                                             <span class="text-xs text-gray-200">Curtidas</span>
-                                            <button type="button"
-                                                    x-show="isSecretary"
-                                                    class="ml-auto inline-flex items-center gap-2 px-3 py-2 rounded-full bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition"
-                                                    @click="deleteSelectedMedia()">
+                                            <button type="button" x-show="isSecretary"
+                                                class="ml-auto inline-flex items-center gap-2 px-3 py-2 rounded-full bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition"
+                                                @click="deleteSelectedMedia()">
                                                 <i class="fas fa-trash"></i> Apagar
                                             </button>
                                         </div>
                                         <div class="flex-1 apple-glass p-4 text-white rounded-3xl comment-wrapper">
-                                            <div class="comment-scroll custom-scrollbar space-y-3 bg-transparent w-full">
+                                            <div
+                                                class="comment-scroll custom-scrollbar space-y-3 bg-transparent w-full">
                                                 <div class="text-center text-white/80 text-sm" x-show="commentLoading">
-                                                    <i class="fas fa-spinner fa-spin mr-2"></i> Carregando comentários...
+                                                    <i class="fas fa-spinner fa-spin mr-2"></i> Carregando
+                                                    comentários...
                                                 </div>
-                                                <div class="text-center text-white/80 text-sm" x-show="!commentLoading && !comments.length">
+                                                <div class="text-center text-white/80 text-sm"
+                                                    x-show="!commentLoading && !comments.length">
                                                     Seja o primeiro a comentar.
                                                 </div>
                                                 <template x-for="comment in comments" :key="comment.id">
-                                                    <div class="rounded-xl bg-white/90 shadow px-3 py-2 border border-white/60">
+                                                    <div
+                                                        class="rounded-xl bg-white/90 shadow px-3 py-2 border border-white/60">
                                                         <div class="flex justify-between text-xs text-gray-700">
-                                                            <span class="font-semibold text-gray-900" x-text="comment.autor"></span>
+                                                            <span class="font-semibold text-gray-900"
+                                                                x-text="comment.autor"></span>
                                                             <span class="text-gray-500" x-text="comment.tempo"></span>
                                                         </div>
                                                         <p class="text-sm text-gray-900" x-text="comment.mensagem"></p>
                                                     </div>
                                                 </template>
-                                                <div class="text-xs text-red-500 text-center" x-show="commentError" x-text="commentError"></div>
+                                                <div class="text-xs text-red-500 text-center" x-show="commentError"
+                                                    x-text="commentError"></div>
                                             </div>
                                         </div>
                                         <div class="space-y-2">
                                             <textarea x-model="commentText"
-                                                      class="w-full border border-gray-300 rounded-2xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-mocs-blue"
-                                                      rows="2"
-                                                      placeholder="Escreva um comentário..."></textarea>
+                                                class="w-full border border-gray-300 rounded-2xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-mocs-blue"
+                                                rows="2" placeholder="Escreva um comentário..."></textarea>
                                             <div class="flex justify-end items-center gap-2">
                                                 <button type="button"
-                                                        class="px-4 py-2 rounded-full bg-mocs-blue text-white text-sm font-semibold hover:bg-opacity-90 transition"
-                                                        @click="submitComment()">
+                                                    class="px-4 py-2 rounded-full bg-mocs-blue text-white text-sm font-semibold hover:bg-opacity-90 transition"
+                                                    @click="submitComment()">
                                                     Publicar
                                                 </button>
                                             </div>
@@ -254,10 +291,22 @@
                             <h2 class="text-xl font-bold text-mocs-blue ">Imprensa</h2>
                             <p class="text-gray-500 text-sm">Venha ficar por dentro das ultimas notícias do MOCS ON</p>
                         </div>
-                        
+
                         <a th:href="@{/imprensa/feed}" class="rounded-xl mt-4 p-2 text-white bg-mocs-blue mt-4">
                             <i class="fas fa-newspaper"></i>
                             <span>Imprensa</span>
+                        </a>
+                    </div>
+                    <!--Parte de Consultas-->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                        <div class="mb-6">
+                            <h2 class="text-xl font-bold text-mocs-blue ">Consultas</h2>
+                            <p class="text-gray-500 text-sm">Venha ficar por dentro das ultimas notícias do MOCS ON</p>
+                        </div>
+
+                        <a th:href="@{/consultas/feed}" class="rounded-xl mt-4 p-2 text-white bg-mocs-blue mt-4">
+                            <i class="fas fa-newspaper"></i>
+                            <span>Consultas</span>
                         </a>
                     </div>
                 </section>
@@ -285,13 +334,15 @@
                         </div>
 
                         <div class="text-sm text-red-600 mb-3" x-show="error" x-text="error" style="display:none"></div>
-                        <div class="text-sm text-gray-500 mb-3" x-show="loading" style="display:none"><i class="fas fa-spinner fa-spin mr-2"></i> Carregando feed...</div>
+                        <div class="text-sm text-gray-500 mb-3" x-show="loading" style="display:none"><i
+                                class="fas fa-spinner fa-spin mr-2"></i> Carregando feed...</div>
 
                         <div class="flex flex-col gap-5 max-h-[40vh] overflow-y-auto">
                             <template x-for="post in posts" :key="post.id">
                                 <div class="border-t pt-4">
                                     <div class="flex items-start space-x-4">
-                                        <div class="h-10 w-10 rounded-full flex items-center justify-center bg-gray-200 text-gray-700">
+                                        <div
+                                            class="h-10 w-10 rounded-full flex items-center justify-center bg-gray-200 text-gray-700">
                                             <template x-if="post.status === 'ANONIMO'">
                                                 <i class="fas fa-user-secret"></i>
                                             </template>
@@ -308,28 +359,25 @@
                                             <div class="mt-3 flex items-center gap-2 text-sm">
                                                 <button
                                                     class="bg-mocs-blue text-white font-semibold py-1 px-2 rounded-lg hover:bg-opacity-90"
-                                                    @click="toggleCurtida(post)"
-                                                >
+                                                    @click="toggleCurtida(post)">
                                                     <span>Curtir</span>
                                                 </button>
 
-                                                <button class="text-sm text-gray-600 underline" @click="openCurtidasModal(post)">
-                                                    <span x-text="(post._curtidaCount !== undefined) ? post._curtidaCount + ' pessoas' : '0 pessoas'"></span>
+                                                <button class="text-sm text-gray-600 underline"
+                                                    @click="openCurtidasModal(post)">
+                                                    <span
+                                                        x-text="(post._curtidaCount !== undefined) ? post._curtidaCount + ' pessoas' : '0 pessoas'"></span>
                                                 </button>
                                             </div>
 
 
                                             <div class="mt-3 flex items-center gap-2 text-sm">
                                                 <template x-for="emoji in emojis" :key="emoji">
-                                                    <button
-                                                        :class="{
+                                                    <button :class="{
                                                             'ring-2 ring-offset-1 ring-blue-300': post.myReaction === emoji,
                                                             'opacity-50 cursor-not-allowed': post._reacting
-                                                        }"
-                                                        class="px-2 py-1 bg-gray-100 rounded-full flex items-center"
-                                                        :disabled="post._reacting"
-                                                        @click="addReaction(post, emoji)"
-                                                    >
+                                                        }" class="px-2 py-1 bg-gray-100 rounded-full flex items-center"
+                                                        :disabled="post._reacting" @click="addReaction(post, emoji)">
                                                         <span x-text="emoji"></span>
                                                         <span class="ml-1" x-text="reactionCount(post, emoji)"></span>
                                                     </button>
@@ -337,39 +385,53 @@
                                             </div>
                                             <div class="mt-3">
                                                 <button class="text-sm text-gray-600" @click="toggleComments(post)">
-                                                    <span x-text="(post._commentsOpen ? 'Fechar' : 'Ver') + ' comentários'"></span>
+                                                    <span
+                                                        x-text="(post._commentsOpen ? 'Fechar' : 'Ver') + ' comentários'"></span>
                                                 </button>
                                                 <div x-show="post._commentsOpen" x-cloak class="mt-2 space-y-3">
-                                                    <div x-show="post._loadingComments" class="text-sm text-gray-500">Carregando comentários...</div>
-                                                    <template x-for="comment in (post.comments || [])" :key="comment.id">
+                                                    <div x-show="post._loadingComments" class="text-sm text-gray-500">
+                                                        Carregando comentários...</div>
+                                                    <template x-for="comment in (post.comments || [])"
+                                                        :key="comment.id">
                                                         <div class="bg-gray-50 p-2 rounded">
                                                             <div class="flex justify-between items-start">
                                                                 <div>
-                                                                    <p class="text-sm font-semibold" x-text="comment.usuarioNome"></p>
+                                                                    <p class="text-sm font-semibold"
+                                                                        x-text="comment.usuarioNome"></p>
                                                                     <template x-if="comment.status === 'EXCLUIDO'">
-                                                                        <p class="text-sm text-gray-400" x-text="comment.mensagem"></p>
+                                                                        <p class="text-sm text-gray-400"
+                                                                            x-text="comment.mensagem"></p>
                                                                     </template>
                                                                     <template x-if="comment.status !== 'EXCLUIDO'">
-                                                                        <p class="text-sm text-gray-700" x-text="comment.mensagem"></p>
+                                                                        <p class="text-sm text-gray-700"
+                                                                            x-text="comment.mensagem"></p>
                                                                     </template>
-                                                                    <p class="text-xs text-gray-400" x-text="timeAgo(comment.createdAt)"></p>
+                                                                    <p class="text-xs text-gray-400"
+                                                                        x-text="timeAgo(comment.createdAt)"></p>
                                                                 </div>
                                                                 <div>
-                                                                    <template x-if="(comment.usuario === currentUserEmail || comment.usuarioNome === currentUser) || isSecretary">
-                                                                        <button class="text-xs text-red-600" @click="deleteComment(post, comment.id)">Remover</button>
+                                                                    <template
+                                                                        x-if="(comment.usuario === currentUserEmail || comment.usuarioNome === currentUser) || isSecretary">
+                                                                        <button class="text-xs text-red-600"
+                                                                            @click="deleteComment(post, comment.id)">Remover</button>
                                                                     </template>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </template>
-                                                    <div x-show="!post._loadingComments && (!post.comments || post.comments.length === 0)" class="text-sm text-gray-500">Seja o primeiro a comentar.</div>
+                                                    <div x-show="!post._loadingComments && (!post.comments || post.comments.length === 0)"
+                                                        class="text-sm text-gray-500">Seja o primeiro a comentar.</div>
                                                     <div class="pt-2">
-                                                        <textarea x-model="post._newComment" rows="2" class="w-full border rounded p-2 text-sm" placeholder="Escreva um comentário..."></textarea>
+                                                        <textarea x-model="post._newComment" rows="2"
+                                                            class="w-full border rounded p-2 text-sm"
+                                                            placeholder="Escreva um comentário..."></textarea>
                                                         <div class="flex justify-end mt-1">
-                                                            <button class="px-3 py-1 text-sm bg-blue-600 text-white rounded"
+                                                            <button
+                                                                class="px-3 py-1 text-sm bg-blue-600 text-white rounded"
                                                                 @click="addComment(post)"
                                                                 :disabled="post._postingComment || !(post._newComment && post._newComment.trim())">
-                                                                <span x-text="post._postingComment ? 'Enviando...' : 'Comentar'"></span>
+                                                                <span
+                                                                    x-text="post._postingComment ? 'Enviando...' : 'Comentar'"></span>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -379,18 +441,22 @@
 
                                         <div class="flex flex-col items-end gap-2">
                                             <template x-if="isSecretary">
-                                                <button class="text-sm text-red-600" @click="deletePost(post.id)"> Excluir
+                                                <button class="text-sm text-red-600" @click="deletePost(post.id)">
+                                                    Excluir
                                                 </button>
                                             </template>
                                         </div>
                                     </div>
                                 </div>
-                                <div x-show="post._curtidasModalOpen" x-cloak class="fixed inset-0 flex items-center justify-center z-50">
-                                    <div class="absolute inset-0 bg-black opacity-50" @click="closeCurtidasModal(post)"></div>
+                                <div x-show="post._curtidasModalOpen" x-cloak
+                                    class="fixed inset-0 flex items-center justify-center z-50">
+                                    <div class="absolute inset-0 bg-black opacity-50" @click="closeCurtidasModal(post)">
+                                    </div>
                                     <div class="bg-white rounded shadow-lg p-4 max-w-md w-full z-10">
                                         <div class="flex justify-between items-center mb-3">
                                             <h3 class="text-lg font-semibold">Curtido por</h3>
-                                            <button class="text-sm text-gray-600" @click="closeCurtidasModal(post)">Fechar</button>
+                                            <button class="text-sm text-gray-600"
+                                                @click="closeCurtidasModal(post)">Fechar</button>
                                         </div>
                                         <div class="max-h-64 overflow-auto">
                                             <template x-if="post._loadingCurtidas">
@@ -402,13 +468,15 @@
                                                     <div class="text-xs text-gray-500" x-text="u.usuario"></div>
                                                 </div>
                                             </template>
-                                            <div x-show="!post._loadingCurtidas && (!post._curtidasList || post._curtidasList.length === 0)" class="text-sm text-gray-500">Ninguém curtiu ainda.</div>
+                                            <div x-show="!post._loadingCurtidas && (!post._curtidasList || post._curtidasList.length === 0)"
+                                                class="text-sm text-gray-500">Ninguém curtiu ainda.</div>
                                         </div>
                                     </div>
                                 </div>
                             </template>
 
-                            <div x-show="!loading && posts.length === 0" class="text-center text-gray-500 py-6" style="display:none">
+                            <div x-show="!loading && posts.length === 0" class="text-center text-gray-500 py-6"
+                                style="display:none">
                                 Nenhum post disponível.
                             </div>
                         </div>
@@ -418,15 +486,13 @@
                         <h2 class="text-xl font-bold text-center mb-4">Agendas</h2>
 
                         <div class="flex justify-center gap-4 mb-6">
-                            <button
-                                @click="setAgenda('GERAL')"
+                            <button @click="setAgenda('GERAL')"
                                 :class="agendaAtiva === 'GERAL' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'"
                                 class="px-4 py-2 rounded-lg font-semibold">
                                 Agenda Geral
                             </button>
 
-                            <button
-                                @click="setAgenda('COMITE')"
+                            <button @click="setAgenda('COMITE')"
                                 :class="agendaAtiva === 'COMITE' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'"
                                 class="px-4 py-2 rounded-lg font-semibold">
                                 Agenda Comitê
@@ -452,17 +518,22 @@
                             </div>
 
                             <div class="grid grid-cols-7 text-center font-semibold text-gray-600 mb-2">
-                                <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+                                <div>Dom</div>
+                                <div>Seg</div>
+                                <div>Ter</div>
+                                <div>Qua</div>
+                                <div>Qui</div>
+                                <div>Sex</div>
+                                <div>Sáb</div>
                             </div>
 
                             <div class="grid grid-cols-7 gap-1 text-center">
-                                <template x-for="n in blanks"><div></div></template>
+                                <template x-for="n in blanks">
+                                    <div></div>
+                                </template>
 
                                 <template x-for="day in days" :key="day.date">
-                                    <div
-                                        @click="openModal(day)"
-                                        class="p-2 rounded cursor-pointer"
-                                        :class="{
+                                    <div @click="openModal(day)" class="p-2 rounded cursor-pointer" :class="{
                                             'bg-green-700 text-white': day.isToday && day.events.length,
                                             'bg-orange-400 text-white': day.isToday && !day.events.length,
                                             'bg-blue-200': !day.isToday && day.events.length,
@@ -488,8 +559,7 @@
                         </div>
 
                         <div x-show="agendaAtiva==='COMITE'" class="mt-6 text-center">
-                            <button
-                                @click="abrirModalCriar()"
+                            <button @click="abrirModalCriar()"
                                 class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold">
                                 + Criar Evento do Comitê
                             </button>
@@ -519,31 +589,24 @@
                                 <h3 class="text-lg font-bold mb-4">Novo Evento (Comitê)</h3>
 
                                 <form @submit.prevent="criarEvento" class="space-y-3">
-                                    <input x-model="novo.titulo" placeholder="Título"
-                                        class="w-full border p-2 rounded" required>
-
-                                    <textarea x-model="novo.descricao" placeholder="Descrição"
-                                            class="w-full border p-2 rounded"></textarea>
-
-                                    <input type="date"
-                                        x-model="novo.data_evento"
-                                        :min="dataMinima"
-                                        class="w-full border p-2 rounded"
+                                    <input x-model="novo.titulo" placeholder="Título" class="w-full border p-2 rounded"
                                         required>
 
-                                    <input type="time"
-                                        x-model="novo.hora_evento"
-                                        class="w-full border p-2 rounded"
+                                    <textarea x-model="novo.descricao" placeholder="Descrição"
+                                        class="w-full border p-2 rounded"></textarea>
+
+                                    <input type="date" x-model="novo.data_evento" :min="dataMinima"
+                                        class="w-full border p-2 rounded" required>
+
+                                    <input type="time" x-model="novo.hora_evento" class="w-full border p-2 rounded"
                                         required>
 
                                     <div class="flex gap-2 pt-2">
-                                        <button type="submit"
-                                                class="bg-blue-600 text-white flex-1 py-2 rounded">
+                                        <button type="submit" class="bg-blue-600 text-white flex-1 py-2 rounded">
                                             Criar
                                         </button>
-                                        <button type="button"
-                                                @click="modalCriar=false"
-                                                class="bg-gray-300 flex-1 py-2 rounded">
+                                        <button type="button" @click="modalCriar=false"
+                                            class="bg-gray-300 flex-1 py-2 rounded">
                                             Cancelar
                                         </button>
                                     </div>
@@ -566,7 +629,8 @@
                                 </div>
 
                                 <template x-for="aviso in paginatedAvisos" :key="aviso.titulo + aviso.data">
-                                    <div class="border-t pt-3 cursor-pointer hover:bg-gray-50 rounded-lg px-2 py-1 transition duration-150" @click="showAvisoModal(aviso)">
+                                    <div class="border-t pt-3 cursor-pointer hover:bg-gray-50 rounded-lg px-2 py-1 transition duration-150"
+                                        @click="showAvisoModal(aviso)">
                                         <p class="font-semibold text-sm text-gray-800" x-text="aviso.titulo"></p>
                                         <p class="text-xs text-gray-500" x-text="formatTimeAgo(aviso.data)"></p>
                                     </div>
@@ -574,11 +638,14 @@
                             </div>
 
                             <div x-show="totalPages > 1" class="flex justify-between items-center mt-4 pt-3 border-t">
-                                <button @click="prevPage()" :disabled="currentPage === 1" class="bg-mocs-orange text-white text-sm font-semibold py-1 px-3 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed">
+                                <button @click="prevPage()" :disabled="currentPage === 1"
+                                    class="bg-mocs-orange text-white text-sm font-semibold py-1 px-3 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed">
                                     Anterior
                                 </button>
-                                <span class="text-sm text-gray-600">Página <span x-text="currentPage"></span> de <span x-text="totalPages"></span></span>
-                                <button @click="nextPage()" :disabled="currentPage >= totalPages" class="bg-mocs-orange text-white text-sm font-semibold py-1 px-3 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed">
+                                <span class="text-sm text-gray-600">Página <span x-text="currentPage"></span> de <span
+                                        x-text="totalPages"></span></span>
+                                <button @click="nextPage()" :disabled="currentPage >= totalPages"
+                                    class="bg-mocs-orange text-white text-sm font-semibold py-1 px-3 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed">
                                     Próxima
                                 </button>
                             </div>
@@ -588,14 +655,17 @@
                             <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg mx-auto" @click.stop>
                                 <div class="flex justify-between items-start mb-4">
                                     <h3 class="text-2xl font-bold text-mocs-blue" x-text="currentAviso.titulo"></h3>
-                                    <button @click="closeAvisoModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+                                    <button @click="closeAvisoModal()" class="text-gray-400 hover:text-gray-600"><i
+                                            class="fas fa-times text-xl"></i></button>
                                 </div>
-                                <p class="text-sm text-gray-500 mb-4 border-b pb-2">Postado por: <span class="font-semibold" x-text="currentAviso.autor"></span></p>
+                                <p class="text-sm text-gray-500 mb-4 border-b pb-2">Postado por: <span
+                                        class="font-semibold" x-text="currentAviso.autor"></span></p>
                                 <div class="max-h-96 custom-scrollbar overflow-y-auto pr-2">
                                     <p class="text-gray-700 whitespace-pre-wrap" x-text="currentAviso.mensagem"></p>
                                 </div>
                                 <div class="mt-6 flex justify-end">
-                                    <button @click="closeAvisoModal()" class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Fechar</button>
+                                    <button @click="closeAvisoModal()"
+                                        class="bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300">Fechar</button>
                                 </div>
                             </div>
                         </div>

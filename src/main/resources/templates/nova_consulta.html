@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Consulta</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body class="bg-slate-100 font-[Inter]">
+
+<div class="min-h-screen flex flex-col">
+
+    <header class="bg-white shadow px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-blue-700">Nova Consulta</h1>
+
+        <a th:href="@{/consultas}" class="text-slate-600 font-semibold">
+            <i class="fas fa-arrow-left mr-2"></i> Voltar
+        </a>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center p-6">
+        <div class="bg-white p-6 rounded-xl shadow-lg w-full max-w-xl">
+
+            <form id="form-consulta" class="space-y-5">
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1">
+                        Título
+                    </label>
+                    <input name="titulo" required
+                           class="w-full p-3 border rounded-lg">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-1">
+                        Pergunta
+                    </label>
+                    <textarea name="pergunta" rows="4" required
+                              class="w-full p-3 border rounded-lg"></textarea>
+                </div>
+
+                <button type="submit"
+                        class="w-full bg-blue-700 text-white font-semibold py-3 rounded-lg">
+                    Criar Consulta
+                </button>
+            </form>
+
+            <div id="message-area"
+                 class="mt-4 text-sm font-medium p-3 rounded-lg text-center hidden">
+            </div>
+
+        </div>
+    </main>
+
+</div>
+
+<script th:src="@{/js/nova_consulta.js}"></script>
+
+</body>
+</html>

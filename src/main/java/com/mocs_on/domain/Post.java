@@ -62,7 +62,6 @@ public class Post {
         return autor;
     }
 
-    /** Retorna o autor conforme armazenado, sem anonimizacao. */
     public String getAutorRaw() {
         return autor;
     }
@@ -117,4 +116,3 @@ public class Post {
         this.comiteId = comiteId;
     }
 }
-

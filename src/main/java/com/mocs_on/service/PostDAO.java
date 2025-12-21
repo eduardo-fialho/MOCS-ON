@@ -224,4 +224,3 @@ public class PostDAO {
         return result.isEmpty() ? null : result.get(0);
     }
 }
-
