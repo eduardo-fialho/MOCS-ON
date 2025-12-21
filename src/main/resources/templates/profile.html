@@ -270,7 +270,7 @@
         </section>
 
         <!-- Modal de galeria (estilo dashboard) -->
-        <div id="galleryModal" class="fixed inset-0 z-40 px-4 hidden">
+        <div id="galleryModal" class="fixed inset-0 z-[999] px-4 hidden">
             <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" id="galleryModalOverlay"></div>
             <div class="relative w-full h-full flex items-center justify-center">
                 <button type="button" class="absolute top-6 right-6 text-white/80 hover:text-white text-2xl z-50"
@@ -444,8 +444,8 @@
 
             const modal = document.getElementById('galleryModal');
             const modalImg = document.getElementById('galleryModalImg');
-            const modalCaption = document.getElementById('galleryModalCaption');
-            const modalMeta = document.getElementById('galleryModalMeta');
+            const modalCaption = document.getElementById('galleryCaption');
+            const modalMeta = document.getElementById('galleryMeta');
             const modalLabel = document.getElementById('galleryLabel');
             const modalAuthor = document.getElementById('galleryAuthor');
             const modalInitials = document.getElementById('galleryInitials');
@@ -729,7 +729,12 @@
                     commentsBox.innerHTML = visible.map(c => {
                         const name = escapeHtml(c.usuarioNome || c.usuario || c.autor || 'Usuario');
                         const msg = escapeHtml(c.mensagem || '');
-                        return `<div class="bg-gray-50 p-2 rounded"><b>${name}</b><p>${msg}</p></div>`;
+                        return `
+                            <div class="bg-white/90 text-gray-800 p-3 rounded-2xl shadow-sm border border-white/70">
+                                <p class="text-xs font-semibold text-gray-700">${name}</p>
+                                <p class="text-sm text-gray-800 mt-1">${msg}</p>
+                            </div>
+                        `;
                     }).join('');
                 } catch (err) {
                     commentsBox.innerHTML = '<p class="text-xs text-red-400">Erro ao carregar.</p>';
@@ -852,10 +857,6 @@
 </body>
 
 </html>
-
-
-
-
 
 
 

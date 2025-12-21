@@ -12,26 +12,32 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/comite-ui.css}">
 </head>
 
-<body class="bg-gray-100">
-    <div class="flex flex-col min-h-screen">
-        <header class="bg-white shadow-md z-10 sticky top-0" x-data="profileData()" x-init="loadUserInfo()">
+<body class="comite-page">
+    <div class="flex flex-col min-h-screen mocs-shell">
+        <header class="mocs-topbar shadow-md z-10 sticky top-0" x-data="profileData()" x-init="loadUserInfo()">
             <div class="container mx-auto px-4 py-3 flex justify-between items-center">
                 <div class="flex items-center space-x-4">
-                    <a href="#"><img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON"
-                            class="h-8"></a>
+                    <a href="/dashboard.html" class="inline-flex items-center">
+                        <span class="inline-flex items-center justify-center h-8 px-4 rounded-lg text-xs font-semibold tracking-[0.25em] text-white"
+                              style="background: var(--mocs-blue);">
+                            MOCS ON
+                        </span>
+                    </a>
                 </div>
                 <div class="flex items-center space-x-6">
                     <span class="font-semibold text-gray-700 hidden sm:block">CSNU</span>
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" class="flex items-center space-x-2">
                             <img :src="userAvatar"
-                                src="https://placehold.co/40x40/cccccc/ffffff?text=U"
+                                src="/images/avatar-default.svg"
+                                th:src="@{/images/avatar-default.svg}"
                                 data-user-avatar
                                 @error="$event.target.src = defaultAvatar"
                                 alt="Avatar"
@@ -66,8 +72,8 @@
         <main class="flex-grow container mx-auto p-4 md:p-6">
             <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-800">Comit&ecirc;s</h2>
-                    <p class="text-sm text-gray-500">Visualize a lista completa de comit&ecirc;s cadastrados.</p>
+                    <h2 class="text-3xl font-semibold page-title">Comit&ecirc;s</h2>
+                    <p class="text-sm text-slate-600">Visualize a lista completa de comit&ecirc;s cadastrados.</p>
                 </div>
             </div>
             <section class="space-y-4">
@@ -76,42 +82,42 @@
                 </p>
 
                 <div th:if="${comites != null and !#lists.isEmpty(comites)}"
-                     class="hidden md:block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                     class="hidden md:block table-shell">
                     <table class="min-w-full text-sm">
-                        <thead class="bg-mocs-blue text-white">
+                        <thead class="table-head">
                             <tr>
-                                <th class="py-3 px-6 text-left">Sigla</th>
-                                <th class="py-3 px-6 text-left">Nome</th>
-                                <th class="py-3 px-6 text-left">Status</th>
-                                <th class="py-3 px-6 text-left">N&uacute;mero de Delegados</th>
-                                <th class="py-3 px-6 text-left">Descri&ccedil;&atilde;o</th>
-                                <th class="py-3 px-6 text-left">A&ccedil;&otilde;es</th>
+                                <th class="table-cell text-left">Sigla</th>
+                                <th class="table-cell text-left">Nome</th>
+                                <th class="table-cell text-left">Status</th>
+                                <th class="table-cell text-left">N&uacute;mero de Delegados</th>
+                                <th class="table-cell text-left">Descri&ccedil;&atilde;o</th>
+                                <th class="table-cell text-left">A&ccedil;&otilde;es</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="comite : ${comites}" class="border-b last:border-0 hover:bg-slate-50">
-                                <td class="py-4 px-6 font-semibold text-gray-700" th:text="${comite.sigla}">SIGLA</td>
-                                <td class="py-4 px-6 text-gray-700" th:text="${comite.nome}">Nome do Comit&ecirc;</td>
-                                <td class="py-4 px-6">
+                            <tr th:each="comite : ${comites}" class="table-row hover:bg-slate-50">
+                                <td class="table-cell font-semibold text-gray-700" th:text="${comite.sigla}">SIGLA</td>
+                                <td class="table-cell text-gray-700" th:text="${comite.nome}">Nome do Comit&ecirc;</td>
+                                <td class="table-cell">
                                     <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold"
                                           th:classappend="${#strings.equalsIgnoreCase(comite.status, 'EM_ANDAMENTO')} ? ' bg-emerald-100 text-emerald-700' : (${#strings.equalsIgnoreCase(comite.status, 'ENCERRADO')} ? ' bg-rose-100 text-rose-700' : ' bg-amber-100 text-amber-700')"
                                           th:text="${comite.status}">
                                         Status
                                     </span>
                                 </td>
-                                <td class="py-4 px-6 text-gray-700" th:text="${comite.numeroDelegados}">0</td>
-                                <td class="py-4 px-6 text-gray-600">
+                                <td class="table-cell text-gray-700" th:text="${comite.numeroDelegados}">0</td>
+                                <td class="table-cell text-gray-600">
                                     <span class="block max-w-sm truncate" th:text="${comite.descricao}"
                                           th:attr="title=${comite.descricao}">Descricao</span>
                                 </td>
-                                <td class="py-4 px-6">
+                                <td class="table-cell">
                                     <div class="flex flex-wrap gap-2">
                                         <a th:href="@{detalhes/{id}(id=${comite.id})}"
-                                           class="inline-flex items-center gap-2 rounded-lg bg-mocs-blue px-3 py-2 text-xs font-semibold text-white hover:bg-opacity-90">
+                                           class="btn-primary text-xs px-3 py-2">
                                             Detalhes
                                         </a>
                                         <a th:href="@{editar/{id}(id=${comite.id})}"
-                                           class="inline-flex items-center gap-2 rounded-lg border border-mocs-blue px-3 py-2 text-xs font-semibold text-mocs-blue hover:bg-mocs-blue hover:text-white">
+                                           class="btn-outline text-xs px-3 py-2">
                                             Editar
                                         </a>
                                     </div>
@@ -122,7 +128,7 @@
                 </div>
 
                 <div th:if="${comites != null and !#lists.isEmpty(comites)}" class="grid gap-4 md:hidden">
-                    <div th:each="comite : ${comites}" class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <div th:each="comite : ${comites}" class="mocs-card">
                         <div class="flex items-start justify-between gap-3">
                             <div>
                                 <p class="text-xs uppercase tracking-[0.3em] text-gray-400">Sigla</p>
@@ -143,11 +149,11 @@
                         </p>
                         <div class="flex flex-wrap gap-2 mt-4">
                             <a th:href="@{detalhes/{id}(id=${comite.id})}"
-                               class="inline-flex items-center gap-2 rounded-lg bg-mocs-blue px-3 py-2 text-xs font-semibold text-white hover:bg-opacity-90">
+                               class="btn-primary text-xs px-3 py-2">
                                 Detalhes
                             </a>
                             <a th:href="@{editar/{id}(id=${comite.id})}"
-                               class="inline-flex items-center gap-2 rounded-lg border border-mocs-blue px-3 py-2 text-xs font-semibold text-mocs-blue hover:bg-mocs-blue hover:text-white">
+                               class="btn-outline text-xs px-3 py-2">
                                 Editar
                             </a>
                         </div>
@@ -159,9 +165,6 @@
 
     <script th:src="@{/js/dashboard_config.js}"></script>
     <script th:src="@{/js/profile_data.js}"></script>
-    <script th:src="@{/js/announcements_data.js}"></script>
-    <script th:src="@{/js/mural_data.js}"></script>
-    <script th:src="@{/js/agenda.js}"></script>
 </body>
 
 </html>

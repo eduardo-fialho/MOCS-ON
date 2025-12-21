@@ -26,16 +26,14 @@ function profileData() {
 
         async loadUserInfo() {
             try {
-                const response = await fetch(USER_ENDPOINT, { credentials: 'include' });
+                const response = await fetchWithTimeout(USER_ENDPOINT, { credentials: 'include' });
 
                 if (!response.ok) throw new Error('Não autenticado');
 
                 const user = await response.json();
 
                 this.userName = user.nome ?? user.username ?? 'Usuário';
-                this.userAvatar = user.avatar
-                    ? `${USER_AVATAR_ENDPOINT}/${user.avatar}`
-                    : this.defaultAvatar;
+                this.userAvatar = resolveAvatarUrl(this.userName, this.defaultAvatar);
                 this.isSecretario = user.isSecretario;
                 syncAvatarTargets(this.userName, this.defaultAvatar);
 
@@ -53,25 +51,43 @@ document.addEventListener("DOMContentLoaded", async () => {
     const dropdownBtn = document.getElementById("user-dropdown-btn");
     const dropdown = document.getElementById("user-dropdown");
 
-    dropdownBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        dropdown.classList.toggle("hidden");
-    });
+    if (dropdownBtn && dropdown) {
+        dropdownBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle("hidden");
+        });
 
-    document.addEventListener("click", () => {
-        dropdown.classList.add("hidden");
-    });
+        document.addEventListener("click", () => {
+            dropdown.classList.add("hidden");
+        });
+    }
 
     const userData = profileData();
     await userData.init();
 
-    document.getElementById("user-avatar").src = userData.userAvatar;
-    document.getElementById("user-name").textContent = userData.userName;
+    const userAvatar = document.getElementById("user-avatar");
+    const userName = document.getElementById("user-name");
+    const secretariadoLink = document.getElementById("secretariado-link");
 
-    if (userData.isSecretario) {
-        document.getElementById("secretariado-link").style.display = "block";
+    if (userAvatar) {
+        userAvatar.src = userData.userAvatar;
+    }
+    if (userName) {
+        userName.textContent = userData.userName;
+    }
+    if (userData.isSecretario && secretariadoLink) {
+        secretariadoLink.style.display = "block";
     }
 });
+
+const USER_FETCH_TIMEOUT_MS = 4000;
+
+function fetchWithTimeout(url, options = {}, timeoutMs = USER_FETCH_TIMEOUT_MS) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeoutMs);
+    const opts = { ...options, signal: controller.signal };
+    return fetch(url, opts).finally(() => clearTimeout(id));
+}
 function resolveAvatarUrl(name, fallback) {
     if (!name || typeof USER_AVATAR_ENDPOINT === 'undefined') {
         return fallback;
@@ -88,7 +104,16 @@ function syncAvatarTargets(name, fallback) {
     const url = resolveAvatarUrl(name, fallback);
     targets.forEach(img => {
         img.src = url;
-        img.onerror = () => { img.src = fallback; };
+        const timer = setTimeout(() => {
+            if (!img.complete || img.naturalWidth === 0) {
+                img.src = fallback;
+            }
+        }, 3000);
+        img.onload = () => clearTimeout(timer);
+        img.onerror = () => {
+            clearTimeout(timer);
+            img.src = fallback;
+        };
     });
 }
 
@@ -101,7 +126,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
     try {
-        const response = await fetch(USER_ENDPOINT, { credentials: 'include' });
+        const response = await fetchWithTimeout(USER_ENDPOINT, { credentials: 'include' });
         if (!response.ok) {
             throw new Error('Nao autenticado');
         }

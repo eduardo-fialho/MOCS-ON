@@ -15,14 +15,15 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/comite-ui.css}">
 </head>
 
-<body>
+<body class="comite-page">
     <div class="flex flex-col min-h-screen mocs-shell">
         <header class="mocs-topbar z-10 sticky top-0" x-data="profileData()" x-init="loadUserInfo()">
             <div class="container mx-auto px-4 py-3 flex justify-between items-center">
                 <div class="flex items-center space-x-4">
-                    <a href="#"><img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON"
+                    <a href="/dashboard.html"><img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON"
                             class="h-8"></a>
                 </div>
                 <div class="flex items-center space-x-6">
@@ -139,188 +140,6 @@
             </section>
         </main>
     </div>
-
-    <style>
-        :root {
-            --mocs-blue: #205395;
-            --mocs-blue-dark: #153d73;
-            --mocs-orange: #ff8c00;
-            --mocs-cream: #f7f3ed;
-            --mocs-ice: #eef4fb;
-            --mocs-ink: #0f172a;
-            --mocs-muted: #475569;
-            --mocs-border: rgba(32, 83, 149, 0.18);
-            --mocs-shadow: 0 28px 50px -40px rgba(15, 23, 42, 0.65);
-        }
-
-        body {
-            font-family: "Sora", sans-serif;
-            color: var(--mocs-ink);
-            background: radial-gradient(circle at 10% 20%, rgba(255, 140, 0, 0.12), transparent 50%),
-                radial-gradient(circle at 80% 0%, rgba(32, 83, 149, 0.18), transparent 45%),
-                linear-gradient(180deg, #f8fafc 0%, #f1f5f9 60%, #eef2f7 100%);
-        }
-
-        .mocs-shell {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .mocs-topbar {
-            background: rgba(255, 255, 255, 0.94);
-            border-bottom: 1px solid rgba(32, 83, 149, 0.12);
-            backdrop-filter: blur(6px);
-        }
-
-        .page-title {
-            font-family: "Fraunces", serif;
-            color: var(--mocs-blue-dark);
-        }
-
-        .accent-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 14px;
-            border-radius: 999px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            color: var(--mocs-blue);
-            background: rgba(32, 83, 149, 0.12);
-        }
-
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 16px;
-            border-radius: 999px;
-            border: 1px solid rgba(32, 83, 149, 0.25);
-            color: var(--mocs-blue);
-            font-weight: 600;
-            background: #ffffff;
-            box-shadow: var(--mocs-shadow);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .back-link:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 18px 30px -24px rgba(32, 83, 149, 0.5);
-        }
-
-        .mocs-card {
-            background: #ffffff;
-            border-radius: 22px;
-            border: 1px solid var(--mocs-border);
-            padding: 24px;
-            box-shadow: var(--mocs-shadow);
-            animation: fadeUp 0.55s ease both;
-        }
-
-        .mocs-card--hero {
-            background: linear-gradient(135deg, rgba(32, 83, 149, 0.06), rgba(255, 140, 0, 0.1));
-        }
-
-        .mocs-card--soft {
-            background: linear-gradient(135deg, rgba(32, 83, 149, 0.06), rgba(32, 83, 149, 0.02));
-        }
-
-        .section-title {
-            font-family: "Fraunces", serif;
-            font-size: 1.4rem;
-            color: var(--mocs-blue-dark);
-        }
-
-        .section-pill {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--mocs-orange);
-            background: rgba(255, 140, 0, 0.15);
-            padding: 6px 12px;
-            border-radius: 999px;
-        }
-
-        .status-chip {
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.14em;
-            color: #ffffff;
-            padding: 6px 12px;
-            border-radius: 999px;
-            background: linear-gradient(135deg, var(--mocs-blue), var(--mocs-blue-dark));
-        }
-
-        .delegation-card {
-            background: #ffffff;
-            border-radius: 20px;
-            border: 1px solid rgba(32, 83, 149, 0.2);
-            padding: 18px 20px;
-            box-shadow: var(--mocs-shadow);
-            animation: fadeUp 0.6s ease both;
-        }
-
-        .mini-chip {
-            font-size: 11px;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 999px;
-            color: var(--mocs-blue);
-            background: rgba(32, 83, 149, 0.1);
-        }
-
-        .mini-chip--alert {
-            color: #b45309;
-            background: rgba(251, 191, 36, 0.2);
-        }
-
-        .delegate-item {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            padding: 10px 12px;
-            border-radius: 14px;
-            background: rgba(32, 83, 149, 0.05);
-        }
-
-        .delegate-item--compact {
-            background: rgba(32, 83, 149, 0.08);
-        }
-
-        .delegate-name {
-            font-weight: 600;
-            color: var(--mocs-ink);
-        }
-
-        .delegate-email {
-            font-size: 12px;
-            color: var(--mocs-muted);
-        }
-
-        .empty-state {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 18px;
-            border-radius: 16px;
-            background: rgba(32, 83, 149, 0.08);
-            color: var(--mocs-blue-dark);
-            font-weight: 500;
-        }
-
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    </style>
 
     <script th:src="@{/js/dashboard_config.js}"></script>
     <script th:src="@{/js/profile_data.js}"></script>
