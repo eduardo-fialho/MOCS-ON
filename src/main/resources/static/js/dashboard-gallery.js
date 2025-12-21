@@ -74,7 +74,7 @@
                     .filter(item => item !== null);
                 this.posts = parsed;
                 this.media = parsed;
-                console.log(this.media);
+                
             } catch (error) {
                 console.error('Erro ao carregar galeria:', error);
                 this.posts = [];
@@ -303,13 +303,14 @@
                         alert('Não foi possível remover sua reação. Status: ' + res.status);
                     }
                 } else {
-                    if (res.status === 201 || res.status === 200) {
+                 
+                    if (res.ok) {
                         this.incrementLikes(this.selectedMedia.id, 1);
                         this.selectedMedia.liked = true;
                         this.spawnHeart();
-                    } else if (res.status === 204) {
-                        this.decrementLikes(this.selectedMedia.id, 1);
-                        this.selectedMedia.liked = false;
+                    } else if (res.status === 409) {
+                        
+                        this.selectedMedia.liked = true;
                     } else {
                         console.error('Erro ao reagir:', res.status, await res.text());
                         alert('Não foi possível registrar sua reação. Status: ' + res.status);

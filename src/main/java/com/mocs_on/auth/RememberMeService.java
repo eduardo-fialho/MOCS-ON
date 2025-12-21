@@ -41,7 +41,6 @@ public class RememberMeService {
         this.secretKey = new SecretKeySpec(keyBytes, "HmacSHA256");
     }
 
-    /** Ajuste solicitado pelo usuário: manter sessão ativa após F5 usando cookie seguro (#28). */
     public void establishSession(UserAccountService.UserRecord user, HttpServletRequest request) {
         HttpSession session = request.getSession(true);
         session.setAttribute(AuthController.SESSION_USER_ATTRIBUTE, user.email());

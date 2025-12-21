@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 
 <head>
@@ -229,7 +229,7 @@
                 </form>
 
                 <div class="rounded-2xl bg-white/85 border border-white/50 p-4 shadow-sm space-y-3">
-                    <p class="text-sm font-medium text-gray-700">Capturar direto da camera</p>
+                    <p class="text-sm font-medium text-gray-700">Capturar direto da câmera</p>
                     <textarea id="galleryCaptureCaption" rows="2" maxlength="280"
                         class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-mocs-blue"
                         placeholder="Legenda para a foto capturada"></textarea>
@@ -243,7 +243,7 @@
                     <canvas id="galleryCameraCanvas" class="hidden"></canvas>
                     <div class="flex flex-wrap gap-3">
                         <button type="button" id="galleryStartCameraBtn"
-                            class="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-100 transition text-sm">Abrir camera</button>
+                            class="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-100 transition text-sm">Abrir câmera</button>
                         <button type="button" id="galleryCaptureBtn" disabled
                             class="px-4 py-2 rounded bg-mocs-blue text-white font-semibold opacity-60 disabled:cursor-not-allowed transition text-sm">Capturar
                             e publicar</button>
@@ -386,7 +386,7 @@
                         captureBtn.disabled = false;
                         closeBtn.disabled = false;
                     } catch {
-                        alert('Nao foi possivel acessar a camera.');
+                        alert('Não foi possível acessar a câmera.');
                     }
                 }
 
@@ -401,7 +401,7 @@
                 }
 
                 function capturePhoto() {
-                    if (!mediaStream) return alert('Abra a camera primeiro.');
+                    if (!mediaStream) return alert('Abra a câmera primeiro.');
                     canvas.width = video.videoWidth || 640;
                     canvas.height = video.videoHeight || 480;
                     canvas.getContext('2d').drawImage(video, 0, 0);

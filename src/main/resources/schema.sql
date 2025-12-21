@@ -183,10 +183,11 @@ CREATE TABLE IF NOT EXISTS `ouvidoria_relatos` (
 
 CREATE TABLE IF NOT EXISTS `agenda_diaria` (
     `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
-    `titulo` VARCHAR(255),
-    `descricao` VARCHAR(255),
-    `data_evento` DATE,
-    `hora_evento` TIME,
+    `titulo` VARCHAR(255) NOT NULL,
+    `descricao` VARCHAR(255) NOT NULL,
+    `data_evento` DATE NOT NULL,
+    `hora_evento` TIME NOT NULL,
+    `tipo` VARCHAR(255) DEFAULT 'GERAL',
     `visivel` BOOLEAN DEFAULT TRUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -245,6 +246,85 @@ CREATE TABLE IF NOT EXISTS `usuario_comite` (
     KEY `idx_usuario_comite_comite` (`comite_id`),
     CONSTRAINT `fk_usuario_comite_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
     CONSTRAINT `fk_usuario_comite_comite` FOREIGN KEY (`comite_id`) REFERENCES `comites` (`id`) ON DELETE CASCADE
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `materias` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+
+    `titulo` VARCHAR(255) NOT NULL,
+    `lead` VARCHAR(500) NOT NULL,
+    `texto` TEXT NOT NULL,
+
+    `imagem` LONGBLOB NULL,
+
+    `autor` VARCHAR(255) NOT NULL,
+    `revisor` VARCHAR(255) NULL,
+
+    `comite_id` BIGINT UNSIGNED NULL,
+
+    `status` VARCHAR(20) NOT NULL DEFAULT 'PENDENTE',
+    `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+
+    `data_criacao` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `data_edicao` DATETIME NULL,
+    `data_aprovacao` DATETIME NULL,
+
+    PRIMARY KEY (`id`),
+
+    KEY `idx_materias_status` (`status`),
+    KEY `idx_materias_autor` (`autor`),
+    KEY `idx_materias_comite` (`comite_id`),
+    KEY `idx_materias_ativo` (`ativo`),
+
+    CONSTRAINT `fk_materia_comite`
+        FOREIGN KEY (`comite_id`)
+        REFERENCES `comites` (`id`)
+        ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `materia_logs` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+
+    `materia_id` BIGINT UNSIGNED NOT NULL,
+    `acao` VARCHAR(50) NOT NULL,
+
+    `usuario` VARCHAR(255) NOT NULL,
+    `descricao` VARCHAR(1000) NULL,
+
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (`id`),
+    KEY `idx_materia_log_materia` (`materia_id`),
+
+    CONSTRAINT `fk_materia_log_materia`
+        FOREIGN KEY (`materia_id`)
+        REFERENCES `materias` (`id`)
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `guia_estudos` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `autor` VARCHAR(255) NOT NULL,
+  `titulo` VARCHAR(255) NOT NULL,
+  `conteudo` TEXT NOT NULL,
+  `regras` TEXT NOT NULL,
+  `arquivo` LONGBLOB NULL,
+  `data` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `atualizado_em` DATETIME NULL,
+  `oficial` BOOLEAN NOT NULL DEFAULT FALSE,
+  `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+  `id_comite` BIGINT UNSIGNED NOT NULL,
+
+  PRIMARY KEY (`id`),
+  KEY `idx_guia_estudos_autor` (`autor`),
+  KEY `idx_guia_estudos_oficial` (`oficial`),
+  KEY `idx_guia_estudos_ativo` (`ativo`),
+  KEY `idx_guia_estudos_comite` (`id_comite`),
+
+  CONSTRAINT `fk_guia_estudos_comite`
+    FOREIGN KEY (`id_comite`)
+    REFERENCES `comites` (`id`)
+    ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `presenca_listas` (
@@ -278,5 +358,22 @@ CREATE TABLE IF NOT EXISTS `presenca_registros` (
     KEY `idx_presenca_lista` (`lista_id`),
     CONSTRAINT `fk_presenca_lista` FOREIGN KEY (`lista_id`) REFERENCES `presenca_listas` (`id`) ON DELETE CASCADE,
     CONSTRAINT `fk_presenca_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `link_guia` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `id_guia` BIGINT UNSIGNED NOT NULL,
+    `link` VARCHAR(1000) NOT NULL,
+    `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+
+    PRIMARY KEY (`id`),
+    KEY `idx_link_guia_id_guia` (`id_guia`),
+    KEY `idx_link_guia_ativo` (`ativo`),
+
+    CONSTRAINT `fk_link_guia_guia_estudos`
+        FOREIGN KEY (`id_guia`)
+        REFERENCES `guia_estudos` (`id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

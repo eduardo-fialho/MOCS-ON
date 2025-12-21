@@ -3,42 +3,43 @@ package com.mocs_on.controller;
 import com.mocs_on.auth.UserAccountService;
 import com.mocs_on.domain.Comite;
 import com.mocs_on.domain.Delegacao;
-import com.mocs_on.domain.Usuario;
 import com.mocs_on.dto.DelegadoDelegacaoDTO;
 import com.mocs_on.dto.DelegacaoNotificacaoDTO;
+import com.mocs_on.dto.InformacoesComiteDTO;
 import com.mocs_on.security.SecaoUsuario;
-import com.mocs_on.service.HDataSource;
-import com.mocs_on.service.AlunoDao;
 import com.mocs_on.service.ComiteDao;
 import com.mocs_on.service.ComiteUsuarioDao;
 import com.mocs_on.service.DelegacaoDao;
 import com.mocs_on.service.DelegacaoNotificacaoDao;
 import com.mocs_on.service.DelegacaoUsuarioDao;
+import com.mocs_on.service.HDataSource;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import java.sql.SQLException;
-
-import jakarta.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import jakarta.servlet.http.HttpSession;
+
 
 
 
@@ -49,6 +50,8 @@ public class ComiteController {
         
     @Autowired
 	private HDataSource ds;
+    @Autowired
+    private ComiteDao comiteService;
 
     @Autowired
     private UserAccountService userAccountService;
@@ -104,7 +107,7 @@ public class ComiteController {
         return "redirect:/comite/listar";
     }
 
-    @RequestMapping("/listar")
+    @GetMapping("/listar")
     public String listarComites(Model model, HttpSession session) throws Exception {
         try (Connection conn = ds.getConnection()) {
 			List<Comite> comites = ComiteDao.listComites(conn);
@@ -440,5 +443,19 @@ public class ComiteController {
         }
 
         return "redirect:/comite/listar";
+    }
+
+    @ResponseBody
+    @GetMapping("/informacoes")
+    public ResponseEntity<List<InformacoesComiteDTO>> listarInformacoes() {
+        List<InformacoesComiteDTO> informacoes = comiteService.informacoesComites();
+        return ResponseEntity.ok(informacoes);
+    }
+
+    @ResponseBody
+    @GetMapping("/informacoes/{id}")
+    public ResponseEntity<InformacoesComiteDTO> informacaoComite(@PathVariable Long id) {
+        InformacoesComiteDTO informacoes = comiteService.informacoesComitePorId(id);
+        return ResponseEntity.ok(informacoes);
     }
 }

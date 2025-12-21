@@ -11,13 +11,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.mocs_on.domain.Documento;
+import com.mocs_on.domain.GuiaEstudos;
 import com.mocs_on.dto.ComiteCatalogDTO;
 import com.mocs_on.dto.ComiteDelegacaoDTO;
 import com.mocs_on.dto.DelegacaoGrupoDTO;
 import com.mocs_on.dto.DelegadoResumoDTO;
 import com.mocs_on.security.SecaoUsuario;
 import com.mocs_on.service.AvisoDAO;
+import com.mocs_on.service.ComiteDao;
 import com.mocs_on.service.DocumentoDAO;
+import com.mocs_on.service.GuiaEstudosDAO;
 import com.mocs_on.service.PreRegistrationService;
 import com.mocs_on.service.SecretariatDashboardService;
 import com.mocs_on.service.SecretariatDashboardService.DashboardMetrics;
@@ -48,8 +51,12 @@ public class HomeController {
     private UsuarioComiteDao usuarioComiteDao;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private GuiaEstudosDAO guiasService;
+    @Autowired
+    private ComiteDao comiteService;
 
-    @GetMapping("/")
+    @GetMapping({"", "/"})
     public String index() {
         return "index";
     }
@@ -108,7 +115,6 @@ public class HomeController {
         if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
             return "redirect:/login";
         }
-        // KPIs
         DashboardMetrics metrics = secretariatDashboardService.collectMetrics();
         model.addAttribute("dashboardMetrics", metrics);
         model.addAttribute("numAvisos", avisoDAO.quantidadeAvisos());
@@ -125,6 +131,15 @@ public class HomeController {
         }
         populateUserAttributes(model);
         return "documentos";
+    }
+
+    @GetMapping("/guias_de_estudos.html")
+    public String guiaEstudos(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        populateUserAttributes(model);
+        return "painel_guia_de_estudos";
     }
 
     @GetMapping("/presencas.html")
@@ -159,6 +174,49 @@ public class HomeController {
         }
         populateUserAttributes(model);
         return "submissao_documentos";
+    }
+
+    @GetMapping("/cadastrar_guia.html")
+    public String cadastrarGuiaDeEstudos(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        populateUserAttributes(model);
+        return "cadastrar_guia";
+    }
+
+    @GetMapping("/editar_guia.html")
+    public String editarGuiaDeEstudos(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        populateUserAttributes(model);
+        return "editar_guia_de_estudos";
+    }
+
+    @GetMapping("/guia_estudo.html")
+    public String visualizarGuia(@RequestParam Long id, HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        model.addAttribute("id", id);
+        populateUserAttributes(model);
+        return "guia_de_estudos";
+    }
+
+    @GetMapping("/editar_guia_de_estudos.html")
+    public String editarGuiaDeEstudos(@RequestParam Long id, HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        GuiaEstudos guia = guiasService.recuperarPorId(id);
+        if (guia == null) {
+            return "redirect:/guias_de_estudos.html";
+        }
+        model.addAttribute("guia", guia);
+        model.addAttribute("comites", comiteService.informacoesComites());
+        populateUserAttributes(model);
+        return "editar_guia_de_estudos";
     }
 
     private boolean isAuthenticated(HttpSession session) {

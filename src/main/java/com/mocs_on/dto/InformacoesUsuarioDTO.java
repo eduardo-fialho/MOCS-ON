@@ -5,10 +5,11 @@ public class InformacoesUsuarioDTO {
     private String email;
     private boolean isSecretario;
 
-    public InformacoesUsuarioDTO(String nome, String email, boolean isSecretario) {
+    public InformacoesUsuarioDTO(String nome, boolean isSecretario, String email) {
         this.nome = nome;
         this.email = email;
         this.isSecretario = isSecretario;
+        this.email = email;
     }
 
     public String getNome() { 
@@ -20,4 +21,5 @@ public class InformacoesUsuarioDTO {
     public boolean getIsSecretario() { 
         return isSecretario; 
     }
+    
 }
