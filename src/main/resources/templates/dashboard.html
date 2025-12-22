@@ -42,7 +42,7 @@
                                     :class="menuOpen ? 'rotate-180' : ''"></i>
                             </button>
                             <div class="overflow-hidden transition-all duration-500 ease-out w-full flex justify-center"
-                                :class="menuOpen ? 'max-h-50 opacity-100' : 'max-h-0 opacity-0'">
+                                :class="menuOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'">
                                 <div class="flex flex-col items-center gap-3 text-sm font-semibold w-64">
                                     <a href="/profile" class="menu-chip w-full justify-center">
                                         <i class="fas fa-user"></i> Meu perfil
@@ -57,12 +57,6 @@
                                             <i class="fas fa-user-tie"></i> Área do Secretariado
                                         </a>
                                     </template>
-                                    <a th:href="@{/guias_de_estudos.html}" class="menu-chip w-full justify-center">
-                                        <i class="fas fa-book-open"></i> Guia de Estudos
-                                    </a>
-                                    <a th:href="@{/relatos_ouvidoria.html}" class="menu-chip w-full justify-center">
-                                        <i class="fas fa-comment-alt"></i>Ouvidoria
-                                    </a>
                                     <a th:href="@{/auth/logout}" id="logoutLink" class="menu-chip w-full justify-center text-red-600 hover:text-red-700">
                                         <i class="fas fa-arrow-right-from-bracket"></i>Sair da conta
                                     </a>
@@ -312,6 +306,28 @@
                         <a th:href="@{/consultas/feed}" class="rounded-xl mt-4 p-2 text-white bg-mocs-blue mt-4">
                             <i class="fas fa-newspaper"></i>
                             <span>Consultas</span>
+                        </a>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                        <div class="mb-6">
+                            <h2 class="text-xl font-bold text-mocs-blue ">Guias de Estudos</h2>
+                            <p class="text-gray-500 text-sm">Venha conferir os guias de estudos do MOCS ON</p>
+                        </div>
+
+                        <a th:href="@{/guias_de_estudos.html}" class="rounded-xl mt-4 p-2 text-white bg-mocs-blue mt-4">
+                            <i class="fas fa-book-open"></i>
+                            <span>Guias de Estudos</span>
+                        </a>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                        <div class="mb-6">
+                            <h2 class="text-xl font-bold text-mocs-blue ">Ouvidoria</h2>
+                            <p class="text-gray-500 text-sm">Venha conferir o canal de atendimento do MOCS ON</p>
+                        </div>
+
+                        <a th:href="@{/relatos_ouvidoria.html}" class="rounded-xl mt-4 p-2 text-white bg-mocs-blue mt-4">
+                            <i class="fas fa-comment-alt"></i>
+                            <span>Ouvidoria</span>
                         </a>
                     </div>
                 </section>
