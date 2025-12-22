@@ -1,14 +1,18 @@
 package com.mocs_on.auth;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.regex.Pattern;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.*;
-import java.util.regex.Pattern;
 
 @Service
 public class UserAccountService {
@@ -458,127 +462,6 @@ public class UserAccountService {
         return value.trim();
     }
 
-    public void ensureCoreTables() {
-        String usersSql = "CREATE TABLE IF NOT EXISTS `" + usersTable + "` ("
-                + " `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,"
-                + " `" + usersNameColumn + "` VARCHAR(255) NOT NULL,"
-                + " `" + usersEmailColumn + "` VARCHAR(255) NOT NULL UNIQUE,"
-                + " `" + usersPasswordColumn + "` VARCHAR(255) NOT NULL,"
-                + " `" + usersTypeColumn + "` VARCHAR(50) NOT NULL DEFAULT 'DELEGADO',"
-                + " `" + usersCreatedAtColumn + "` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,"
-                + " `" + usersUpdatedAtColumn + "` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,"
-                + " PRIMARY KEY (`id`),"
-                + " KEY `idx_usuarios_tipo` (`" + usersTypeColumn + "`)"
-                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        jdbcTemplate.execute(usersSql);
-
-        String changeSql = "CREATE TABLE IF NOT EXISTS `" + userChangeLogTable + "` ("
-                + " `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,"
-                + " `user_id` INT UNSIGNED NOT NULL,"
-                + " `field` VARCHAR(50) NOT NULL,"
-                + " `old_value` VARCHAR(500) NULL,"
-                + " `new_value` VARCHAR(500) NULL,"
-                + " `changed_by` VARCHAR(255) NULL,"
-                + " `changed_at` DATETIME NOT NULL,"
-                + " PRIMARY KEY (`id`),"
-                + " KEY `idx_change_user` (`user_id`),"
-                + " CONSTRAINT `fk_change_user` FOREIGN KEY (`user_id`) REFERENCES `" + usersTable + "` (`id`) ON DELETE CASCADE"
-                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        jdbcTemplate.execute(changeSql);
-
-        String tokensSql = "CREATE TABLE IF NOT EXISTS `password_reset_tokens` ("
-                + " `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,"
-                + " `email` VARCHAR(255) NOT NULL,"
-                + " `token_hash` CHAR(64) NOT NULL,"
-                + " `expires_at` DATETIME NOT NULL,"
-                + " `used_at` DATETIME NULL,"
-                + " `created_at` DATETIME NOT NULL,"
-                + " `ip` VARCHAR(45) NULL,"
-                + " `user_agent` VARCHAR(255) NULL,"
-                + " PRIMARY KEY (`id`),"
-                + " UNIQUE KEY `uniq_token_hash` (`token_hash`),"
-                + " KEY `idx_email` (`email`),"
-                + " KEY `idx_expires_at` (`expires_at`),"
-                + " CONSTRAINT `fk_token_user` FOREIGN KEY (`email`) REFERENCES `" + usersTable + "` (`" + usersEmailColumn + "`) ON DELETE CASCADE"
-                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        jdbcTemplate.execute(tokensSql);
-
-        String secretariadoSql = "CREATE TABLE IF NOT EXISTS `secretariado_profiles` ("
-                + " `user_id` INT UNSIGNED NOT NULL,"
-                + " `funcao` VARCHAR(50) NOT NULL,"
-                + " `departamento` VARCHAR(255) NOT NULL,"
-                + " `matricula` VARCHAR(100) NULL,"
-                + " `telefone` VARCHAR(50) NULL,"
-                + " `turno_atendimento` VARCHAR(100) NULL,"
-                + " `responsabilidades` VARCHAR(255) NULL,"
-                + " `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,"
-                + " PRIMARY KEY (`user_id`),"
-                + " CONSTRAINT `fk_secretariado_user` FOREIGN KEY (`user_id`) REFERENCES `" + usersTable + "` (`id`) ON DELETE CASCADE"
-                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        jdbcTemplate.execute(secretariadoSql);
-
-        jdbcTemplate.execute("ALTER TABLE `secretariado_profiles` "
-                + "ADD COLUMN IF NOT EXISTS `turno_atendimento` VARCHAR(100) NULL");
-        jdbcTemplate.execute("ALTER TABLE `secretariado_profiles` "
-                + "ADD COLUMN IF NOT EXISTS `responsabilidades` VARCHAR(255) NULL");
-
-        String userProfileSql = "CREATE TABLE IF NOT EXISTS `user_profiles` ("
-                + " `user_id` INT UNSIGNED NOT NULL,"
-                + " `instituicao` VARCHAR(255) NULL,"
-                + " `telefone` VARCHAR(100) NULL,"
-                + " `comite_preferido` VARCHAR(255) NULL,"
-                + " `observacoes` TEXT NULL,"
-                + " `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,"
-                + " PRIMARY KEY (`user_id`),"
-                + " CONSTRAINT `fk_user_profiles_user` FOREIGN KEY (`user_id`) REFERENCES `" + usersTable + "` (`id`) ON DELETE CASCADE"
-                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        jdbcTemplate.execute(userProfileSql);
-
-        String userComiteSql = "CREATE TABLE IF NOT EXISTS `usuario_comite` ("
-                + " `usuario_id` INT UNSIGNED NOT NULL,"
-                + " `comite_id` BIGINT UNSIGNED NOT NULL,"
-                + " `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,"
-                + " PRIMARY KEY (`usuario_id`, `comite_id`),"
-                + " KEY `idx_usuario_comite_comite` (`comite_id`),"
-                + " CONSTRAINT `fk_usuario_comite_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `" + usersTable + "` (`id`) ON DELETE CASCADE,"
-                + " CONSTRAINT `fk_usuario_comite_comite` FOREIGN KEY (`comite_id`) REFERENCES `comites` (`id`) ON DELETE CASCADE"
-                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        jdbcTemplate.execute(userComiteSql);
-
-        String userDelegacaoSql = "CREATE TABLE IF NOT EXISTS `usuario_delegacao` ("
-                + " `usuario_id` INT UNSIGNED NOT NULL,"
-                + " `comite_id` BIGINT UNSIGNED NOT NULL,"
-                + " `delegacao_id` BIGINT UNSIGNED NULL,"
-                + " `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,"
-                + " PRIMARY KEY (`usuario_id`, `comite_id`),"
-                + " KEY `idx_usuario_delegacao_comite` (`comite_id`),"
-                + " KEY `idx_usuario_delegacao_delegacao` (`delegacao_id`),"
-                + " CONSTRAINT `fk_usuario_delegacao_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `" + usersTable + "` (`id`) ON DELETE CASCADE,"
-                + " CONSTRAINT `fk_usuario_delegacao_comite` FOREIGN KEY (`comite_id`) REFERENCES `comites` (`id`) ON DELETE CASCADE,"
-                + " CONSTRAINT `fk_usuario_delegacao_delegacao` FOREIGN KEY (`delegacao_id`) REFERENCES `delegacoes` (`id`) ON DELETE SET NULL"
-                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        jdbcTemplate.execute(userDelegacaoSql);
-
-        String delegacaoNotifSql = "CREATE TABLE IF NOT EXISTS `delegacao_notificacoes` ("
-                + " `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,"
-                + " `usuario_id` INT UNSIGNED NOT NULL,"
-                + " `comite_id` BIGINT UNSIGNED NOT NULL,"
-                + " `mensagem` VARCHAR(500) NOT NULL,"
-                + " `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,"
-                + " PRIMARY KEY (`id`),"
-                + " KEY `idx_delegacao_notif_user` (`usuario_id`),"
-                + " KEY `idx_delegacao_notif_comite` (`comite_id`),"
-                + " CONSTRAINT `fk_delegacao_notif_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `" + usersTable + "` (`id`) ON DELETE CASCADE,"
-                + " CONSTRAINT `fk_delegacao_notif_comite` FOREIGN KEY (`comite_id`) REFERENCES `comites` (`id`) ON DELETE CASCADE"
-                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        jdbcTemplate.execute(delegacaoNotifSql);
-
-        jdbcTemplate.execute("ALTER TABLE `" + usersTable + "` "
-                + "ADD COLUMN IF NOT EXISTS `profile_photo` LONGBLOB NULL");
-        jdbcTemplate.execute("ALTER TABLE `" + usersTable + "` "
-                + "ADD COLUMN IF NOT EXISTS `profile_photo_content_type` VARCHAR(100) NULL");
-    }
-
     public void updateProfilePhoto(long userId, byte[] photo, String contentType) {
         jdbcTemplate.update(
                 "UPDATE `" + usersTable + "` SET profile_photo = ?, profile_photo_content_type = ?, `" + usersUpdatedAtColumn + "` = CURRENT_TIMESTAMP WHERE id = ?",
@@ -628,4 +511,3 @@ public class UserAccountService {
 
     public record UserPhoto(byte[] data, String contentType) {}
 }
-

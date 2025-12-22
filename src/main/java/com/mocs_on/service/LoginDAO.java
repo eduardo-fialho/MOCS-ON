@@ -1,10 +1,10 @@
 package com.mocs_on.service;
 
-import com.mocs_on.domain.Comite;
-import com.mocs_on.domain.Comite.StatusComite;
-import com.mocs_on.domain.Login;
-import com.mocs_on.domain.Usuario;
-import com.mocs_on.security.CargoEnum;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +13,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
+import com.mocs_on.domain.Comite;
+import com.mocs_on.domain.Comite.StatusComite;
+import com.mocs_on.domain.Login;
+import com.mocs_on.domain.Usuario;
+import com.mocs_on.security.CargoEnum;
 
 @Repository
 public class LoginDAO {

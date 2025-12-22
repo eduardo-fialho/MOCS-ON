@@ -51,6 +51,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const dropdownBtn = document.getElementById("user-dropdown-btn");
     const dropdown = document.getElementById("user-dropdown");
 
+    dropdownBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle("hidden");
+    }); 
     if (dropdownBtn && dropdown) {
         dropdownBtn.addEventListener("click", (e) => {
             e.stopPropagation();

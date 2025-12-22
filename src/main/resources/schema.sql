@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS `documentos` (
     `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
     `data` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `avaliacao` VARCHAR(1000) NOT NULL,
+    `comite_sigla` VARCHAR(255),
 
     PRIMARY KEY (`id`),
     KEY `idx_documentos_status` (`status`),
@@ -152,33 +153,22 @@ CREATE TABLE IF NOT EXISTS `pre_registrations` (
     KEY `idx_pre_reg_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `ouvidoria_relatos` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `status` VARCHAR(50) NOT NULL DEFAULT 'novo',
-
-  `identificacao` VARCHAR(50) NOT NULL,
-  `nome_relator` VARCHAR(255) NULL,
-  `comite_relator` VARCHAR(255) NULL,
-
-  `categoria_relato` VARCHAR(100) NOT NULL,
-
-  `comite_conducao` VARCHAR(50) NULL,
-  `comite_respeito` VARCHAR(50) NULL,
-  `comite_imparcialidade` VARCHAR(50) NULL,
-  `comite_apoio` VARCHAR(50) NULL,
-  `comite_mensagem` TEXT NULL,
-  
-  `secretariado_positivos` TEXT NULL,
-  `secretariado_negativos` TEXT NULL,
-  `secretariado_falta` TEXT NULL,
-  `secretariado_sugestoes` TEXT NULL,
-
-  `outros_mensagem` TEXT NULL,
+CREATE TABLE IF NOT EXISTS `relato_ouvidoria` (
+  `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `criado_em` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `resolvido_em` DATETIME NULL,
+  `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
+  `status` VARCHAR(50) NOT NULL,
+  `autor` VARCHAR(255) NOT NULL,
+  `assunto` VARCHAR(255) NOT NULL,
+  `relato` TEXT NOT NULL,
+  `ouvidor` VARCHAR(255) NULL,
+  `resposta` TEXT NULL,
 
   PRIMARY KEY (`id`),
-  KEY `idx_status` (`status`),
-  KEY `idx_categoria_relato` (`categoria_relato`)
+  KEY `idx_ouvidoria_status` (`status`),
+  KEY `idx_ouvidoria_ativo` (`ativo`),
+  KEY `idx_ouvidoria_autor` (`autor`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `agenda_diaria` (
@@ -377,3 +367,58 @@ CREATE TABLE IF NOT EXISTS `link_guia` (
         ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `user_profiles` (
+    `user_id` INT UNSIGNED NOT NULL,
+    `instituicao` VARCHAR(255) NULL,
+    `telefone` VARCHAR(100) NULL,
+    `comite_preferido` VARCHAR(255) NULL,
+    `observacoes` TEXT NULL,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (`user_id`),
+
+    CONSTRAINT `fk_user_profiles_user` 
+      FOREIGN KEY (`user_id`) 
+      REFERENCES `usuarios` (`id`) 
+      ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `consulta` (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `titulo` VARCHAR(255) NOT NULL,
+  `pergunta` VARCHAR(255) NOT NULL,
+  `status` ENUM('PENDENTE', 'APROVADA', 'REJEITADA', 'ARQUIVADA') NOT NULL,
+  `ativo` BOOLEAN NOT NULL DEFAULT true,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `approved_at` TIMESTAMP NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `consulta_votos` (
+  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `consulta_id` INT UNSIGNED NOT NULL,
+  `usuario_username` VARCHAR(255) NOT NULL,
+  `voto` ENUM('SIM', 'NAO') NOT NULL,
+
+  UNIQUE (`consulta_id`, `usuario_username`),
+
+  FOREIGN KEY (`consulta_id`)
+    REFERENCES consulta(id)
+    ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS `usuario_comites` (
+  `usuario_id` INT UNSIGNED NOT NULL,
+  `comite_id` BIGINT UNSIGNED NOT NULL,
+
+  PRIMARY KEY (`usuario_id`, `comite_id`),
+
+  CONSTRAINT `fk_uc_usuario`
+    FOREIGN KEY (`usuario_id`)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT `fk_uc_comite`
+    FOREIGN KEY (`comite_id`)
+    REFERENCES comites(id)
+    ON DELETE CASCADE
+);

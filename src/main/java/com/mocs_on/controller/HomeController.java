@@ -1,6 +1,13 @@
 package com.mocs_on.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -12,28 +19,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.mocs_on.domain.Documento;
 import com.mocs_on.domain.GuiaEstudos;
+import com.mocs_on.domain.RelatoOuvidoria;
 import com.mocs_on.dto.ComiteCatalogDTO;
 import com.mocs_on.dto.ComiteDelegacaoDTO;
 import com.mocs_on.dto.DelegacaoGrupoDTO;
 import com.mocs_on.dto.DelegadoResumoDTO;
 import com.mocs_on.security.SecaoUsuario;
-import com.mocs_on.service.AvisoDAO;
 import com.mocs_on.service.ComiteDao;
 import com.mocs_on.service.DocumentoDAO;
 import com.mocs_on.service.GuiaEstudosDAO;
 import com.mocs_on.service.PreRegistrationService;
+import com.mocs_on.service.RelatoOuvidoriaDAO;
 import com.mocs_on.service.SecretariatDashboardService;
 import com.mocs_on.service.SecretariatDashboardService.DashboardMetrics;
 import com.mocs_on.service.UsuarioComiteDao;
 
 import jakarta.servlet.http.HttpSession;
-import org.springframework.jdbc.core.JdbcTemplate;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 @CrossOrigin(origins = "*")
@@ -41,8 +42,6 @@ public class HomeController {
 
     @Autowired
     private DocumentoDAO documentoDAO;
-    @Autowired
-    private AvisoDAO avisoDAO;
     @Autowired
     private PreRegistrationService preRegistrationService;
     @Autowired
@@ -55,6 +54,8 @@ public class HomeController {
     private GuiaEstudosDAO guiasService;
     @Autowired
     private ComiteDao comiteService;
+    @Autowired
+    private RelatoOuvidoriaDAO relatoOuvidoriaDAO;
 
     @GetMapping({"", "/"})
     public String index() {
@@ -101,15 +102,6 @@ public class HomeController {
         return "academic";
     }
 
-    @GetMapping("/mesa_diretora.html")
-    public String mesaDiretora(HttpSession session, Model model) {
-        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
-            return "redirect:/login";
-        }
-        populateUserAttributes(model);
-        return "mesa_diretora";
-    }
-
     @GetMapping("/secretariado.html")
     public String secretariado(HttpSession session, Model model) {
         if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
@@ -117,9 +109,10 @@ public class HomeController {
         }
         DashboardMetrics metrics = secretariatDashboardService.collectMetrics();
         model.addAttribute("dashboardMetrics", metrics);
-        model.addAttribute("numAvisos", avisoDAO.quantidadeAvisos());
-        model.addAttribute("numDocumentos", documentoDAO.quantidadeDocumentos());
+        model.addAttribute("numAvisos", metrics.announcementsPublished());
+        model.addAttribute("numDocumentos", metrics.documentsSent());
         model.addAttribute("pendingPreCount", preRegistrationService.countPending());
+        model.addAttribute("numComites", metrics.activeCommittees());
         populateUserAttributes(model);
         return "secretariado";
     }
@@ -219,6 +212,45 @@ public class HomeController {
         return "editar_guia_de_estudos";
     }
 
+    @GetMapping("/relatos_ouvidoria.html")
+    public String relatosOuvidoria(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        populateUserAttributes(model);
+        return "relatos_ouvidoria";
+    }
+
+    @GetMapping("/fazer_relato.html")
+    public String fazerRelatosOuvidoria(HttpSession session, Model model) {
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+        populateUserAttributes(model);
+        return "fazer_relato";
+    }
+
+    @GetMapping("/relato_ouvidoria.html")
+    public String visualizarRelato(
+            @RequestParam Long id,
+            HttpSession session,
+            Model model) {
+
+        if (!isAuthenticated(session) && !isAuthenticatedSecurity()) {
+            return "redirect:/login";
+        }
+
+        RelatoOuvidoria relato = relatoOuvidoriaDAO.recuperarPorId(id);
+        if (relato == null) {
+            return "redirect:/relatos_ouvidoria.html";
+        }
+
+        model.addAttribute("relato", relato);
+        populateUserAttributes(model);
+
+        return "relato_ouvidoria";
+    }
+
     private boolean isAuthenticated(HttpSession session) {
         return session != null && session.getAttribute(AuthController.SESSION_USER_ATTRIBUTE) != null;
     }
@@ -254,7 +286,8 @@ public class HomeController {
 
     private void populateUserAttributes(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof SecaoUsuario user) {
+        if (authentication != null && authentication.getPrincipal() instanceof SecaoUsuario) {
+            SecaoUsuario user = (SecaoUsuario) authentication.getPrincipal();
             model.addAttribute("usuarioNome", user.getNome());
             model.addAttribute("usuarioTipo", user.getCargo().name());
         } else {

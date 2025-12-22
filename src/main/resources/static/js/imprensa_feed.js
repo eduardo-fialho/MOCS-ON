@@ -135,15 +135,15 @@ async function abrirMateria(id) {
     const d = document.getElementById('detalhes-materia');
 
     d.innerHTML = `
-        <h2 class="text-4xl font-bold mb-2">${m.titulo}</h2>
+        <h2 class="text-4xl font-bold materia-title mb-3">${m.titulo}</h2>
 
         <div class="text-slate-600 mb-4">
-            <p><i>${m.lead}</i></p>
+            <p>${m.lead}</p>
         </div>
 
         <p class="text-sm text-slate-800 mb-4">
             Autor: <strong><span class="text-mocs-blue">${m.autor}</span></strong>
-            <br> ${formatDateBR(m.createdAt)} | Há ${timeAgo(m.createdAt)}
+            <br> <b> ${formatDateBR(m.createdAt)} </b> | Há ${timeAgo(m.createdAt)}
         </p>
 
         ${m.imagem ? `

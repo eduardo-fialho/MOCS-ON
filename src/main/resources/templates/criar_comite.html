@@ -4,59 +4,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOCS ON - Criar comit&ecirc;</title>
-
+    <title>MOCS ON - Criar um comitê</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
     <link rel="stylesheet" th:href="@{/css/comite-ui.css}">
 </head>
 
-<body class="comite-page">
-    <div class="page-shell mocs-shell">
-
-        <header class="mocs-topbar shadow-md z-10 sticky top-0" x-data="profileData()" x-init="loadUserInfo()">
+<body class="bg-gray-100">
+    <div class="flex flex-col min-h-screen">
+        <header class="bg-white shadow-md z-10 sticky top-0">
             <div class="container mx-auto px-4 py-3 flex justify-between items-center">
                 <div class="flex items-center space-x-4">
-                    <a href="/dashboard.html"><img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON"
+                    <a th:href="@{/dashboard.html}"><img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON" alt="Logo MOCS ON"
                             class="h-8"></a>
                 </div>
                 <div class="flex items-center space-x-6">
                     <span class="font-semibold text-gray-700 hidden sm:block">CSNU</span>
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center space-x-2">
-                            <img :src="userAvatar"
-                                src="https://placehold.co/40x40/cccccc/ffffff?text=U"
-                                data-user-avatar
-                                @error="$event.target.src = defaultAvatar"
-                                alt="Avatar"
-                                class="h-9 w-9 rounded-full border-2 border-mocs-blue">
-                            <span class="hidden md:block font-semibold text-gray-700"
-                                x-text="userName">Carregando...</span>
+                    <div class="relative">
+                        <button id="user-dropdown-btn" class="flex items-center space-x-2">
+                            <img id="user-avatar" data-user-avatar src="https://placehold.co/40x40/cccccc/ffffff?text=U"
+                                alt="Avatar" class="h-9 w-9 rounded-full border-2 border-mocs-blue">
+                            <span id="user-name"
+                                class="hidden md:block font-semibold text-gray-700">Carregando...</span>
                             <i class="fas fa-chevron-down text-xs text-gray-500"></i>
                         </button>
-                        <div x-show="open" @click.away="open = false"
-                            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20"
-                            style="display: none;">
-                            <a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b">
+                        <div id="user-dropdown"
+                            class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 hidden">
+                            <a th:href="@{/profile}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-b">
                                 <i class="fas fa-user mr-2"></i> Meu perfil
                             </a>
-                            <template x-if="isSecretario">
-                                <div>
-                                    <a href="/secretariado.html"
-                                        class="block px-4 py-2 text-sm text-mocs-blue font-semibold hover:bg-gray-100 border-b">
-                                        <i class="fas fa-user-tie mr-2"></i> &Aacute;rea do Secretariado
-                                    </a>
-                                </div>
-                            </template>
-
-                            <a href="/auth/logout"
+                            <a id="secretariado-link" th:href="@{/secretariado.html}"
+                                class="block px-4 py-2 text-sm text-mocs-blue font-semibold hover:bg-gray-100 border-b"
+                                style="display:none">
+                                <i class="fas fa-user-tie mr-2"></i> Área do Secretariado
+                            </a>
+                            <a th:href="@{/auth/logout}"
                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
                         </div>
                     </div>
@@ -64,102 +50,42 @@
             </div>
         </header>
 
-        <main class="container mx-auto px-4 py-10">
-            <div class="grid lg:grid-cols-[1.05fr_1.25fr] gap-8 items-start">
-                <section class="panel panel--intro">
-                    <span class="pill"><i class="fa-solid fa-shield"></i> Secretariado</span>
-                    <h1 class="display-title text-3xl md:text-4xl font-semibold mt-4">Criar um novo comit&ecirc;</h1>
-                    <p class="text-sm text-slate-600 mt-3">
-                        Configure o comit&ecirc; e deixe tudo pronto para as delega&ccedil;&otilde;es entrarem na simula&ccedil;&atilde;o.
-                    </p>
-
-                    <div class="note-card mt-6">
-                        <h3 class="text-base font-semibold text-slate-800">O que voc&ecirc; precisa preencher</h3>
-                        <ul class="text-sm text-slate-600 mt-2 space-y-2">
-                            <li><span class="font-semibold text-slate-700">Nome e sigla</span> para identificar o comit&ecirc;.</li>
-                            <li><span class="font-semibold text-slate-700">Status</span> para controlar o andamento.</li>
-                            <li><span class="font-semibold text-slate-700">Delegados</span> e delega&ccedil;&otilde;es (opcional).</li>
-                        </ul>
-                    </div>
-                </section>
-
-                <section class="panel panel--form">
-                    <form action="/comite/salvar" method="post" class="space-y-6">
-                        <div>
-                            <h2 class="text-xl font-semibold text-gray-800">Dados principais</h2>
-                            <p class="text-xs text-gray-500">Preencha as informa&ccedil;&otilde;es do comit&ecirc;.</p>
-                        </div>
-
-                        <div class="form-grid two">
-                            <div>
-                                <label for="nomeComite" class="block text-sm font-medium text-gray-700 mb-1">Nome do comit&ecirc;</label>
-                                <input type="text" id="nomeComite" name="nome" required class="input-base">
-                            </div>
-                            <div>
-                                <label for="siglaComite" class="block text-sm font-medium text-gray-700 mb-1">Sigla</label>
-                                <input type="text" id="siglaComite" name="sigla" required class="input-base">
-                            </div>
-                        </div>
-
-                        <div class="form-grid two">
-                            <div>
-                                <label for="statusComite" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                                <select id="statusComite" name="status" required class="input-base">
-                                    <option th:each="s : ${T(com.mocs_on.domain.Comite.StatusComite).values()}"
-                                            th:value="${s}"
-                                            th:text="${s}">EM_ANDAMENTO</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="numeroDelegados" class="block text-sm font-medium text-gray-700 mb-1">N&uacute;mero de delegados</label>
-                                <input type="number" id="numeroDelegados" min="1" name="numeroDelegados" required class="input-base">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label for="descricaoComite" class="block text-sm font-medium text-gray-700 mb-1">Descri&ccedil;&atilde;o</label>
-                            <textarea id="descricaoComite" name="descricao" rows="4" required class="input-base"></textarea>
-                        </div>
-
-                        <div class="border-t border-slate-200 pt-5" x-data="{
-                            novasDelegacoes: [{ id: 0, nome: '' }],
-                            nextDelegacaoId: 1,
-                            addDelegacao() { this.novasDelegacoes.push({ id: this.nextDelegacaoId++, nome: '' }); },
-                            removeDelegacao(id) {
-                                if (this.novasDelegacoes.length > 1) {
-                                    this.novasDelegacoes = this.novasDelegacoes.filter((item) => item.id !== id);
-                                    return;
-                                }
-                                this.novasDelegacoes = [{ id: 0, nome: '' }];
-                                this.nextDelegacaoId = 1;
-                            }
-                        }">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h3 class="text-base font-semibold text-gray-800">Delegac&otilde;es do comit&ecirc;</h3>
-                                    <p class="text-xs text-gray-500">Opcional. Adicione quantas delega&ccedil;&otilde;es quiser.</p>
-                                </div>
-                                <button type="button" @click="addDelegacao()" class="btn-link text-xs">+ Adicionar delega&ccedil;&atilde;o</button>
-                            </div>
-
-                            <template x-for="delegacao in novasDelegacoes" :key="delegacao.id">
-                                <div class="flex items-center gap-2 mt-3">
-                                    <input type="text" name="delegacoes" x-model="delegacao.nome"
-                                           placeholder="Ex: Brasil" class="input-base">
-                                    <button type="button"
-                                            @click="removeDelegacao(delegacao.id)"
-                                            class="text-xs font-semibold text-slate-500 hover:text-slate-800">Remover</button>
-                                </div>
-                            </template>
-                        </div>
-
-                        <button type="submit" class="btn-primary w-full">
-                            <i class="fa-solid fa-circle-plus"></i>
-                            Criar comit&ecirc;
-                        </button>
-                    </form>
-                </section>
-            </div>
+        <main class="flex-grow container mx-auto p-4 md:p-6">
+            <form action="/comite/salvar" method="post"
+                class="bg-white p-6 rounded-xl shadow-lg max-w-lg mx-auto">
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">Criar Novo Comitê</h2>
+                <article class="mb-4">
+                    <label for="nomeComite" class="block text-gray-700 font-semibold mb-2">Nome do Comitê</label>
+                    <input type="text" id="nomeComite" name="nome" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
+                </article>
+                <article class="mb-4">
+                    <label for="siglaComite" class="block text-gray-700 font-semibold mb-2">Sigla</label>
+                    <input type="text" id="siglaComite" name="sigla" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
+                </article>
+                <article class="mb-4">
+                    <label for="statusComite" class="block text-gray-700 font-semibold mb-2">Status</label>
+                    <select id="statusComite" name="status" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
+                        <option th:each="s : ${T(com.mocs_on.domain.Comite.StatusComite).values()}"
+                            th:value="${s}" th:text="${s}">EM_ANDAMENTO</option>
+                    </select>
+                </article>
+                <article class="mb-4">
+                    <label for="numeroDelegados" class="block text-gray-700 font-semibold mb-2">Número de delegados</label>
+                    <input type="number" id="numeroDelegados" min="1" name="numeroDelegados" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
+                </article>
+                <article class="mb-4">
+                    <label for="descricaoComite" class="block text-gray-700 font-semibold mb-2">Descrição</label>
+                    <textarea id="descricaoComite" name="descricao" rows="4" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue"></textarea>
+                </article>
+                <button type="submit"
+                    class="bg-mocs-blue text-white font-semibold py-2 px-5 rounded-lg hover:bg-opacity-90">Criar
+                    Comitê</button>
+            </form>
         </main>
     </div>
 

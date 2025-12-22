@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOCS ON - Consultas</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/imprensa_feed.css}">
+</head>
+
+<body class="feed-bg bg-slate-50 font-[Inter]">
+
+    <div class="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-6">
+
+        <header class="bg-white border rounded-2xl px-6 py-4 shadow-md flex justify-between items-center"
+            x-data="profileData()" x-init="init()">
+
+            <a th:href="@{/secretariado.html}" class="text-blue-700 font-semibold">
+                <i class="fas fa-arrow-left mr-2"></i> Voltar
+            </a>
+
+            <h1 class="text-2xl font-extrabold">Gestão de Consultas</h1>
+
+            <span class="font-semibold text-slate-600" x-text="userCargo"></span>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <section class="lg:col-span-2 space-y-4">
+
+                <!-- Abas -->
+                <div class="bg-white border rounded-2xl p-6 shadow-sm space-y-6">
+                    <div class="flex gap-2 border-b pb-3">
+                        <button onclick="mostrarAba('todas')" id="btn-todas"
+                            class="px-4 py-2 font-semibold border-b-2 text-blue-600 border-blue-600">
+                            Todas
+                        </button>
+                        <button onclick="mostrarAba('pendente')" id="btn-pendentes"
+                            class="px-4 py-2 font-semibold border-b-2 text-slate-500">
+                            Pendentes
+                        </button>
+                        <button onclick="mostrarAba('aprovada')" id="btn-aprovadas"
+                            class="px-4 py-2 font-semibold border-b-2 text-slate-500">
+                            Aprovadas
+                        </button>
+                    </div>
+
+                    <div id="lista-consultas" class="space-y-3">
+                        <p class="text-sm text-slate-400 italic">
+                            Carregando consultas...
+                        </p>
+                    </div>
+                </div>
+
+            </section>
+
+            <aside class="bg-white rounded-2xl p-4 shadow-sm">
+                <div id="consulta-detalhe" class="text-sm text-slate-700 space-y-4 mt-6">
+                    <p class="text-slate-500">
+                        Selecione uma consulta para ver os detalhes.
+                    </p>
+                </div>
+                
+                <div class="mt-6">
+                    <a href="/consultas/nova"
+                        class="inline-flex items-center bg-blue-600 text-white font-semibold px-5 py-3 rounded-xl shadow hover:bg-blue-700 transition">
+                        <i class="fas fa-plus mr-2"></i> Nova Consulta
+                    </a>
+                </div>
+            </aside>
+
+        </main>
+    </div>
+
+    <script th:src="@{/js/usuario_logado_helper.js}"></script>
+    <script th:src="@{/js/dashboard_config.js}"></script>
+    <script th:src="@{/js/profile_data.js}"></script>
+    <script th:src="@{/js/consultas.js}"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+</body>
+
+</html>

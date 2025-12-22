@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOCS ON - Presenca</title>
+    <title>MOCS ON - Presença</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,8 +23,8 @@
                 <span class="text-lg font-bold tracking-tight text-blue-700">MOCS ON</span>
             </div>
             <div class="text-center md:text-left">
-                <h1 class="text-2xl font-extrabold text-slate-900">Lista de presenca</h1>
-                <p class="text-sm text-slate-500">Registro rapido de presenca por sessao.</p>
+                <h1 class="text-2xl font-extrabold text-slate-900">Lista de presença</h1>
+                <p class="text-sm text-slate-500">Registro rápido de presença por sessão.</p>
             </div>
             <div class="flex items-center gap-3">
                 <span class="hidden sm:block text-slate-600 font-semibold" x-text="userCargo">VISITANTE</span>
@@ -44,7 +44,7 @@
                         <a href="/profile" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"><i class="fas fa-user mr-2"></i> Meu perfil</a>
                         <template x-if="isSecretario">
                             <a href="/secretariado.html" class="block px-4 py-2 text-sm text-blue-700 font-semibold hover:bg-slate-50">
-                                <i class="fas fa-user-tie mr-2"></i> Area do Secretariado
+                                <i class="fas fa-user-tie mr-2"></i> Área do Secretariado
                             </a>
                         </template>
                         <a href="/auth/logout" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">Sair</a>
@@ -59,11 +59,11 @@
                     <h2 id="presenca-form-title" class="text-lg font-bold text-slate-900 mb-4">Nova lista</h2>
                     <form id="form-presenca" class="space-y-4">
                         <div>
-                            <label class="block text-sm font-semibold text-slate-600 mb-1" for="presenca-titulo">Titulo</label>
+                            <label class="block text-sm font-semibold text-slate-600 mb-1" for="presenca-titulo">Título</label>
                             <input id="presenca-titulo" type="text" class="w-full px-3 py-2 border border-slate-200 rounded-xl" placeholder="Ex: Sessao da manha" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-slate-600 mb-1" for="presenca-comite">Comite</label>
+                            <label class="block text-sm font-semibold text-slate-600 mb-1" for="presenca-comite">Comitê</label>
                             <select id="presenca-comite" class="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white">
                                 <option value="">Sem comite</option>
                             </select>
@@ -74,24 +74,24 @@
                                 <input id="presenca-data" type="date" class="w-full px-3 py-2 border border-slate-200 rounded-xl" required>
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-slate-600 mb-1" for="presenca-hora-inicio">Hora inicio</label>
+                                <label class="block text-sm font-semibold text-slate-600 mb-1" for="presenca-hora-inicio">Hora de início</label>
                                 <input id="presenca-hora-inicio" type="time" class="w-full px-3 py-2 border border-slate-200 rounded-xl">
                             </div>
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-slate-600 mb-1" for="presenca-hora-fim">Hora fim</label>
+                            <label class="block text-sm font-semibold text-slate-600 mb-1" for="presenca-hora-fim">Hora de fim</label>
                             <input id="presenca-hora-fim" type="time" class="w-full px-3 py-2 border border-slate-200 rounded-xl">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-slate-600 mb-1" for="presenca-observacao">Observacao</label>
-                            <textarea id="presenca-observacao" rows="3" class="w-full px-3 py-2 border border-slate-200 rounded-xl" placeholder="Observacoes da sessao"></textarea>
+                            <label class="block text-sm font-semibold text-slate-600 mb-1" for="presenca-observacao">Observação</label>
+                            <textarea id="presenca-observacao" rows="3" class="w-full px-3 py-2 border border-slate-200 rounded-xl" placeholder="Observações da sessão"></textarea>
                         </div>
                         <div class="flex flex-col gap-2">
                             <button id="presenca-submit" type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 rounded-xl hover:bg-blue-700 transition">
                                 Criar lista
                             </button>
                             <button id="presenca-cancelar" type="button" class="hidden w-full border border-slate-200 text-slate-700 font-semibold py-2 rounded-xl hover:bg-slate-50 transition">
-                                Cancelar edicao
+                                Cancelar edição
                             </button>
                         </div>
                     </form>
@@ -117,7 +117,7 @@
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                         <div>
                             <h2 id="presenca-detalhe-titulo" class="text-xl font-bold text-slate-900">Selecione uma lista</h2>
-                            <p id="presenca-detalhe-info" class="text-sm text-slate-500">Escolha uma lista para registrar presenca.</p>
+                            <p id="presenca-detalhe-info" class="text-sm text-slate-500">Escolha uma lista para registrar presença.</p>
                         </div>
                         <div class="flex flex-wrap items-center gap-2">
                             <button id="editar-lista" class="px-3 py-2 rounded-xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-50 transition disabled:opacity-60 disabled:cursor-not-allowed" disabled>

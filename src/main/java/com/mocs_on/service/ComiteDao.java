@@ -171,7 +171,6 @@ public class ComiteDao {
             if (count == 0) {
                 throw new Exception("Object not found [" + vo.getId() + "] .");
             }
-            // SEM COMMIT
         } catch (SQLException e) {
             try {
                 conn.rollback();
@@ -237,5 +236,11 @@ public class ComiteDao {
         );
 
         return lista.isEmpty() ? null : lista.get(0);
+    }
+
+    public Long quantidadeComites() {
+        String sql = "SELECT COUNT(*) FROM comites WHERE status = 'EM_ANDAMENTO'";
+        Long total = jdbcTemplate.queryForObject(sql, Long.class);
+        return total != null ? total : 0l;
     }
 }

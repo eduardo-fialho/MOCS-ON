@@ -1,5 +1,5 @@
-
 document.addEventListener("DOMContentLoaded", function () {
+
     const tipo = document.getElementById("tipo");
     const secretariadoSection = document.getElementById("secretariadoSection");
     const secretariadoFuncao = document.getElementById("secretariadoFuncao");
@@ -30,7 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function atualizarTextoFuncao() {
-
         textoPadrao.classList.add("hidden");
         textoDocente.classList.add("hidden");
         textoTecnico.classList.add("hidden");

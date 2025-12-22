@@ -105,7 +105,8 @@ public class CommentController {
                 out.put("createdAt", LocalDateTime.now());
                 return ResponseEntity.status(HttpStatus.CREATED).body(out);
             } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                // likely blocked because post is a Consulta Informal
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

@@ -106,7 +106,7 @@ async function renderMateriaDetails(m) {
     const podeAprovar =
         m.status === 'PENDENTE' &&
         usuario.isSecretario 
-        /* &&  m.autor !== usuario.email */
+        &&  m.autor !== usuario.email
         ;
     
     const podeEditar = usuario.email == m.autor;

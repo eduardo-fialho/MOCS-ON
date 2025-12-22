@@ -17,9 +17,8 @@
             <div>
                 <h1 class="text-2xl font-bold text-gray-800">Novo Usuário</h1>
                 <p class="text-sm text-gray-500 mt-1">Cadastre um participante e defina seu papel inicial.</p>
-                <p th:text="${secretariadoFuncaoOptions}"></p>
             </div>
-            <a href="/admin/users" class="text-sm text-blue-600 hover:underline">Voltar para lista</a>
+            <a th:href="@{/admin/users}" class="text-sm text-blue-600 hover:underline">Voltar para lista</a>
         </div>
     </header>
 
@@ -122,8 +121,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1" for="tipo">Papel na
-                            plataforma</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1" for="tipo">Papel na plataforma</label>
                         <select id="tipo" th:field="*{tipo}"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue uppercase">
                             <option value="">Selecione</option>
@@ -138,14 +136,12 @@
                         <input type="password" id="password" th:field="*{password}" minlength="8" required
                             placeholder="Mínimo 8 caracteres"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
-                        <p class="text-xs text-gray-500 mt-1">Compartilhe a senha inicial com o usuário ou gere uma
-                            senha temporária.</p>
+                        <p class="text-xs text-gray-500 mt-1">Compartilhe a senha inicial com o usuário ou gere uma senha temporária.</p>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1" for="confirmPassword">Confirmar
-                        senha</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1" for="confirmPassword">Confirmar senha</label>
                     <input type="password" id="confirmPassword" th:field="*{confirmPassword}" minlength="8" required
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
                 </div>
@@ -154,55 +150,37 @@
                     <div class="bg-slate-100 border border-slate-200 rounded-lg p-4 text-sm text-slate-700 space-y-2">
                         <p class="font-semibold text-slate-900">Orientações sobre os perfis do Secretariado</p>
                         <p id="textoPadrao">Selecione a função para visualizar um resumo das responsabilidades.</p>
-                        <p id="textoDocente" class="hidden">
-                            <span class="font-medium">Docente:</span> lidera frentes pedagógicas, valida materiais
-                            acadêmicos e orienta delegações.
-                        </p>
-                        <p id="textoTecnico" class="hidden">
-                            <span class="font-medium">Técnico administrativo:</span> organiza logística, cuida da
-                            comunicação oficial e dá suporte aos participantes.
-                        </p>
-                        
+                        <p id="textoDocente" class="hidden"><span class="font-medium">Docente:</span> lidera frentes pedagógicas, valida materiais acadêmicos e orienta delegações.</p>
+                        <p id="textoTecnico" class="hidden"><span class="font-medium">Técnico administrativo:</span> organiza logística, cuida da comunicação oficial e dá suporte aos participantes.</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1"
-                                for="secretariadoFuncao">Função</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1" for="secretariadoFuncao">Função</label>
                             <select id="secretariadoFuncao" th:field="*{secretariadoFuncao}"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue uppercase">
                                 <option value="">Selecione</option>
-                                <option th:each="funcao : ${secretariadoFuncaoOptions}" th:value="${funcao}"
-                                    th:text="${funcao}"
-                                    th:selected="${form.secretariadoFuncao != null and #strings.equalsIgnoreCase(funcao, form.secretariadoFuncao)}">
-                                    DOCENTE
-                                </option>
+                                <option th:each="funcao : ${secretariadofuncaoOptions}" th:value="${funcao}" th:text="${funcao}"
+                                    th:selected="${form.secretariadoFuncao != null and #strings.equalsIgnoreCase(funcao, form.secretariadoFuncao)}"></option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1"
-                                for="secretariadoDepartamento">Departamento / Órgão de lotação</label>
-                            <input type="text" id="secretariadoDepartamento" th:field="*{secretariadoDepartamento}"
-                                placeholder="Ex.: Coordenação Acadêmica"
+                            <label class="block text-sm font-medium text-gray-700 mb-1" for="secretariadoDepartamento">Departamento / Órgão de lotação</label>
+                            <input type="text" id="secretariadoDepartamento" th:field="*{secretariadoDepartamento}" placeholder="Ex.: Coordenação Acadêmica"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1"
-                                for="secretariadoMatricula">Matrícula (opcional)</label>
-                            <input type="text" id="secretariadoMatricula" th:field="*{secretariadoMatricula}"
-                                placeholder="Registro funcional ou SIAPE"
+                            <label class="block text-sm font-medium text-gray-700 mb-1" for="secretariadoMatricula">Matrícula (opcional)</label>
+                            <input type="text" id="secretariadoMatricula" th:field="*{secretariadoMatricula}" placeholder="Registro funcional ou SIAPE"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1"
-                                for="secretariadoTelefone">Telefone / Ramal (opcional)</label>
-                            <input type="text" id="secretariadoTelefone" th:field="*{secretariadoTelefone}"
-                                placeholder="(31) 0000-0000"
+                            <label class="block text-sm font-medium text-gray-700 mb-1" for="secretariadoTelefone">Telefone / Ramal (opcional)</label>
+                            <input type="text" id="secretariadoTelefone" th:field="*{secretariadoTelefone}" placeholder="(31) 0000-0000"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1" for="secretariadoTurno">Turno de
-                                atendimento</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1" for="secretariadoTurno">Turno de atendimento</label>
                             <select id="secretariadoTurno" th:field="*{secretariadoTurno}"
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue uppercase">
                                 <option value="">Selecione</option>
@@ -213,24 +191,17 @@
                             </select>
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1"
-                                for="secretariadoResponsabilidades">Principais responsabilidades</label>
-                            <textarea id="secretariadoResponsabilidades" th:field="*{secretariadoResponsabilidades}"
-                                rows="3" maxlength="255" placeholder="Resumo das atividades..."
+                            <label class="block text-sm font-medium text-gray-700 mb-1" for="secretariadoResponsabilidades">Principais responsabilidades</label>
+                            <textarea id="secretariadoResponsabilidades" th:field="*{secretariadoResponsabilidades}" rows="3" maxlength="255" placeholder="Resumo das atividades..."
                                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue"></textarea>
-                            <p class="text-xs text-gray-500 mt-1">Ajude a equipe a entender rapidamente como acionar
-                                este membro do Secretariado.</p>
+                            <p class="text-xs text-gray-500 mt-1">Ajude a equipe a entender rapidamente como acionar este membro do Secretariado.</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="pt-2 flex justify-end gap-3">
-                    <a href="/admin/users"
-                        class="px-4 py-2 rounded border border-gray-300 text-gray-600 hover:bg-gray-100">Cancelar</a>
-                    <button type="submit"
-                        class="px-4 py-2 rounded bg-mocs-blue text-white font-semibold hover:bg-opacity-90">
-                        Criar usuário
-                    </button>
+                    <a th:href="@{/admin/users}" class="px-4 py-2 rounded border border-gray-300 text-gray-600 hover:bg-gray-100">Cancelar</a>
+                    <button type="submit" class="px-4 py-2 rounded bg-mocs-blue text-white font-semibold hover:bg-opacity-90">Criar usuário</button>
                 </div>
             </form>
         </div>

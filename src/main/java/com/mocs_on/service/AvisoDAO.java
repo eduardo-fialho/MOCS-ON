@@ -42,10 +42,10 @@ public class AvisoDAO {
         );
     }
 
-    public int quantidadeAvisos() {
+    public Long quantidadeAvisos() {
         String sql = "SELECT COUNT(*) FROM avisos";
-        Integer total = jdbcTemplate.queryForObject(sql, Integer.class);
-        return total != null ? total : 0;
+        Long total = jdbcTemplate.queryForObject(sql, Long.class);
+        return total != null ? total : 0l;
     }
 
 }
