@@ -82,7 +82,7 @@
                             _curtindo: false,
                             _curtidaCount: 0,
                             _hasCurtido: false,
-                            // determine allowed reactions per post
+                            
                             _allowedEmojis: (p.status === 'CONSULTA_INFORMAL') ? ['SIM','NAO'] : this.emojis
                         }));
 
@@ -243,7 +243,7 @@
 
             async toggleComments(post) {
                 if (!post) return;
-                // comments disabled for Consulta Informal
+
                 if (post.status === 'CONSULTA_INFORMAL') return;
                 post._commentsOpen = !post._commentsOpen;
                 if (post._commentsOpen && (!post.comments || post.comments.length === 0)) {

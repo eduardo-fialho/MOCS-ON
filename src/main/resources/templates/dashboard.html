@@ -26,8 +26,6 @@
                         <div class="flex items-center gap-4">
                             <a href="#"><img src="https://placehold.co/150x50/205395/ffffff?text=MOCS+ON"
                                     alt="Logo MOCS ON" class="h-8 rounded-xl shadow"></a>
-                            <span
-                                class="font-semibold text-mocs-blue tracking-widest uppercase text-xs sm:text-sm">CSNU</span>
                         </div>
                         <div class="flex flex-col items-center gap-3">
                             <button @click="toggleMenu" class="flex items-center gap-2 font-semibold text-white">
@@ -253,7 +251,7 @@
                                                 </div>
                                                 <template x-for="comment in comments" :key="comment.id">
                                                     <div
-                                                        class="rounded-xl bg-white/90 shadow px-3 py-2 border border-white/60">
+                                                        class="rounded-xl bg-white/90 shadow px-3 py-2 border border-white/80">
                                                         <div class="flex justify-between text-xs text-gray-700">
                                                             <span class="font-semibold text-gray-900"
                                                                 x-text="comment.autor"></span>
@@ -268,7 +266,7 @@
                                         </div>
                                         <div class="space-y-2">
                                             <textarea x-model="commentText"
-                                                class="w-full border border-gray-300 rounded-2xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-mocs-blue"
+                                                class="w-full border border-gray-400 rounded-2xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-mocs-blue"
                                                 rows="2" placeholder="Escreva um comentário..."></textarea>
                                             <div class="flex justify-end items-center gap-2">
                                                 <button type="button"
@@ -283,7 +281,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
                         <div class="mb-6">
                             <h2 class="text-xl font-bold text-mocs-blue ">Imprensa</h2>
@@ -333,7 +330,7 @@
                 </section>
                 <section class="lg:col-span-4 flex flex-col gap-6">
                     <div x-data="muralData()" x-init="init()" class="bg-white p-6 rounded-xl shadow-lg">
-                        <h2 class="text-2xl font-bold text-mocs-blue mb-4">Mural do Comitê - CSNU</h2>
+                        <h2 class="text-2xl font-bold text-mocs-blue mb-4">Mural </h2>
                         <div class="mb-6">
                             <textarea x-model="newMessage"
                                 class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-mocs-blue"
@@ -373,7 +370,7 @@
                                         </div>
 
                                         <div class="flex-1">
-                                            <p class="font-bold text-gray-800" x-text="post.autor"></p>
+                                            <p class="font-bold text-mocs-blue" x-text="post.autor"></p>
                                             <p class="text-gray-700" x-text="post.mensagem"></p>
                                             <p class="text-xs text-gray-500 mt-1" x-text="timeAgo(post.data)"></p>
 
@@ -384,7 +381,7 @@
                                                     <span>Curtir</span>
                                                 </button>
 
-                                                <button class="text-sm text-gray-600 underline"
+                                                <button class="text-sm text-mocs-blue"
                                                     @click="openCurtidasModal(post)">
                                                     <span
                                                         x-text="(post._curtidaCount !== undefined) ? post._curtidaCount + ' pessoas' : '0 pessoas'"></span>
@@ -434,7 +431,9 @@
                                                                     <template
                                                                         x-if="(comment.usuario === currentUserEmail || comment.usuarioNome === currentUser) || isSecretary">
                                                                         <button class="text-xs text-red-600"
-                                                                            @click="deleteComment(post, comment.id)">Remover</button>
+                                                                            @click="deleteComment(post, comment.id)">
+                                                                            <i class="fas fa-trash"></i>
+                                                                        </button>
                                                                     </template>
                                                                 </div>
                                                             </div>
@@ -463,37 +462,13 @@
                                         <div class="flex flex-col items-end gap-2">
                                             <template x-if="isSecretary">
                                                 <button class="text-sm text-red-600" @click="deletePost(post.id)">
-                                                    Excluir
+                                                    <i class="fas fa-trash"></i>
                                                 </button>
                                             </template>
                                         </div>
                                     </div>
                                 </div>
-                                <div x-show="post._curtidasModalOpen" x-cloak
-                                    class="fixed inset-0 flex items-center justify-center z-50">
-                                    <div class="absolute inset-0 bg-black opacity-50" @click="closeCurtidasModal(post)">
-                                    </div>
-                                    <div class="bg-white rounded shadow-lg p-4 max-w-md w-full z-10">
-                                        <div class="flex justify-between items-center mb-3">
-                                            <h3 class="text-lg font-semibold">Curtido por</h3>
-                                            <button class="text-sm text-gray-600"
-                                                @click="closeCurtidasModal(post)">Fechar</button>
-                                        </div>
-                                        <div class="max-h-64 overflow-auto">
-                                            <template x-if="post._loadingCurtidas">
-                                                <div class="text-sm text-gray-500">Carregando...</div>
-                                            </template>
-                                            <template x-for="u in (post._curtidasList || [])" :key="u.usuario">
-                                                <div class="py-2 border-b">
-                                                    <div class="font-medium" x-text="u.usuarioNome"></div>
-                                                    <div class="text-xs text-gray-500" x-text="u.usuario"></div>
-                                                </div>
-                                            </template>
-                                            <div x-show="!post._loadingCurtidas && (!post._curtidasList || post._curtidasList.length === 0)"
-                                                class="text-sm text-gray-500">Ninguém curtiu ainda.</div>
-                                        </div>
-                                    </div>
-                                </div>
+            
                             </template>
 
                             <div x-show="!loading && posts.length === 0" class="text-center text-gray-500 py-6"
@@ -504,7 +479,7 @@
                     </div>
 
                     <div x-data="calendarComponent()" x-init="init()" class="bg-white p-6 rounded-xl shadow-lg">
-                        <h2 class="text-xl font-bold text-center mb-4">Agendas</h2>
+                        <h2 class="text-xl font-bold text-center mb-4 text-mocs-blue">Agendas</h2>
 
                         <div class="flex justify-center gap-4 mb-6">
                             <button @click="setAgenda('GERAL')"

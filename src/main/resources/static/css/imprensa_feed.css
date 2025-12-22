@@ -16,7 +16,7 @@ body {
 }
 
 .text-mocs-blue {
-    color: #205395;
+    color: #0254be;
 }
 
 .bg-mocs-orange {
@@ -190,4 +190,9 @@ body {
 .menu-chip:hover {
     background: rgba(255, 255, 255, 1);
     transform: translateY(-1px);
+}
+
+.materia-title {
+    font-family: "Fraunces", serif;
+    color: var(--mocs-blue-dark);
 }
