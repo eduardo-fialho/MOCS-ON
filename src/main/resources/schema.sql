@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS `documentos` (
     `ativo` BOOLEAN NOT NULL DEFAULT TRUE,
     `data` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `avaliacao` VARCHAR(1000) NOT NULL,
+    `comite_sigla` VARCHAR(255),
 
     PRIMARY KEY (`id`),
     KEY `idx_documentos_status` (`status`),

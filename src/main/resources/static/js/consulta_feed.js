@@ -2,30 +2,6 @@ let consultasAtuais = [];
 let consultaSelecionada = null;
 let abaAtual = 'todas';
 
-function mostrarAba(aba) {
-    abaAtual = aba;
-
-    
-    document.getElementById('btn-todas').className = aba==='todas' 
-        ? 'px-4 py-2 font-semibold border-b-2 text-blue-600 border-blue-600'
-        : 'px-4 py-2 font-semibold border-b-2 text-slate-500';
-
-    document.getElementById('btn-pendentes').className = aba==='pendente'
-        ? 'px-4 py-2 font-semibold border-b-2 text-amber-600 border-amber-500'
-        : 'px-4 py-2 font-semibold border-b-2 text-slate-500';
-
-    document.getElementById('btn-aprovadas').className = aba==='aprovada'
-        ? 'px-4 py-2 font-semibold border-b-2 text-green-600 border-green-600'
-        : 'px-4 py-2 font-semibold border-b-2 text-slate-500';
-
-    if (aba === 'todas') {
-        renderListaConsultas(consultasAtuais);
-    } else {
-        renderListaConsultas(consultasAtuais.filter(c => c.status === aba.toUpperCase()));
-    }
-}
-
-
 async function fetchConsultas() {
     try {
         const res = await fetch('/api/consultas');
@@ -33,7 +9,8 @@ async function fetchConsultas() {
         if (!res.ok) throw new Error('Erro ao buscar consultas');
 
         consultasAtuais = await res.json();
-        renderListaConsultas(consultasAtuais);
+        const consultasAprovadas = consultasAtuais.filter(c => c.status === "APROVADA");
+        renderListaConsultas(consultasAprovadas);
 
     } catch (e) {
         console.error(e);
@@ -136,30 +113,14 @@ async function renderDetalheConsulta(c) {
             </span>
         </div>
 
+        <div class="relative w-full h-4 bg-gray-300 rounded mt-2 overflow-hidden">
+            <div class="absolute top-0 left-0 h-full bg-green-500" style="width: ${percFavor}%;"></div>
+            <div class="absolute top-0 right-0 h-full bg-red-500" style="width: ${percContra}%;"></div>
+        </div>
+        
         <p class="mt-2 font-semibold">
             Resultado parcial: ${vencedor}
         </p>
-
-        <div class="mt-6 flex gap-3">
-            ${podeAdministrar ? `
-                <button onclick="aprovarConsulta(${c.id})"
-                        class="bg-green-600 text-white px-4 py-2 rounded-lg">
-                    Aprovar
-                </button>
-
-                <button onclick="rejeitarConsulta(${c.id})"
-                        class="bg-red-600 text-white px-4 py-2 rounded-lg">
-                    Rejeitar
-                </button>
-            ` : ''}
-
-            ${c.status.toLowerCase() === 'aprovada' ? `
-                <button onclick="arquivarConsulta(${c.id})"
-                        class="bg-orange-600 text-white px-4 py-2 rounded-lg">
-                    Arquivar
-                </button>
-            ` : ''}
-        </div>
     `;
 }
 

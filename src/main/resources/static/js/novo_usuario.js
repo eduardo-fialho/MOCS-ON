@@ -43,9 +43,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    toggleSecretariado();
+    atualizarSecao();
     atualizarTextoFuncao();
 
-    tipo.addEventListener("change", toggleSecretariado);
+    tipo.addEventListener("change", atualizarSecao);
     secretariadoFuncao.addEventListener("change", atualizarTextoFuncao);
 });
