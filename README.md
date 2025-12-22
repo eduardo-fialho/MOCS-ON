@@ -103,7 +103,7 @@ MOCS ON é uma plataforma digital integrada para gerir o Modelo de Comitês Simu
 | CSU09 | Registrar lista de presença | REQ013 | - |
 | CSU10 | Consulta informal | REQ015 | - |
 | CSU11 | Enviar "Spotteds" e "Pérolas" | REQ003, REQ020 | - |
-| CSU12 | Workflow da imprensa | REQ003 | RN003, RN008 |
+| CSU12 | Submeter e Aprovar um post da Imprensa | REQ003 | RN003, RN008 |
 | CSU13 | Enviar avisos gerais | REQ003 | - |
 | CSU14 | Recuperar senha | REQ002 | RN013 |
 | CSU15 | Publicar agenda do comitê | REQ010 | - |
@@ -151,3 +151,24 @@ Planejamento da construção do projeto resumido em 3 sprints.
 | Arthur Henrique Neves | CSU09 | Registro avançado de listas de presença. |
 | Túlio Araújo Grossi | CSU17 | Gestão de delegações por comitê. |
 
+### Tabela Final: CSU's de Uso/Desenvolvedor
+| CSU  | Descrição                          | Desenvolvedor                     |
+|:------|:-----|:---------------------|
+| CSU01 | Login na plataforma | Hike Penedo Mendes |
+| CSU02 | Criar e Editar diferentes tipos de Usuário | Arthur Henrique Neves |
+| CSU03 | Criar e editar comitês | Túlio Araújo Grossi |
+| CSU04 | Utilizar a ouvidoria | Ana Sofia de Miranda e  Eduardo Lopes Fialho |
+| CSU05 | Receber e avaliar documentos | Eduardo Lopes Fialho |
+| CSU06 | Submeter documentos | Ana Sofia de Miranda e  Eduardo Lopes Fialho |
+| CSU07 | Submeter post em comitê | Arthur Henrique Neves |
+| CSU08 | Interagir com post | Samuel Soares dos Santos |
+| CSU09 | Registrar lista de presença | Arthur Henrique Neves |
+| CSU10 | Consulta informal | Ana Sofia de Miranda e  Samuel Soares dos Santos |
+| CSU11 | Enviar "Spotteds" e "Pérolas" | Samuel Soares dos Santos |
+| CSU12 | Submeter e Aprovar um post da Imprensa | Samuel Soares dos Santos |
+| CSU13 | Enviar avisos gerais | Eduardo Lopes Fialho |
+| CSU14 | Recuperação de Senha |  Arthur Henrique Neves |
+| CSU15 | Publicar agenda do comitê | Hike Penedo Mendes |
+| CSU16 | Publicar agenda diária | Hike Penedo Mendes |
+| CSU17 | Criar e editar delegações | Arthur Henrique Neves |
+| CSU18 | Disponibilizar guia de estudos | Eduardo Lopes Fialho |
